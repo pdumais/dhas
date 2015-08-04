@@ -1,0 +1,5 @@
+Copy the sound files here.
+
+files here can be in any format. They will be converted when installed on target device
+they will be converted to S16 so that they can be used by the sound card
+and a u-Law version will also be created for use by the RTP stack

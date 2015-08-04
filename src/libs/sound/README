@@ -1,0 +1,2 @@
+Sound devices can only output. No input supported
+Each sound device spawns a thread in swhich the write() function blocks

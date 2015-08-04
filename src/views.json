@@ -1,0 +1,14 @@
+{
+    "_id" : "_design/views",
+    "views": {
+        "temperature": {
+            "map" : "function(doc){if (doc.event == \"timer\"){emit(doc.timestamp, doc.temperatures);}}"
+        },
+        "alarms": {
+            "map" : "function(doc){if (doc.event == \"alarmstate\"){emit(doc.timestamp, {status:doc.status,from:doc.from});}}"
+        },
+        "io": {
+            "map" : "function(doc){if (doc.event == \"inputpin\"){emit(doc.timestamp, doc.pins);}}"
+        }
+    }
+}

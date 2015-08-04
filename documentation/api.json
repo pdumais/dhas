@@ -1,0 +1,470 @@
+{
+	"api" : [
+		{
+			"method" : "GET",
+			"path" : "/events/show",
+			"params" : [
+			],
+			"description" : "show all scheduled events"
+		},
+		{
+			"method" : "GET",
+			"path" : "/events/add",
+			"params" : [
+				{
+					"description" : "hour of the day at which to trigger the event",
+					"name" : "hour"
+				},
+				{
+					"description" : "minute of the hour at which to trigger the event",
+					"name" : "min"
+				},
+				{
+					"description" : "user defined data",
+					"name" : "p"
+				},
+				{
+					"description" : "Event name",
+					"name" : "name"
+				}
+			],
+			"description" : "add a scheduled event. This event will trigger the LUA script at the defined time"
+		},
+		{
+			"method" : "GET",
+			"path" : "/events/remove",
+			"params" : [
+				{
+					"description" : "event ID",
+					"name" : "id"
+				}
+			],
+			"description" : "remove a scheduled event"
+		},
+		{
+			"method" : "GET",
+			"path" : "/events/gettime",
+			"params" : [
+			],
+			"description" : "get current time"
+		},
+		{
+			"method" : "GET",
+			"path" : "/help",
+			"params" : [
+			],
+			"description" : "display API documentation"
+		},
+		{
+			"method" : "GET",
+			"path" : "/io/getstatus",
+			"params" : [
+			],
+			"description" : "Get current status of sensors"
+		},
+		{
+			"method" : "GET",
+			"path" : "/io/addwebrelay",
+			"params" : [
+				{
+					"description" : "Name of relay. This will be used to trigger the relay later",
+					"name" : "name"
+				},
+				{
+					"description" : "ID of a web relay on the device",
+					"name" : "id"
+				},
+				{
+					"description" : "IP address of a web relay device",
+					"name" : "ip"
+				}
+			],
+			"description" : "add web relay device"
+		},
+		{
+			"method" : "GET",
+			"path" : "/io/setrelay",
+			"params" : [
+				{
+					"description" : "Name of relay. This will be used to trigger the relay later",
+					"name" : "name"
+				},
+				{
+					"description" : "\'true\' or \'false\'",
+					"name" : "on"
+				}
+			],
+			"description" : "Set relay on or off"
+		},
+		{
+			"method" : "GET",
+			"path" : "/io/setoutput",
+			"params" : [
+				{
+					"description" : "pin number",
+					"name" : "number"
+				},
+				{
+					"description" : "\'true\' or \'false\'",
+					"name" : "on"
+				}
+			],
+			"description" : "Set IO board output pin on or off"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/setip",
+			"params" : [
+				{
+					"description" : "IP address of weather controller",
+					"name" : "ip"
+				}
+			],
+			"description" : "set IP of weather controller"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/getstats",
+			"params" : [
+			],
+			"description" : "retrieve stats"
+		},
+		{
+			"method" : "GET",
+			"path" : "/audio/play",
+			"params" : [
+				{
+					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1$4,sound2. This would make a 4 second pause between sound1 and sound2",
+					"name" : "sound"
+				}
+			],
+			"description" : "plays files defined by PLAY_STRING on onboard sound device"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/clearmodules",
+			"params" : [
+			],
+			"description" : "reset list of Insteon module definition"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/listmodules",
+			"params" : [
+			],
+			"description" : "lists all Insteon modules"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/addmodule",
+			"params" : [
+				{
+					"description" : "The name of the module",
+					"name" : "name"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "add a Insteon module definition"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/addezflora",
+			"params" : [
+				{
+					"description" : "The name of the module",
+					"name" : "name"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "add a Insteon ezflora module definition"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/addiolinc",
+			"params" : [
+				{
+					"description" : "The name of the module",
+					"name" : "name"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "add a Insteon iolinc module definition"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/setcontroller",
+			"params" : [
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "set Insteon controller ID (PLM)"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/switch",
+			"params" : [
+				{
+					"description" : "0 to 255. This is the ramp rate",
+					"name" : "rate"
+				},
+				{
+					"description" : "for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant",
+					"name" : "subdev"
+				},
+				{
+					"description" : "0 to 255. Irrelevant if action is off or toggle",
+					"name" : "level"
+				},
+				{
+					"description" : "on/off/toggle",
+					"name" : "action"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "Turn on or off a device"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/ezflora/setprogram",
+			"params" : [
+				{
+					"description" : "Zone 8 timer. 0 to 255 minutes",
+					"name" : "z8"
+				},
+				{
+					"description" : "Zone 5 timer. 0 to 255 minutes",
+					"name" : "z5"
+				},
+				{
+					"description" : "Zone 4 timer. 0 to 255 minutes",
+					"name" : "z4"
+				},
+				{
+					"description" : "Zone 3 timer. 0 to 255 minutes",
+					"name" : "z3"
+				},
+				{
+					"description" : "Zone 7 timer. 0 to 255 minutes",
+					"name" : "z7"
+				},
+				{
+					"description" : "Zone 6 timer. 0 to 255 minutes",
+					"name" : "z6"
+				},
+				{
+					"description" : "Zone 2 timer. 0 to 255 minutes",
+					"name" : "z2"
+				},
+				{
+					"description" : "Zone 1 timer. 0 to 255 minutes",
+					"name" : "z1"
+				},
+				{
+					"description" : "Program number. 1 to 4",
+					"name" : "p"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "Sets a program on the EZFlora"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/ezflora/status",
+			"params" : [
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				}
+			],
+			"description" : "Forces an update of EZFlora status"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/raw",
+			"params" : [
+				{
+					"description" : "data byte 12 for extended data",
+					"name" : "d12"
+				},
+				{
+					"description" : "data byte 10 for extended data",
+					"name" : "d10"
+				},
+				{
+					"description" : "data byte 11 for extended data",
+					"name" : "d11"
+				},
+				{
+					"description" : "data byte 9 for extended data",
+					"name" : "d9"
+				},
+				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				},
+				{
+					"description" : "data byte 8 for extended data",
+					"name" : "d8"
+				},
+				{
+					"description" : "data byte 3 for extended data",
+					"name" : "d3"
+				},
+				{
+					"description" : "data byte 14 for extended data",
+					"name" : "d14"
+				},
+				{
+					"description" : "command byte 1",
+					"name" : "cmd1"
+				},
+				{
+					"description" : "command byte 2",
+					"name" : "cmd2"
+				},
+				{
+					"description" : "data byte 1 for extended data",
+					"name" : "d1"
+				},
+				{
+					"description" : "data byte 2 for extended data",
+					"name" : "d2"
+				},
+				{
+					"description" : "data byte 13 for extended data",
+					"name" : "d13"
+				},
+				{
+					"description" : "data byte 4 for extended data",
+					"name" : "d4"
+				},
+				{
+					"description" : "data byte 6 for extended data",
+					"name" : "d6"
+				},
+				{
+					"description" : "data byte 5 for extended data",
+					"name" : "d5"
+				},
+				{
+					"description" : "data byte 7 for extended data",
+					"name" : "d7"
+				}
+			],
+			"description" : "Send raw insteon command"
+		},
+		{
+			"method" : "GET",
+			"path" : "/insteon/refreshalllinksdatabase",
+			"params" : [
+			],
+			"description" : "retrieve all-link database"
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/call",
+			"params" : [
+				{
+					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
+					"name" : "play"
+				},
+				{
+					"description" : "extention to call",
+					"name" : "ext"
+				}
+			],
+			"description" : "Will call the given extension and optionally play sound when the remote peer answers the call. Placing a call only works if the user agent was previously registered. Called extension must be know by the proxy because direct URI are not supported. To make an intercom call (where the UAS will autoanswer) this needs to be configured on the proxy. "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/register",
+			"params" : [
+				{
+					"description" : "PBX IP address",
+					"name" : "proxy"
+				},
+				{
+					"description" : "pin associated to user",
+					"name" : "pin"
+				},
+				{
+					"description" : "SIP user to register",
+					"name" : "user"
+				}
+			],
+			"description" : "Will register the phone service user agent to the given PBX. This is usually done during initialization "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/blf",
+			"params" : [
+				{
+					"description" : "extension",
+					"name" : "ext"
+				}
+			],
+			"description" : "Will subscribe for presence events for the given extension. The extension must be a known extension in the subscribe context of our UA (if using Asterisk). "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/showcalls",
+			"params" : [
+			],
+			"description" : "Get the list of active calls in the system "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/showblf",
+			"params" : [
+			],
+			"description" : "Get the list of active subscriptions to presence events in the system "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/release",
+			"params" : [
+				{
+					"description" : "Call ID",
+					"name" : "id"
+				}
+			],
+			"description" : "release a call using call ID (usually provided in call events) "
+		},
+		{
+			"method" : "GET",
+			"path" : "/phone/play",
+			"params" : [
+				{
+					"description" : "[true/false] if you want the call to be released after sound finished playing",
+					"name" : "releaseaftersounds"
+				},
+				{
+					"description" : "call ID",
+					"name" : "id"
+				},
+				{
+					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
+					"name" : "sound"
+				}
+			],
+			"description" : "Play sounds on an active call using given callID."
+		}
+	]
+}
