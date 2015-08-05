@@ -81,7 +81,7 @@ Not documented yet... please refer to the source code and the example scripts.
 
 API Documentation
 ==============
-DHAS uses my REST engine, which is self-documenting. The documentation is generated in documentation/api.json
+DHAS uses my [REST engine](https://github.com/pdumais/rest), which is self-documenting. The documentation is generated in [documentation/api.json](documentation/api.json)
 
 Sounds
 ==============
