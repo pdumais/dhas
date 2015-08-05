@@ -50,8 +50,8 @@ DHAS.onevent = function(st)
     if (v["event"]=="sunset")
     {
         // on sunset, turn on outside light and close garage door
-        initiateAction("/insteon/switch?id=0x445566&action=on");
-        initiateAction("/insteon/switch?id=0x112233&action=off");
+        DHAS.initiateAction("/insteon/switch?id=0x445566&action=on");
+        DHAS.initiateAction("/insteon/switch?id=0x112233&action=off");
     }
 };
 ```
