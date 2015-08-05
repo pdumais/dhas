@@ -3,6 +3,9 @@ install: installapp
 install_sounds: installsounds
 clean: cleanapp
 
+# change the following to LUA if you want to compile with Lua support
+SCRIPTTYPE=JS
+
 #configuration
 OUTDIR=./bin
 APPPATH=/opt/ha
@@ -26,7 +29,7 @@ INCLUDES:=$(realpath $(sort $(INCLUDES)))
 VPATH:=$(INCLUDES)
 INCLUDES:=$(patsubst %,-I%,$(INCLUDES)) -I$(DATAFOLDER)
 
-CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG
+CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG -DSCRIPT$(SCRIPTTYPE)
 LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -llua -lasound -ludev
 STATICLIBS=$(wildcard ./bin/*.a)
 
@@ -79,7 +82,8 @@ installapp: application
 	$(APPPATH)/homeautomation -d < /dev/null >/dev/null
 
 updatescript: chkdata
-	cp $(DATAFOLDER)/script.lua $(TARGETFOLDER)
+	-cp $(DATAFOLDER)/script.lua $(TARGETFOLDER)
+	-cp $(DATAFOLDER)/script.js $(TARGETFOLDER)
 	-killall -HUP homeautomation
 
 installsounds: chkdata

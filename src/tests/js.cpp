@@ -11,6 +11,8 @@ int main(int argc, char** argv)
 
     IScriptEngine* p = new JSEngine();
     p->load(argv[1]);
+    
+    p->notifyEvent("{\"event\":\"test1\"}");
 
     delete p;
 

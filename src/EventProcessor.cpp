@@ -2,6 +2,7 @@
 //#include "config.h"
 #include "EventProcessor.h"
 #include "LUAEngine.h"
+#include "JSEngine.h"
 #include "stdio.h"
 #include <vector>
 #include <signal.h>
@@ -130,9 +131,14 @@ void EventProcessor::reloadScript()
         removeEventListener(mpScriptEngine);
         delete mpScriptEngine;
     }
-    
-    //TODO: replace this with JSEngine
+
+#ifdef SCRIPTLUA    
     mpScriptEngine = new LUAEngine();
+#elif SCRIPTJS
+    mpScriptEngine = new JSEngine();
+#else
+    #error No valid script engine defined
+#endif
     mpScriptEngine->setRESTInterface(mpRESTInterface);
     mpScriptEngine->load(this->mScriptFile);
     addEventListener(mpScriptEngine);

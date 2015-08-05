@@ -7,6 +7,7 @@ class JSEngine: public IScriptEngine
 {
 private:
     duk_context* context;
+    void prepareContext();
 
 public:
 	JSEngine();
