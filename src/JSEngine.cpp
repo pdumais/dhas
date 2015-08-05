@@ -49,16 +49,18 @@ void JSEngine::prepareContext()
         calling duk_put_prop_string will pop the previous value and store it
         in the object at index -2 (therefore, the global object). 
     */
-    duk_push_global_object(context);
+    duk_push_global_object(this->context);
+    duk_push_object(this->context);
     duk_push_c_function(context, initiateAction, DUK_VARARGS);
     duk_push_pointer(context,this);
     duk_put_prop_string(context, -2, "engine"); //save  functionObject["engine"] = this
-    duk_put_prop_string(context, -2, "initiateAction"); // globalObject["initiateAction"] = pushed function
+    duk_put_prop_string(context, -2, "initiateAction"); // Object["initiateAction"] = pushed function
     duk_push_c_function(context, log, DUK_VARARGS);
     duk_push_pointer(context,this);
     duk_put_prop_string(context, -2, "engine"); //save  functionObject["engine"] = this
     duk_put_prop_string(context, -2, "log"); 
-    duk_pop(context);
+    duk_put_prop_string(context, -2, "DHAS"); // DHAS object pushed on global object
+    duk_pop(this->context);
 }
 
 JSEngine::~JSEngine()
@@ -77,13 +79,21 @@ void JSEngine::notifyEvent(const std::string& jsonEvent)
     const char *st = jsonEvent.c_str();
 
     duk_push_global_object(this->context);
-    duk_get_prop_string(this->context, -1, "onEvent"); // get Propery "onEvent" from object at -1 (the global object)
-    duk_push_string(this->context, st);
-    if (duk_pcall(this->context,1) != 0)
+    duk_get_prop_string(this->context, -1, "DHAS"); // get Propery "DHAS" from object at -1 (the global object)
+    duk_get_prop_string(this->context, -1, "onevent"); // get Propery "DHAS" from object at -1 (the global object)
+    if (duk_is_callable(this->context,-1))
     {
-        Logging::log("ERROR: calling javascript onEvent");
+        duk_push_string(this->context, st);
+        if (duk_pcall(this->context,1) != 0)
+        {
+            Logging::log("ERROR: calling javascript onevent");
+        }
     }
-    duk_pop(this->context);
+    else
+    {
+        Logging::log("No onevent handler has been defined in script");
+    }
+    duk_pop_n(this->context,3);
 }
 
 void JSEngine::load(std::string script)
