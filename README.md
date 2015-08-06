@@ -30,7 +30,7 @@ DHAS is modular. Every different technology is represented by a module. The curr
 Script
 ==============
 DHAS supports Lua and Javascript scripts. The Makefile must be modified to support Lua as it will 
-support Javascript by default. Javascript scripting is made possible with [Duktape](https://github.com/pdumais/dhas)
+support Javascript by default. Javascript scripting is made possible with [Duktape](https://github.com/svaarala/duktape)
 
 When DHAS loads, it will run the code from the Lua or JS script (path defined in config.h).
 So it is necessary to initialize things such as Webrelay IP address, insteon device database etc..
