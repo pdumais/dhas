@@ -1,45 +1,39 @@
 #include "CouchDB.h"
 #include "HTTPCommunication.h"
 #include "Logging.h"
-#include "config.h"
 
 #define MAXREQUESTS 100
 
-void *ThreadStarter_couchdb(void *p)
+CouchDB::CouchDB(const std::string& db, const std::string& server, int port)
 {
-    CouchDB* pc = (CouchDB*)p;
-    pc->run();
-}
-
-
-CouchDB::CouchDB(std::string db)
-{
-    pthread_mutex_init(&mConditionLock,0);
-    pthread_cond_init(&mWaitCondition,0);
+    mServer = server;
+    mPort = port;
     this->mpRequests = new MPSCRingBuffer<std::string>(MAXREQUESTS);
     this->mDb = db;
     this->mMustCompact = false;
-    pthread_create(&mThreadHandle, 0, ThreadStarter_couchdb, this);
+    
+    mThreadHandle = std::thread([this](){
+        this->run();
+    });
 }
 
 CouchDB::~CouchDB()
 {
     this->mStopping = true;
-    pthread_mutex_lock(&mConditionLock);
-    pthread_cond_signal(&mWaitCondition);
-    pthread_mutex_unlock(&mConditionLock);
+    
+    mConditionLock.lock();
+    mWaitCondition.notify_one();
+    mConditionLock.unlock();
 
-    pthread_join(mThreadHandle,0);
-    pthread_cond_destroy(&mWaitCondition);
-    pthread_mutex_destroy(&mConditionLock);
+    if (mThreadHandle.joinable()) mThreadHandle.join();
 }
 
 void CouchDB::compact()
 {
-    pthread_mutex_lock(&mConditionLock);
+    mConditionLock.lock();
     this->mMustCompact = true;
-    pthread_cond_signal(&mWaitCondition);
-    pthread_mutex_unlock(&mConditionLock);
+    mWaitCondition.notify_one();
+    mConditionLock.unlock();
 }
 
 void CouchDB::addDocument(Dumais::JSON::JSON& json)
@@ -50,9 +44,9 @@ void CouchDB::addDocument(Dumais::JSON::JSON& json)
         Logging::log("Couchdb event queue overlofw. Dropping %s",st.c_str());
         return;
     }
-    pthread_mutex_lock(&mConditionLock);
-    pthread_cond_signal(&mWaitCondition);
-    pthread_mutex_unlock(&mConditionLock);
+    mConditionLock.lock();
+    mWaitCondition.notify_one();
+    mConditionLock.unlock();
 
 }
 
@@ -64,11 +58,8 @@ bool CouchDB::unPoolDocument()
     std::string url = "/";
     url += this->mDb;
 
-    bool ret = HTTPCommunication::postURL(COUCHDB_SERVER,url,data,"application/json",5984);
-    if (ret)
-    {
-    }
-    else
+    bool ret = HTTPCommunication::postURL(mServer,url,data,"application/json",mPort);
+    if (!ret)
     {
         Logging::log("ERROR: Could not add document in CouchDB");
     }
@@ -81,11 +72,11 @@ void CouchDB::run()
     while (!this->mStopping)
     {
         bool compact = false;
-        pthread_mutex_lock(&mConditionLock);
-        pthread_cond_wait(&mWaitCondition,&mConditionLock);
+        mConditionLock.lock();
+        mWaitCondition.wait(mConditionLock);
         compact = this->mMustCompact;
         this->mMustCompact = false;
-        pthread_mutex_unlock(&mConditionLock);
+        mConditionLock.unlock();
         while (unPoolDocument()); // unpool all documents until queue is empty
 
         if (compact)
@@ -93,25 +84,67 @@ void CouchDB::run()
             std::string url = "/";
             url += this->mDb;
             url += "/";
-            std::string st = HTTPCommunication::getURL(COUCHDB_SERVER,url,5984);
+            std::string st = HTTPCommunication::getURL(mServer,url,mPort);
             Dumais::JSON::JSON j;
             j.parse(st);
             Logging::log("Will compact CouchDB. Size=%s",j["disk_size"].str().c_str());
 
-            bool ret = HTTPCommunication::postURL(COUCHDB_SERVER,url+"_compact","","application/json",5984);
-            if (ret)
-            {
-                std::string st = HTTPCommunication::getURL(COUCHDB_SERVER,url,5984);
-                Dumais::JSON::JSON j;
-                j.parse(st);
-                Logging::log("CouchDB compacted. Size=%s",j["disk_size"].str().c_str());
-            }
-            else
+            bool ret = HTTPCommunication::postURL(mServer,url+"_compact","","application/json",mPort);
+            if (!ret)
             {
                 Logging::log("ERROR: Could not compact CouchDB Database");
             }
-
         }
     }
 }
 
+void CouchDB::createDb()
+{
+    std::string dbDoc = HTTPCommunication::getURL(mServer,"/"+this->mDb+"/",mPort);
+    Dumais::JSON::JSON jv;
+    jv.parse(dbDoc);
+    if (jv["db_name"].str() == this->mDb) return;
+    
+    Logging::log("DB is missing in couchdb. Creating it");
+    
+    bool ret = HTTPCommunication::putURL(mServer,"/"+this->mDb,"","application/json",mPort);
+    if (!ret)
+    {
+        Logging::log("ERROR: Could not add DB in CouchDB");
+    }
+    
+}
+
+void CouchDB::createViewsIfNonExistant(std::string views)
+{
+    std::string viewsDoc = HTTPCommunication::getURL(mServer,"/"+this->mDb+"/_design/views/",mPort);
+    Dumais::JSON::JSON jv;
+    jv.parse(viewsDoc);
+    
+    Dumais::JSON::JSON j;
+    j.parse(views);
+
+    Dumais::JSON::JSON& v = j["views"];
+    if (!v.isValid()) return;
+    
+    bool oneIsMissing = false;
+    for (auto& it : v.keys())
+    {
+        if (!jv["views"][it].isValid())
+        {
+            oneIsMissing = true;
+            break;
+        }
+    }
+
+    if (!oneIsMissing) return;
+
+    Logging::log("Views are missing in couchdb. Creating them");
+    
+    if (jv["_rev"].isValid()) j.addValue(jv["_rev"].str(),"_rev");
+    bool ret = HTTPCommunication::putURL(mServer,"/"+this->mDb+"/_design/views",j.stringify(false),"application/json",mPort);
+    if (!ret)
+    {
+        Logging::log("ERROR: Could not add views in CouchDB");
+    }
+}

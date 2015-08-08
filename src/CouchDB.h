@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 #include "JSON.h"
-#include <pthread.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "MPSCRingBuffer.h"
 
 class CouchDB
@@ -9,19 +11,24 @@ class CouchDB
 private:
     bool unPoolDocument();
 
-    pthread_t   mThreadHandle;
+    std::thread   mThreadHandle;
     volatile bool        mStopping; 
-    bool                 mMustCompact;
+    volatile bool        mMustCompact;
     MPSCRingBuffer<std::string>* mpRequests;
     std::string mDb;
-    pthread_mutex_t mConditionLock;
-    pthread_cond_t mWaitCondition;
+    std::mutex mConditionLock;
+    std::condition_variable_any mWaitCondition;
+    std::string mServer;
+    int mPort;
 
 public:
-    CouchDB(std::string db);
+    CouchDB(const std::string& db, const std::string& server, int port);
     ~CouchDB();
 
     void compact();
     void addDocument(Dumais::JSON::JSON& json);
     void run();
+
+    void createDb();
+    void createViewsIfNonExistant(std::string views);
 };

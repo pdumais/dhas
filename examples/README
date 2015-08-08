@@ -1,2 +1,4 @@
-A folder called "data" should be created at the same level as this folder. It should contain
-the same files that this folder contains but please modify the example data to fit your needs.
+This folder contains example files used to run and build the software.
+
+config.h should be copied to the src folder and customized.
+

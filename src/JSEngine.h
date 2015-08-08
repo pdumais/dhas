@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef SCRIPTJS
+
 #include "IScriptEngine.h"
 #include "duktape.h"
 
@@ -18,3 +21,4 @@ public:
 
 };
 
+#endif

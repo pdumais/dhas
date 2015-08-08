@@ -35,7 +35,7 @@ void onHUP(int sig)
 
 EventProcessor::EventProcessor(RESTInterface *p,Schedule *pSchedule, 
                                WeatherHelper *pWeather, ModuleProvider *sp,
-                               const std::string& scriptFile)
+                               const std::string& scriptFile, CouchDB* couch)
 {
     this->mScriptFile = scriptFile;
     pthread_mutex_init(&mMessageQueueLock,0);
@@ -47,7 +47,7 @@ EventProcessor::EventProcessor(RESTInterface *p,Schedule *pSchedule,
     mpRESTInterface = p;
     mpScriptEngine = 0;
     mpSchedule = pSchedule;
-    mpCouchDB = new CouchDB("dhas");
+    mpCouchDB = couch;
 
     time(&this->mLastCouchCompact);
     
@@ -69,7 +69,6 @@ EventProcessor::~EventProcessor(){
     pthread_mutex_destroy(&mMessageQueueLock);
     pthread_cond_destroy(&mMessageQueueWaitCondition);
     removeEventListener(mpScriptEngine);
-    delete mpCouchDB;
     delete mpScriptEngine;
 }
 

@@ -31,7 +31,5 @@
 #define SOUNDS_FOLDER "/opt/ha/sounds/"
 #define SCRIPT_FILE "/opt/ha/script.lua"
 #define PASSWD_FILE "/opt/ha/passwd"
-#define ALARMLOGS "/opt/ha/log/alarm.log"
-#define PERSISTANTDB "/opt/ha/vars.db"
 #define SCHEDULEDB "/opt/ha/schedule.db"
 

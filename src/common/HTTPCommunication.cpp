@@ -20,10 +20,20 @@ HTTPCommunication::HTTPCommunication(){
 HTTPCommunication::~HTTPCommunication(){
 }
 
+bool HTTPCommunication::putURL(std::string server, std::string url, std::string data, std::string contentType, int port)
+{
+    return postOrPutURL("PUT",server,url,data,contentType,port);
+}
+
 bool HTTPCommunication::postURL(std::string server, std::string url, std::string data, std::string contentType, int port)
 {
+    return postOrPutURL("POST",server,url,data,contentType,port);
+}
+
+bool HTTPCommunication::postOrPutURL(std::string method, std::string server, std::string url, std::string data, std::string contentType, int port)
+{
     std::stringstream ss;
-    ss << "POST "<< url << " HTTP/1.1\r\n";
+    ss << method << " "<< url << " HTTP/1.1\r\n";
     ss << "Content-Length: " << data.size() << "\r\n";
     ss << "Content-Type: " << contentType << "\r\n";
     ss << "Connection: close\r\n";

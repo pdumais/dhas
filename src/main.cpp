@@ -1,4 +1,5 @@
 #include "Logging.h"
+#include <iostream>
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -13,6 +14,8 @@
 #include <execinfo.h>
 #include <signal.h>
 #include "ModuleRegistrar.h"
+#include <fstream>
+#include <streambuf>
 
 volatile bool quit;
 EventProcessor *pEventProcessor;
@@ -60,6 +63,51 @@ void getConfig(Dumais::JSON::JSON& jsonConfig)
     jsonConfig["audio"].addValue(SOUNDS_FOLDER,"soundsfolder");
 }
 
+
+unsigned int getServerPID()
+{
+    unsigned int pid;
+    std::fstream pidfile("/var/run/homeautomation.pid",std::ios_base::in);
+    if (pidfile.is_open())
+    {
+        if (pidfile >> pid)
+        {
+            return pid;
+        }
+    }
+
+    return 0;
+}
+
+void forkprocess()
+{
+    unsigned int pid = getServerPID();
+    if (pid != 0)
+    {
+        std::stringstream ss;
+        ss << "/proc/"<<pid<<"/cmdline";
+        std::fstream procfile(ss.str(),std::ios_base::in);
+        std::string cmdline;
+        if (procfile >> cmdline)
+        {
+            if (cmdline.find("homeautomation") != std::string::npos)
+            {
+                printf("Home automation server is already running\r\n");
+                exit(-1);
+            }
+            else
+            {
+                Logging::log("WARNING: stale pid file contains pid [%i] for process [%s]",pid,cmdline.c_str());
+            }
+        } 
+    }
+    if (fork()>0) exit(0);
+
+    std::fstream pidfile("/var/run/homeautomation.pid",std::ios_base::out);
+    pidfile << getpid();
+    pidfile.close();
+}
+
 //For examples on how to use GPIO, check out the bcm2835 C library
 int main(int argc, char** argv) 
 { 
@@ -70,6 +118,15 @@ int main(int argc, char** argv)
     char *scriptName = 0;
     char *soundsFolder = 0;
     bool gendoc = false;
+
+    if (argc < 2)
+    {
+        printf("Usage: homeautomation -d|-g|-r\r\n");
+        printf("       -d launch daemon\r\n");
+        printf("       -g generate API doc\r\n");
+        printf("       -r send SIGHUP to daemon\r\n");
+        exit(0);
+    }
 
     for (int i=0;i<argc;i++)
     {
@@ -82,6 +139,18 @@ int main(int argc, char** argv)
         {
             gendoc = true;
             Logging::disabled = true;
+        }
+        else if (param=="-r")
+        {
+            unsigned int pid = getServerPID();
+            if (pid == 0)
+            {
+                printf("Server is not running\r\n");
+                exit(-1);
+            }
+            printf("Sending SIGHUP to server process [%i]\r\n",pid);
+            kill(pid,SIGHUP);
+            exit(0);
         }
     }
     
@@ -99,7 +168,7 @@ int main(int argc, char** argv)
     }
     else if (daemon)
     {
-        if (fork()>0) exit(0);
+        forkprocess();
     }
 
     Logging::log("Starting\r\n");
@@ -114,8 +183,15 @@ int main(int argc, char** argv)
 
     pRESTInterface->init();
 
+    // setup couchDB views at first
+    CouchDB *couch = new CouchDB("dhas",COUCHDB_SERVER,5984); 
+    couch->createDb();
+    std::ifstream file("views.json");
+    std::string st((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());
+    couch->createViewsIfNonExistant(st);
+
     // This needs to be created after services because it will load a script
-    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE);
+    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE,couch);
     pEventProcessor->addEventListener(&webNotificationEngine);
 
     Logging::log("Starting Web Interface");
@@ -132,6 +208,7 @@ int main(int argc, char** argv)
     serviceProvider.stopModules();
 
     delete pEventProcessor;
+    delete couch;
     Logging::log("=========== DHAS is now down ===========");
     return 0; 
 }

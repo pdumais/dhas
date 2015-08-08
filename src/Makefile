@@ -3,14 +3,17 @@ install: installapp
 install_sounds: installsounds
 clean: cleanapp
 
-# change the following to LUA if you want to compile with Lua support
+# change the following to LUA if you want to compile with Lua support. Don't foget to modify config.h accordingly.
 SCRIPTTYPE=JS
+
+PASSWDFILE=`awk '/PASSWD_FILE/ {gsub(/"/, "", $$3); print $$3}' config.h`
+SCRIPTFILE=`awk '/SCRIPT_FILE/ {gsub(/"/, "", $$3); print $$3}' config.h`
+SOUNDSFOLDER=$(shell awk '/SOUNDS_FOLDER/ {gsub(/"/, "", $$3); print $$3}' config.h)
 
 #configuration
 OUTDIR=./bin
 APPPATH=/opt/ha
 TARGETFOLDER=$(APPPATH)
-DATAFOLDER=../data
 TESTSDIR=tests
 TESTSCPP=$(wildcard $(TESTSDIR)/*.cpp)
 TESTSOBJ=$(TESTSCPP:.cpp=.o)
@@ -27,21 +30,26 @@ OBJECTS:=$(addprefix $(OUTDIR)/,$(notdir $(OBJECTS)))
 INCLUDES=$(dir $(wildcard ./modules/*/)) ./WebInterface ./common $(dir $(wildcard ./libs/*/)) ./
 INCLUDES:=$(realpath $(sort $(INCLUDES)))
 VPATH:=$(INCLUDES)
-INCLUDES:=$(patsubst %,-I%,$(INCLUDES)) -I$(DATAFOLDER)
+INCLUDES:=$(patsubst %,-I%,$(INCLUDES))
 
 CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG -DSCRIPT$(SCRIPTTYPE)
-LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -llua -lasound -ludev
+LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -ludev
+ifeq ($(SCRIPTTYPE),LUA)
+LDFLAGS+= -llua
+endif
 STATICLIBS=$(wildcard ./bin/*.a)
+SRCDIR=$(shell pwd)
 
 .PHONY: dumaislib
 .PHONY: couchdb
 .PHONY: tst
 
 tst:
-	echo $(ROOTLEVELSRC)
+	echo $(subst /,\/,$(SOUNDSFOLDER))
 
-chkdata:
-	@if [ ! -d "$(DATAFOLDER)" ]; then echo -e "\r\nThe folder $(DATAFOLDER) does not exist. Please look at the example folder"; exit -1; fi
+chkconfig:
+	@if [ ! -f "$(SRCDIR)/config.h" ]; then echo -e "\r\nconfig.h was not found in $(SRCDIR). Please make a copy of the file from the example folder and customize it to your needs"; exit -1; fi
+
 
 cleantests:
 	-rm $(TESTSDIR)/*.o
@@ -69,28 +77,22 @@ outdir:
 libraries:
 	cd libs && make
 
-application: chkdata outdir libraries $(OUTDIR)/main.o $(OBJECTS)
+application: chkconfig outdir libraries $(OUTDIR)/main.o $(OBJECTS)
 	g++ -g -rdynamic $(OUTDIR)/main.o $(OBJECTS) $(STATICLIBS) $(LDFLAGS) -o $(OUTDIR)/homeautomation
 	$(OUTDIR)/homeautomation -g > ../documentation/api.json
 
-installapp: application
+killha:
 	-killall homeautomation -w
+
+installapp: application
 	mkdir -p $(TARGETFOLDER)
+	cp config.h $(TARGETFOLDER)
+	cp views.json $(TARGETFOLDER)
+	sed "s/SOUNDSFOLDERPLACEHOLDER/$(subst /,\/,$(SOUNDSFOLDER))/g" haconvertsounds > $(TARGETFOLDER)/haconvertsounds
+	@if [ ! -f "$(SCRIPTFILE)" ]; then echo -e "\r\n**NOTICE** Event script $(SCRIPTFILE) does not exist. Please create it (see example folder) and run 'homeautomation -r'"; fi
+	@if [ ! -f "$(PASSWDFILE)" ]; then echo "username:password" > $(PASSWDFILE); echo -e "\r\n**NOTICE** Default username/password created in $(PASSWDFILE). Please update them and reload homeautomation"; fi
 	cp $(OUTDIR)/homeautomation $(TARGETFOLDER)
-	-cp $(DATAFOLDER)/JSON.lua $(TARGETFOLDER)
-	-cp $(DATAFOLDER)/passwd $(TARGETFOLDER)
+
+upgrade: killha installapp
 	$(APPPATH)/homeautomation -d < /dev/null >/dev/null
-
-updatescript: chkdata
-	-cp $(DATAFOLDER)/script.lua $(TARGETFOLDER)
-	-cp $(DATAFOLDER)/script.js $(TARGETFOLDER)
-	-killall -HUP homeautomation
-
-installsounds: chkdata
-	mkdir -p $(TARGETFOLDER)/sounds
-	./convert.sh $(DATAFOLDER)/sounds /tmp/dhassounds
-	mv tmp/dhassounds/* $(TARGETFOLDER)/sounds
-	rmdir tmp/dhassounds
 	
-couchdb:
-	./couchdb

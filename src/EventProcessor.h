@@ -30,7 +30,7 @@ private:
     bool mNeedReloadScript;
 
 public:
-	EventProcessor(RESTInterface *p, Schedule *pSchedule, WeatherHelper *pWeather, ModuleProvider *sp, const std::string& scriptFile);
+	EventProcessor(RESTInterface *p, Schedule *pSchedule, WeatherHelper *pWeather, ModuleProvider *sp, const std::string& scriptFile, CouchDB *couch);
 	~EventProcessor();
     
     void stop();

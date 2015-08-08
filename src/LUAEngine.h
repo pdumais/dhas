@@ -1,3 +1,5 @@
+#ifdef SCRIPTLUA
+
 #ifndef LUAENGINE_H
 #define LUAENGINE_H
 
@@ -25,4 +27,4 @@ public:
 };
 
 #endif
-
+#endif

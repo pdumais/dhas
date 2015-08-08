@@ -86,9 +86,27 @@ DHAS uses my [REST engine](https://github.com/pdumais/rest), which is self-docum
 Sounds
 ==============
 Sound files may be usefull to play on a phone call or on the local sound card. Each sound files needed
-should be copied in the data/sounds folder and then "make installsounds" should be run. The makefile
-will convert to soundfiles to S16 and u-law for use with the soundcard and the RTP stack respectively.
-The "sox" application is needed.
+should be converted to S16 and u-law to be used by DHAS. a script called "haconvertsounds" is deployed with
+the homeautomation executable. invoke that script from the directory where your sound files are located and
+the script will convert the files (using sox) and copy them to the proper folder as defined in config.h
+
+Dependencies
+==============
+
+    - reSIProcate
+    - berkeleyDB
+    - liblua (if using Lua)
+    - libasound (Alsa)
+    - libudev
+    - ortp
+    - git submodules: json, rest, webserver (clone the project with --recursive to get them automatically)
+
+Invoking
+==============
+    
+    - homeautomation -d: start the server in daemon mode
+    - homeautomation -g: generate API documentation
+    - homeautomation -r: send SIGHUP to server process. This will reload the script file
 
 Makefile
 ==============
@@ -96,17 +114,6 @@ The Makefile is customized for my system so you may have to modify it to make it
 
     - make: will generate the executable and the api documentation
     - make install: will build then kill the running DHAS, deploy files and restart DHAS
+    - make upgrade: will kill the running process, install, then lauch the process
     - make tests: will generate tests included in the tests folder (but will not run them)
-    - make couchdb: will initialize couchdb views
-    - make installsounds: will convert sounds located in data/sounds and copy them in the install directory
-    - make updatescript: will copy data/script.xx to the install directory and kill -HUP the process
 
-Installing for the first time
-==============
-```
-make
-make couchdb
-make install
-make installsounds
-make updatescript
-```

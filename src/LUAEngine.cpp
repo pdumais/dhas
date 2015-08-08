@@ -1,3 +1,5 @@
+#ifdef SCRIPTLUA
+
 #include "Logging.h"
 #include "LUAEngine.h"
 #include <stdio.h>
@@ -78,3 +80,4 @@ void LUAEngine::load(std::string script)
     return mpStorage;
 }*/
 
+#endif

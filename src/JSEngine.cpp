@@ -1,3 +1,5 @@
+#ifdef SCRIPTJS
+
 #include "Logging.h"
 #include "JSEngine.h"
 #include <stdio.h>
@@ -15,7 +17,7 @@ int initiateAction(duk_context *ctx)
 {
     duk_push_current_function(ctx);
     duk_get_prop_string(ctx, -1, "engine");
-    JSEngine* pEngine = duk_get_pointer(ctx,-1);
+    JSEngine* pEngine = (JSEngine*)duk_get_pointer(ctx,-1);
     duk_pop_n(ctx,2);
 
 
@@ -109,3 +111,5 @@ void JSEngine::load(std::string script)
 }
 
 
+
+#endif
