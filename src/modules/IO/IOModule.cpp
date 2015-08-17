@@ -57,23 +57,23 @@ void IOModule::registerCallBacks(RESTEngine* pEngine)
 {
     RESTCallBack *p;
     p = new RESTCallBack(this,&IOModule::getStatus_callback,"Get current status of sensors");
-    pEngine->addCallBack("/io/getstatus",RESTMethod::GET,p);
+    pEngine->addCallBack("/io/getstatus","GET",p);
 
     p = new RESTCallBack(this,&IOModule::addWebRelay_callback,"add web relay device");
     p->addParam("ip","IP address of a web relay device");
     p->addParam("id","ID of a web relay on the device");
     p->addParam("name","Name of relay. This will be used to trigger the relay later");
-    pEngine->addCallBack("/io/addwebrelay",RESTMethod::GET,p);
+    pEngine->addCallBack("/io/addwebrelay","GET",p);
 
     p = new RESTCallBack(this,&IOModule::triggerRelay_callback,"Set relay on or off");
     p->addParam("on","'true' or 'false'");
     p->addParam("name","Name of relay. This will be used to trigger the relay later");
-    pEngine->addCallBack("/io/setrelay",RESTMethod::GET,p);
+    pEngine->addCallBack("/io/setrelay","GET",p);
 
     p = new RESTCallBack(this,&IOModule::triggerIORelay_callback,"Set IO board output pin on or off");
     p->addParam("on","'true' or 'false'");
     p->addParam("number","pin number");
-    pEngine->addCallBack("/io/setoutput",RESTMethod::GET,p);
+    pEngine->addCallBack("/io/setoutput","GET",p);
 }
 
 void IOModule::run()

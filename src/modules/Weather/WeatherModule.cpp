@@ -55,10 +55,10 @@ void WeatherModule::registerCallBacks(RESTEngine* pEngine)
     RESTCallBack *p;
     p = new RESTCallBack(this,&WeatherModule::setIP_callback,"set IP of weather controller");
     p->addParam("ip","IP address of weather controller");
-    pEngine->addCallBack("/weather/setip",RESTMethod::GET,p);
+    pEngine->addCallBack("/weather/setip","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::getStats_callback,"retrieve stats");
-    pEngine->addCallBack("/weather/getstats",RESTMethod::GET,p);
+    pEngine->addCallBack("/weather/getstats","GET",p);
 
 }
 

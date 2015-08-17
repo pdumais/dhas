@@ -69,25 +69,25 @@ void Insteon::registerCallBacks(RESTEngine* pEngine)
 //    pEngine->addCallBack("/insteon/ramp",p);
 
     p = new RESTCallBack(this,&Insteon::clearmodules_callback,"reset list of Insteon module definition");
-    pEngine->addCallBack("/insteon/clearmodules",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/clearmodules","GET",p);
 
     p = new RESTCallBack(this,&Insteon::listmodules_callback,"lists all Insteon modules");
-    pEngine->addCallBack("/insteon/listmodules",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/listmodules","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addmodule_callback,"add a Insteon module definition");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
     p->addParam("name","The name of the module");
-    pEngine->addCallBack("/insteon/addmodule",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/addmodule","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addezflora_callback,"add a Insteon ezflora module definition");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
     p->addParam("name","The name of the module");
-    pEngine->addCallBack("/insteon/addezflora",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/addezflora","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addIOLinc_callback,"add a Insteon iolinc module definition");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
     p->addParam("name","The name of the module");
-    pEngine->addCallBack("/insteon/addiolinc",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/addiolinc","GET",p);
 
     /*p = new RESTCallBack<Insteon>(this,&Insteon::addKeypadLinc_callback,"add a Insteon keypadlinc module definition");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
@@ -101,7 +101,7 @@ void Insteon::registerCallBacks(RESTEngine* pEngine)
 
     p = new RESTCallBack(this,&Insteon::setcontroller_callback,"set Insteon controller ID (PLM)");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    pEngine->addCallBack("/insteon/setcontroller",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/setcontroller","GET",p);
 
     p = new RESTCallBack(this,&Insteon::switch_callback,"Turn on or off a device");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
@@ -109,7 +109,7 @@ void Insteon::registerCallBacks(RESTEngine* pEngine)
     p->addParam("level","0 to 255. Irrelevant if action is off or toggle");
     p->addParam("rate","0 to 255. This is the ramp rate");
     p->addParam("subdev","for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant");
-    pEngine->addCallBack("/insteon/switch",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/switch","GET",p);
 
     p = new RESTCallBack(this,&Insteon::ezflorasetprogram_callback,"Sets a program on the EZFlora");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
@@ -122,11 +122,11 @@ void Insteon::registerCallBacks(RESTEngine* pEngine)
     p->addParam("z6","Zone 6 timer. 0 to 255 minutes");
     p->addParam("z7","Zone 7 timer. 0 to 255 minutes");
     p->addParam("z8","Zone 8 timer. 0 to 255 minutes");
-    pEngine->addCallBack("/insteon/ezflora/setprogram",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/ezflora/setprogram","GET",p);
 
     p = new RESTCallBack(this,&Insteon::ezfloraforcegetvalvestatus_callback,"Forces an update of EZFlora status");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    pEngine->addCallBack("/insteon/ezflora/status",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/ezflora/status","GET",p);
 
     p = new RESTCallBack(this,&Insteon::raw_callback,"Send raw insteon command");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
@@ -146,10 +146,10 @@ void Insteon::registerCallBacks(RESTEngine* pEngine)
     p->addParam("d12","data byte 12 for extended data");
     p->addParam("d13","data byte 13 for extended data");
     p->addParam("d14","data byte 14 for extended data");
-    pEngine->addCallBack("/insteon/raw",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/raw","GET",p);
 
     p = new RESTCallBack(this,&Insteon::refreshAllLinksDatabase_callback,"retrieve all-link database");
-    pEngine->addCallBack("/insteon/refreshalllinksdatabase",RESTMethod::GET,p);
+    pEngine->addCallBack("/insteon/refreshalllinksdatabase","GET",p);
 
     /*p = new RESTCallBack<Insteon>(this,&Insteon::setThermostatOperatingMode_callback,"sets thermostat in cool,heat or off mode");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");

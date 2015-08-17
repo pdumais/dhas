@@ -28,24 +28,24 @@ void RESTInterface::init()
 	RESTCallBack *p;
 
 	p = new RESTCallBack(this,&RESTInterface::showevents_callback,"show all scheduled events");
-	mRESTEngine.addCallBack("/events/show",RESTMethod::GET,p);
+	mRESTEngine.addCallBack("/events/show","GET",p);
 
 	p = new RESTCallBack(this,&RESTInterface::addevent_callback,"add a scheduled event. This event will trigger the LUA script at the defined time");
 	p->addParam("name","Event name");
 	p->addParam("p","user defined data");
 	p->addParam("min","minute of the hour at which to trigger the event");
 	p->addParam("hour","hour of the day at which to trigger the event");
-	mRESTEngine.addCallBack("/events/add",RESTMethod::GET,p);
+	mRESTEngine.addCallBack("/events/add","GET",p);
 
 	p = new RESTCallBack(this,&RESTInterface::removeevent_callback,"remove a scheduled event");
 	p->addParam("id","event ID");
-	mRESTEngine.addCallBack("/events/remove",RESTMethod::GET,p);
+	mRESTEngine.addCallBack("/events/remove","GET",p);
 
 	p = new RESTCallBack(this,&RESTInterface::gettime_callback,"get current time");
-	mRESTEngine.addCallBack("/events/gettime",RESTMethod::GET,p);
+	mRESTEngine.addCallBack("/events/gettime","GET",p);
 
 	p = new RESTCallBack(this,&RESTInterface::help_callback,"display API documentation");
-	mRESTEngine.addCallBack("/help",RESTMethod::GET,p);
+	mRESTEngine.addCallBack("/help","GET",p);
 
     mpModuleProvider->registerCallBacks(&mRESTEngine);
 
