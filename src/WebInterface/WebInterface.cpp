@@ -6,12 +6,23 @@
 #include <sstream>
 #include "JSON.h"
 #include <stdlib.h>
+#include "WebServerLogging.h"
 
 using namespace Dumais::WebServer;
+
+class WebServerInterfaceLogger: public Dumais::WebServer::IWebServerLogger
+{
+    virtual void log(const std::string& ss)
+    {
+        Logging::log("%s",ss.c_str());
+    }
+};
+
 
 WebInterface::WebInterface(int port,RESTInterface *pRESTInterface, WebNotificationEngine *pWebNotificationEngine)
 {
     mpRESTInterface = pRESTInterface;
+    Dumais::WebServer::WebServerLogging::logger = new WebServerInterfaceLogger();
 //    mpWebNotificationEngine = pWebNotificationEngine;
     mPort = port;
     mpWebServer = 0;
