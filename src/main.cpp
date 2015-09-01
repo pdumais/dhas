@@ -14,6 +14,7 @@
 #include <execinfo.h>
 #include <signal.h>
 #include "ModuleRegistrar.h"
+#include "EventLogger.h"
 #include <fstream>
 #include <streambuf>
 
@@ -190,8 +191,11 @@ int main(int argc, char** argv)
     std::string st((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());
     couch->createViewsIfNonExistant(st);
 
+    EventLogger eventLogger(couch);
+
     // This needs to be created after services because it will load a script
-    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE,couch);
+    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE);
+    pEventProcessor->addEventListener(&eventLogger);
     pEventProcessor->addEventListener(&webNotificationEngine);
 
     Logging::log("Starting Web Interface");

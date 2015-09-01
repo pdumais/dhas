@@ -19,7 +19,7 @@ public:
 	LUAEngine();
 	~LUAEngine();
 
-    virtual void notifyEvent(const std::string& jsonEvent);
+    virtual void notifyEvent(const Dumais::JSON::JSON& jsonEvent);
     virtual void load(std::string script); 
 
  //   PersistantStorage *getStorage();

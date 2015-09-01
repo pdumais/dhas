@@ -35,7 +35,7 @@ void onHUP(int sig)
 
 EventProcessor::EventProcessor(RESTInterface *p,Schedule *pSchedule, 
                                WeatherHelper *pWeather, ModuleProvider *sp,
-                               const std::string& scriptFile, CouchDB* couch)
+                               const std::string& scriptFile)
 {
     this->mScriptFile = scriptFile;
     pthread_mutex_init(&mMessageQueueLock,0);
@@ -47,10 +47,7 @@ EventProcessor::EventProcessor(RESTInterface *p,Schedule *pSchedule,
     mpRESTInterface = p;
     mpScriptEngine = 0;
     mpSchedule = pSchedule;
-    mpCouchDB = couch;
 
-    time(&this->mLastCouchCompact);
-    
     struct itimerval timer;
     time_t t;
     time(&t);
@@ -147,28 +144,16 @@ void EventProcessor::reloadScript()
 
 void EventProcessor::processEvent(Dumais::JSON::JSON &message)
 {
-    processEvent(message.stringify(false));
-
-    time_t t;
-    time(&t);
-    message.addValue((unsigned int)t,"timestamp");
-    mpCouchDB->addDocument(message);
-}
-
-void EventProcessor::processEvent(std::string str)
-{
-
     // we need to lock this since other service might want to add something. And main thread might
     // want to pull something out
     pthread_mutex_lock(&mMessageQueueLock);
-    mMessageQueue.push(str);
+    mMessageQueue.push(message);
     pthread_cond_signal(&mMessageQueueWaitCondition);
     pthread_mutex_unlock(&mMessageQueueLock);
 }
 
 bool EventProcessor::timeSlice()
 {
-    std::vector<std::string> tmpMessages;    
 
     // We lock the message queue because other services might try to add something to it. And then
     // we use a wait condition to wait until at lwast one event gets added. This is to avoid
@@ -181,39 +166,30 @@ bool EventProcessor::timeSlice()
         reloadScript();
     }
 
-    while (mMessageQueue.size()>0)
-    {
-        tmpMessages.push_back(mMessageQueue.front());
-        mMessageQueue.pop();
-    }
+    std::queue<Dumais::JSON::JSON> tmpMessages;
+    std::swap(tmpMessages,mMessageQueue);
     pthread_mutex_unlock(&mMessageQueueLock);
 
-    for (std::vector<std::string>::iterator it = tmpMessages.begin();it!=tmpMessages.end();it++)
+    while (!tmpMessages.empty())
     {
-        for (std::vector<IEventNotificationListener*>::iterator it2 = mEventListeners.begin();it2!=mEventListeners.end();it2++)
+        for (auto it2 : mEventListeners)
         {
-            (*it2)->notifyEvent(*it);
+            (*it2).notifyEvent(tmpMessages.front());
         }
+        tmpMessages.pop();
     }
     return true;
 }
 
 void EventProcessor::processSchedule(time_t t)
 {
-    // This will be called every minute. compact database if its been 24hs
-    if (t> (this->mLastCouchCompact+(24*60*60)))
-    {
-        this->mLastCouchCompact = t;        
-        this->mpCouchDB->compact();      
-    } 
-
     std::vector<ScheduledEvent> list = mpSchedule->getDueEvents(t);
     for (std::vector<ScheduledEvent>::iterator it = list.begin();it!=list.end();it++)
     {
         ScheduledEvent event = *it;
         Dumais::JSON::JSON json;
         event.toJSON(json);
-        processEvent(json.stringify(false));
+        processEvent(json);
         mpSchedule->removeEvent(event.getID());
     }
   

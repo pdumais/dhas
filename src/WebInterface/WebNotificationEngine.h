@@ -16,7 +16,7 @@ public:
 	WebNotificationEngine();
 	~WebNotificationEngine();
 
-    virtual void notifyEvent(const std::string& jsonEvent);
+    virtual void notifyEvent(const Dumais::JSON::JSON& jsonEvent);
     void unsubscribe(int socket);
     void subscribe(int socket);
     void activateSubscription(int socket);

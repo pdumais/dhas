@@ -10,7 +10,7 @@ protected:
 public:
     void setRESTInterface(RESTInterface *pRESTInterface){mpRESTInterface=pRESTInterface;}
     RESTInterface* getRESTInterface(){return mpRESTInterface;}
-    virtual void notifyEvent(const std::string& jsonEvent)=0;
+    virtual void notifyEvent(const Dumais::JSON::JSON& jsonEvent)=0;
     virtual void load(std::string script)=0;
 
 };

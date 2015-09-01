@@ -53,8 +53,9 @@ void WebNotificationEngine::unsubscribe(int socket)
     pthread_mutex_unlock(&mSocketListLock);
 }
 
-void WebNotificationEngine::notifyEvent(const std::string& jsonEvent)
+void WebNotificationEngine::notifyEvent(const Dumais::JSON::JSON& json)
 {
+    std::string jsonEvent = json.stringify(false);
     std::string st = "data: ";
     st += jsonEvent;
 

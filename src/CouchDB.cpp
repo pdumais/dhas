@@ -36,7 +36,7 @@ void CouchDB::compact()
     mConditionLock.unlock();
 }
 
-void CouchDB::addDocument(Dumais::JSON::JSON& json)
+void CouchDB::addDocument(const Dumais::JSON::JSON& json)
 {
     std::string st = json.stringify(false);
     if (!this->mpRequests->put(st))

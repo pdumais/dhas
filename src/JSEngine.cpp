@@ -70,8 +70,9 @@ JSEngine::~JSEngine()
     if (this->context != 0) duk_destroy_heap(this->context);
 }
 
-void JSEngine::notifyEvent(const std::string& jsonEvent)
+void JSEngine::notifyEvent(const Dumais::JSON::JSON& json)
 {
+    std::string jsonEvent = json.stringify(false);
     Logging::log("Script event: %s",jsonEvent.c_str());
     if (this->context == 0)
     {

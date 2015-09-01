@@ -26,7 +26,7 @@ public:
     ~CouchDB();
 
     void compact();
-    void addDocument(Dumais::JSON::JSON& json);
+    void addDocument(const Dumais::JSON::JSON& json);
     void run();
 
     void createDb();

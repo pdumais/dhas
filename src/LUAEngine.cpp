@@ -58,8 +58,9 @@ LUAEngine::~LUAEngine()
     lua_close (mpLUA);
 }
 
-void LUAEngine::notifyEvent(const std::string& jsonEvent)
+void LUAEngine::notifyEvent(const Dumais::JSON::JSON& json)
 {
+    std::string jsonEvent = json.stringify(false);
     Logging::log("Script event: %s",jsonEvent.c_str());
     const char *st = jsonEvent.c_str();
     lua_getglobal(mpLUA,"onEvent");
