@@ -67,21 +67,12 @@ void ModuleProvider::startModules(IEventProcessor *p)
     }
 
     Logging::log("Waiting for all services to be up");
-    while (1)
+    for (ModuleMap::iterator it = mModuleMap.begin();it!=mModuleMap.end();it++)
     {
-        bool allStarted = true;
-        for (auto &it : mModuleMap)
-        {
-            if (!it.second->isStarted())
-            {
-                allStarted = false;
-                break;
-            }
-        }
-
-        if (allStarted) break;
-        std::this_thread::yield();
+        Module *pModule = it->second;
+        pModule->waitReady();
     }
+
     Logging::log("All services are up");
 
 }

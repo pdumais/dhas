@@ -15,7 +15,6 @@ void *ThreadStarter(void *p)
 Module::Module(){
     mNeedSuspend = false;
     mSuspended = true;
-    mIsStarted = false;
 }
 
 Module::~Module()
@@ -27,9 +26,17 @@ void Module::startModule(IEventProcessor *p)
     mpEventProcessor = p;
     mStopping = false;
     mSuspended = false;
-    mIsStarted = false;
     pthread_create(&mThreadHandle, 0, ThreadStarter, this);
+}
 
+void Module::setStarted()
+{
+    mStartedPromise.set_value(true);
+}
+
+void Module::waitReady()
+{
+    mStartedPromise.get_future().wait();
 }
 
 void Module::suspend()

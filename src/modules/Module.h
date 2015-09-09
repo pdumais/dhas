@@ -5,6 +5,7 @@
 #include "RESTEngine.h"
 #include "JSON.h"
 #include <functional>
+#include <future>
 
 
 class Module{
@@ -13,12 +14,12 @@ private:
     volatile bool        mStopping;
     volatile bool        mSuspended;
     volatile bool        mNeedSuspend;
+    std::promise<bool>   mStartedPromise;
 
 protected:
     bool stopping();
     bool isSuspended();
 
-    volatile bool mIsStarted;
     IEventProcessor *mpEventProcessor;
 
 public:
@@ -30,6 +31,7 @@ public:
     virtual void stop()=0;
 
     void startModule(IEventProcessor *p);
+    void waitReady();
     void waitCompletion();
     virtual void run()=0;
     virtual std::string getName()=0;
@@ -39,8 +41,7 @@ public:
     static std::vector<std::function<Module*()>> mModuleBuilders;
     virtual void appendPeriodicData(Dumais::JSON::JSON& data);
 
-    bool isStarted() {return mIsStarted;}
-    void setStarted() {mIsStarted = true;}
+    void setStarted();
 };
 
 
