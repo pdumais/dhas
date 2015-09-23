@@ -1,9 +1,0 @@
-[submodule "src/libs/json"]
-	path = src/libs/json
-	url = https://github.com/pdumais/json
-[submodule "src/libs/rest"]
-	path = src/libs/rest
-	url = https://github.com/pdumais/rest
-[submodule "src/libs/webserver"]
-	path = src/libs/webserver
-	url = https://github.com/pdumais/webserver
