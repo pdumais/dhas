@@ -1,6 +1,6 @@
 #ifndef HTTPCOMMUNICATION_H
 #define HTTPCOMMUNICATION_H
-#include "JSON.h"
+#include "json/JSON.h"
 
 class HTTPCommunication{
 private:

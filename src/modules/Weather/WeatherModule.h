@@ -21,8 +21,8 @@ public:
     virtual void appendPeriodicData(Dumais::JSON::JSON& data);
 
     std::string getTemperature(int id);
-    void setIP_callback(RESTContext context);    
-    void getStats_callback(RESTContext context);
+    void setIP_callback(RESTContext* context);    
+    void getStats_callback(RESTContext* context);
     void registerCallBacks(RESTEngine* pEngine);
 };
 

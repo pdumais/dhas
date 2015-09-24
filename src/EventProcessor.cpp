@@ -144,6 +144,11 @@ void EventProcessor::reloadScript()
 
 void EventProcessor::processEvent(Dumais::JSON::JSON &message)
 {
+    // Need to add timestamp for when this is saved in database
+    time_t t;
+    time(&t);
+    message.addValue((unsigned int)t,"timestamp");
+
     // we need to lock this since other service might want to add something. And main thread might
     // want to pull something out
     pthread_mutex_lock(&mMessageQueueLock);

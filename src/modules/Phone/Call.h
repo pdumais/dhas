@@ -4,7 +4,7 @@
 #include <resip/dum/AppDialogSet.hxx>
 #include "RTPObserver.h"
 #include "RTPSession.h"
-#include "JSON.h"
+#include "json/JSON.h"
 
 enum CallState
 {

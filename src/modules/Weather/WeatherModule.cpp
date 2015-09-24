@@ -10,7 +10,7 @@
 #include <netinet/tcp.h>
 #include <list>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 #include <stdlib.h>
 #include <math.h>
 #include "HTTPCommunication.h"
@@ -104,19 +104,19 @@ void WeatherModule::run()
 }
 
 
-void WeatherModule::setIP_callback(RESTContext context)
+void WeatherModule::setIP_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     mServer = params->getParam("ip");
     Logging::log("Weather service server: %s",mServer.c_str());
     json.addValue("ok","status");
 }
 
-void WeatherModule::getStats_callback(RESTContext context)
+void WeatherModule::getStats_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     json.addList("temperatures");
     json["temperatures"].addValue(mTemperatures[0]);
     json["temperatures"].addValue(mTemperatures[1]);

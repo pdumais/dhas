@@ -216,27 +216,27 @@ void Insteon::run()
     }
 }
 
-void Insteon::refreshAllLinksDatabase_callback(RESTContext context)
+void Insteon::refreshAllLinksDatabase_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     mpInsteonModem->getFirstAllLinkRecord();
     json.addValue("ok","status");
 }
 
 
-void Insteon::clearmodules_callback(RESTContext context)
+void Insteon::clearmodules_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     clearModuleList();
     json.addValue("ok","status");
 }
 
-void Insteon::listmodules_callback(RESTContext context)
+void Insteon::listmodules_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     json.addList("modules");
     listModules(json["modules"]);
 }
@@ -248,20 +248,20 @@ void Insteon::listmodules_callback(RESTContext context)
     json.addValue("ok","status");
 }*/
 
-void Insteon::startalllinkingasresponder_callback(RESTContext context)
+void Insteon::startalllinkingasresponder_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     unsigned int group = strtoul(params->getParam("group").c_str(),0,16);
     mpInsteonModem->startAllLikingAsResponder(group);
     json.addValue("ok","status");
 }
 
 
-void Insteon::addmodule_callback(RESTContext context)
+void Insteon::addmodule_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     if (params->getParam("id")!="""" && params->getParam("name")!="")
     {
         InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
@@ -270,10 +270,10 @@ void Insteon::addmodule_callback(RESTContext context)
     }
 }
 
-void Insteon::addezflora_callback(RESTContext context)
+void Insteon::addezflora_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     if (params->getParam("id")!="" && params->getParam("name")!="")
     {
         InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
@@ -283,10 +283,10 @@ void Insteon::addezflora_callback(RESTContext context)
 }
 
 
-void Insteon::addIOLinc_callback(RESTContext context)
+void Insteon::addIOLinc_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
    if (params->getParam("id")!="" && params->getParam("name")!="")
     {
         InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
@@ -447,10 +447,10 @@ void Insteon::setThermostatPoint_callback(RESTContext context)
     }
 }*/
 
-void Insteon::setcontroller_callback(RESTContext context)
+void Insteon::setcontroller_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     if (params->getParam("id")!="")
     {
         InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
@@ -459,10 +459,10 @@ void Insteon::setcontroller_callback(RESTContext context)
     }
 }
 
-void Insteon::ramp_callback(RESTContext context)
+void Insteon::ramp_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     unsigned char rate = 0x0F;
     unsigned char level = 0x0F;
     if (params->getParam("rate")!="") rate = atoi(params->getParam("rate").c_str());
@@ -475,10 +475,10 @@ void Insteon::ramp_callback(RESTContext context)
     }
 }
 
-void Insteon::switch_callback(RESTContext context)
+void Insteon::switch_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
     unsigned char subdev = 0;
     if (params->getParam("subdev")!="")
@@ -499,10 +499,10 @@ void Insteon::switch_callback(RESTContext context)
     json.addValue("ok","status");
 }
 
-void Insteon::ezflorasetprogram_callback(RESTContext context)
+void Insteon::ezflorasetprogram_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
     unsigned char program = atoi(params->getParam("p").c_str());
     if (program>=0 && program<=4)
@@ -574,20 +574,20 @@ void Insteon::ezflorastopvalve_callback(RESTContext context)
     }
 }*/
 
-void Insteon::ezfloraforcegetvalvestatus_callback(RESTContext context)
+void Insteon::ezfloraforcegetvalvestatus_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
     mpInsteonModem->writeCommand(id,0x44,0x02);
     json.addValue("ok","status");
 }
 
 
-void Insteon::raw_callback(RESTContext context)
+void Insteon::raw_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
     unsigned int cmd1 = strtoul(params->getParam("cmd1").c_str(),0,16);
     unsigned int cmd2 = strtoul(params->getParam("cmd2").c_str(),0,16);
@@ -612,10 +612,10 @@ void Insteon::raw_callback(RESTContext context)
     json.addValue("ok","status");
 }
 
-void Insteon::sendAllLink_callback(RESTContext context)
+void Insteon::sendAllLink_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     InsteonID id = strtoul(params->getParam("id").c_str(),0,16);
     unsigned int group = strtoul(params->getParam("group").c_str(),0,16);
     mpInsteonModem->writeCommand(id,0x09,group);

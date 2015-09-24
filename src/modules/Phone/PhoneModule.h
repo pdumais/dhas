@@ -37,13 +37,13 @@ public:
 
     void registerCallBacks(RESTEngine* pEngine);
 
-    void call_callback(RESTContext context);
-    void register_callback(RESTContext context);
-    void blf_callback(RESTContext context);
-    void showcalls_callback(RESTContext context);
-    void showblf_callback(RESTContext context);
-    void release_callback(RESTContext context);
-    void play_callback(RESTContext context);
+    void call_callback(RESTContext* context);
+    void register_callback(RESTContext* context);
+    void blf_callback(RESTContext* context);
+    void showcalls_callback(RESTContext* context);
+    void showblf_callback(RESTContext* context);
+    void release_callback(RESTContext* context);
+    void play_callback(RESTContext* context);
 
 
     virtual void onRTPSessionSoundQueueEmpty(Call *call);

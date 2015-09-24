@@ -2,8 +2,8 @@
 #define SERVICE_H
 #include <pthread.h>
 #include "IEventProcessor.h"
-#include "RESTEngine.h"
-#include "JSON.h"
+#include "rest/RESTEngine.h"
+#include "json/JSON.h"
 #include <functional>
 #include <future>
 

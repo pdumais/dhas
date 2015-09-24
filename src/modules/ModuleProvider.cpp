@@ -2,12 +2,12 @@
 #include "ModuleProvider.h"
 
 #include "InsteonModule.h"
-#include "WebServer.h"
+#include "webserver/WebServer.h"
 #include "PhoneModule.h"
 #include "SoundModule.h"
 #include "SMTPModule.h"
 #include "IEventProcessor.h"
-#include "RESTEngine.h"
+#include "rest/RESTEngine.h"
 #include "ModuleRegistrar.h"
 #include <thread>
 

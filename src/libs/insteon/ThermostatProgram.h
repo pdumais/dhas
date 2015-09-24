@@ -5,7 +5,7 @@
 #include <pthread.h>
 #define HAVE_CXX_STDHEADERS
 #include <db_cxx.h>
-#include "../json/JSON.h"
+#include "json/JSON.h"
 
 struct ProgramPoint
 {

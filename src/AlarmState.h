@@ -1,6 +1,6 @@
 #ifndef SYSTEMSTATE_H
 #define SYSTEMSTATE_H
-#include "JSON.h"
+#include "json/JSON.h"
 #include <list>
 #include <string>
 #define USER_PAT "System Master"

@@ -1,18 +1,21 @@
 all: libs
 OUTDIR=../bin
-MODULES=$(sort $(patsubst ./%/,%,$(dir $(wildcard ./*/*.cpp))))
-MODULES+=$(sort $(patsubst ./%/,%,$(dir $(wildcard ./*/*.c))))
-LIBS=$(addprefix $(OUTDIR)/,$(MODULES))
-LIBS:=$(addsuffix .a,$(LIBS))
+MODULES=$(sort $(patsubst ./%/,%,$(dir $(wildcard ./*/Makefile))))
 
 clean-%:
 	-cd $* && make clean
 
 clean: $(addprefix clean-,$(MODULES))
 
-$(OUTDIR)/%.a:%
-	cd $< && make
-	mv $</$<.a $@
+.PHONY: $(MODULES)
 
-libs: $(LIBS)
-	echo $(LIBS)
+$(MODULES): 
+	cd $@ && make
+
+libs: $(MODULES)
+	cp duktape/duktape.a $(OUTDIR)/
+	cp sound/sound.a $(OUTDIR)/
+	cp insteon/insteon.a $(OUTDIR)/
+	cp dumaislib/sdk/lib/rest.a $(OUTDIR)/
+	cp dumaislib/sdk/lib/json.a $(OUTDIR)/
+	cp dumaislib/sdk/lib/webserver.a $(OUTDIR)/

@@ -10,7 +10,7 @@
 #include <netinet/tcp.h>
 #include <list>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 #include <stdlib.h>
 #include "AlarmState.h"
 #include "ModuleRegistrar.h"

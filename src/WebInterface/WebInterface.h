@@ -1,7 +1,7 @@
 #ifndef WEBSERVICE_H
 #define WEBSERVICE_H
 
-#include "WebServer.h"
+#include "webserver/WebServer.h"
 #include "RESTInterface.h"
 #include "WebNotificationEngine.h"
 #include <string>

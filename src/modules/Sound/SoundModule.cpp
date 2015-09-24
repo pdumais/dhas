@@ -37,10 +37,10 @@ void SoundModule::configure(Dumais::JSON::JSON& config)
     mpSoundDevice = f.createSoundCard(config["sounddevice"].str());
 }
 
-void SoundModule::play_callback(RESTContext context)
+void SoundModule::play_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     Logging::log("Play sound [%s]",params->getParam("sound").c_str());
     SoundListParser slp(params->getParam("sound"));
     std::vector<std::string> list = slp.getSoundList();

@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <list>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 #include <stdlib.h>
-#include "WebServerLogging.h"
+#include "webserver/WebServerLogging.h"
 
 using namespace Dumais::WebServer;
 

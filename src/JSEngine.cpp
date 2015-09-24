@@ -4,7 +4,7 @@
 #include "JSEngine.h"
 #include <stdio.h>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 
 int log(duk_context *ctx)
 {

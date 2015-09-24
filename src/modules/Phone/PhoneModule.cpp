@@ -63,55 +63,55 @@ void PhoneModule::registerCallBacks(RESTEngine* pEngine)
 }
 
 
-void PhoneModule::call_callback(RESTContext context)
+void PhoneModule::call_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     bool releaseAfterSounds = true;
     if (params->getParam("releaseaftersounds")=="false") releaseAfterSounds = false;
     this->call(params->getParam("ext"),params->getParam("play"),releaseAfterSounds);
 
 }
 
-void PhoneModule::register_callback(RESTContext context)
+void PhoneModule::register_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     this->registerUserAgent(params->getParam("user"),params->getParam("pin"),params->getParam("proxy"));
 }
 
-void PhoneModule::blf_callback(RESTContext context)
+void PhoneModule::blf_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     this->subscribeBLF(params->getParam("ext"));
 }
 
-void PhoneModule::showcalls_callback(RESTContext context)
+void PhoneModule::showcalls_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     this->getCallsList(json);
 }
 
-void PhoneModule::showblf_callback(RESTContext context)
+void PhoneModule::showblf_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     this->getBLFList(json);
 }
 
-void PhoneModule::release_callback(RESTContext context)
+void PhoneModule::release_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     this->releaseCall(params->getParam("id"));
 }
 
-void PhoneModule::play_callback(RESTContext context)
+void PhoneModule::play_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     bool releaseAfterSounds = true;
     if (params->getParam("releaseaftersounds")=="false") releaseAfterSounds = false;
     this->playOnCall(params->getParam("id"),params->getParam("sound"),releaseAfterSounds);

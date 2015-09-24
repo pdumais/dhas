@@ -1,6 +1,6 @@
 #ifndef INSTEONDEVICE_H
 #define INSTEONDEVICE_H
-#include "JSON.h"
+#include "json/JSON.h"
 #include <string>
 #include "InsteonModem.h"
 

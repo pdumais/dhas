@@ -1,7 +1,7 @@
 #ifndef SERVICEPROVIDER_H
 #define SERVICEPROVIDER_H
 #include <map>
-#include "JSON.h"
+#include "json/JSON.h"
 
 class RESTEngine;
 class EventProcessor;

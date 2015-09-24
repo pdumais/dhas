@@ -20,7 +20,7 @@ public:
 	SoundModule();
 	~SoundModule();
 
-    void play_callback(RESTContext context);
+    void play_callback(RESTContext* context);
 
     void abortPlayList();
     void registerCallBacks(RESTEngine* pEngine);    

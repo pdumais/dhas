@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
-#include "JSON.h"
+#include "json/JSON.h"
 
 #define JAN12000 946684800.0
 #define JULIANJAN12000 2451545.0

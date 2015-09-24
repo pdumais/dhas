@@ -4,7 +4,7 @@
 #include "LUAEngine.h"
 #include <stdio.h>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 
 static std::map<lua_State*,LUAEngine*> LuaEngineMap;
 

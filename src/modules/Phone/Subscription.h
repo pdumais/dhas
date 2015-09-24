@@ -2,7 +2,7 @@
 #define SUBSCRIPTION_H
 
 #include <resip/dum/AppDialogSet.hxx>
-#include "JSON.h"
+#include "json/JSON.h"
 
 class Subscription: public resip::AppDialogSet{
 public:

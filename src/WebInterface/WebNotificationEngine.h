@@ -3,7 +3,7 @@
 #include <map>
 #include <pthread.h>
 #include <string>
-#include <JSON.h>
+#include "json/JSON.h"
 #include "IEventNotificationListener.h"
 
 class WebNotificationEngine: public IEventNotificationListener

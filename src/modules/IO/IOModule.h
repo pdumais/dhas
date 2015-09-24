@@ -33,10 +33,10 @@ public:
     virtual void run();
     virtual std::string getName(){return "IO";}
 
-    void getStatus_callback(RESTContext context);    
-    void addWebRelay_callback(RESTContext context);    
-    void triggerRelay_callback(RESTContext context);    
-    void triggerIORelay_callback(RESTContext context);    
+    void getStatus_callback(RESTContext* context);    
+    void addWebRelay_callback(RESTContext* context);    
+    void triggerRelay_callback(RESTContext* context);    
+    void triggerIORelay_callback(RESTContext* context);    
     void registerCallBacks(RESTEngine* pEngine);
 };
 

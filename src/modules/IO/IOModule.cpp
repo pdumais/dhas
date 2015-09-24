@@ -10,7 +10,7 @@
 #include <netinet/tcp.h>
 #include <list>
 #include <sstream>
-#include "JSON.h"
+#include "json/JSON.h"
 #include <stdlib.h>
 #include <math.h>
 #include "HTTPCommunication.h"
@@ -125,10 +125,10 @@ void IOModule::statusToJSON(Dumais::JSON::JSON &json)
     for (int i = 0; i < 8; i++) json["pins"].addValue(((mCurrentInputStatus>>i)&1));
 }
 
-void IOModule::getStatus_callback(RESTContext context)
+void IOModule::getStatus_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     bool ok = true;
     mSerialPortLock.lock();
     if (mpSerialPort)
@@ -161,10 +161,10 @@ void IOModule::getStatus_callback(RESTContext context)
     }
 }
 
-void IOModule::triggerRelay_callback(RESTContext context)
+void IOModule::triggerRelay_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     std::string val = params->getParam("on");
     std::string name = params->getParam("name");
     
@@ -181,10 +181,10 @@ void IOModule::triggerRelay_callback(RESTContext context)
 }
 
 
-void IOModule::triggerIORelay_callback(RESTContext context)
+void IOModule::triggerIORelay_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     std::string val = params->getParam("on");
     std::string str = params->getParam("number");
     unsigned long number = std::stoul(str);
@@ -216,10 +216,10 @@ void IOModule::triggerIORelay_callback(RESTContext context)
 }
 
 
-void IOModule::addWebRelay_callback(RESTContext context)
+void IOModule::addWebRelay_callback(RESTContext* context)
 {
-    RESTParameters* params = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     WebRelay r;
     r.ip = params->getParam("ip");
     r.id = params->getParam("id");

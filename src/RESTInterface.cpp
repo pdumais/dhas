@@ -81,9 +81,9 @@ bool RESTInterface::processQuery(Dumais::JSON::JSON& json, const std::string& qu
   json.addValue(temp,"temperature");
 }*/
 
-void RESTInterface::showevents_callback(RESTContext context)
+void RESTInterface::showevents_callback(RESTContext* context)
 {
-    Dumais::JSON::JSON& json = context.returnData;
+  Dumais::JSON::JSON& json = context->returnData;
   json.addList("events");
   std::vector<ScheduledEvent> list = mpSchedule->getAllEvents();
   for (std::vector<ScheduledEvent>::iterator it= list.begin();it!=list.end();it++)
@@ -100,25 +100,25 @@ void RESTInterface::showevents_callback(RESTContext context)
   }
 }
 
-void RESTInterface::addevent_callback(RESTContext context)
+void RESTInterface::addevent_callback(RESTContext* context)
 {
-    RESTParameters* p = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* p = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     ScheduledEvent *pEvent = new ScheduledEvent(p->getParam("name"),p->getParam("p"),atoi(p->getParam("min").c_str()),atoi(p->getParam("hour").c_str()));
     mpSchedule->addEvent(pEvent);
 }
 
-void RESTInterface::removeevent_callback(RESTContext context)
+void RESTInterface::removeevent_callback(RESTContext* context)
 {
-    RESTParameters* p = context.params;
-    Dumais::JSON::JSON& json = context.returnData;
+    RESTParameters* p = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
     int id = atoi(p->getParam("id").c_str());
     mpSchedule->removeEvent(id);                
 }
 
-void RESTInterface::gettime_callback(RESTContext context)
+void RESTInterface::gettime_callback(RESTContext* context)
 {
-    Dumais::JSON::JSON& json = context.returnData;
+    Dumais::JSON::JSON& json = context->returnData;
   time_t t;
   time(&t);
   time_t sunrise = mpWeatherHelper->getSunRise();
@@ -130,9 +130,9 @@ void RESTInterface::gettime_callback(RESTContext context)
   json.addValue(night?"true":"false","night");
 }
 
-void RESTInterface::help_callback(RESTContext context)
+void RESTInterface::help_callback(RESTContext* context)
 {
-    Dumais::JSON::JSON& json = context.returnData;
+    Dumais::JSON::JSON& json = context->returnData;
     mRESTEngine.documentInterface(json);
 }
 

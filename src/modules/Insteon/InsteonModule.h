@@ -6,7 +6,7 @@
 #include <queue>
 #include <string>
 #include "InsteonDevice.h"
-#include "JSON.h"
+#include "json/JSON.h"
 #include "IInsteonMessageHandler.h"
 #include "InsteonModem.h"
 
@@ -50,24 +50,24 @@ public:
 
     void registerCallBacks(RESTEngine* pEngine);
 
-    void startalllinkingasresponder_callback(RESTContext context);
-    void sendAllLink_callback(RESTContext context);
-    void clearmodules_callback(RESTContext context);
-    void listmodules_callback(RESTContext context);
-    void addmodule_callback(RESTContext context);
-    void addezflora_callback(RESTContext context);
-    void addIOLinc_callback(RESTContext context);
-    void setcontroller_callback(RESTContext context);
-    void ramp_callback(RESTContext context);
-    void switch_callback(RESTContext context);
-    void ezflorasetprogram_callback(RESTContext context);
-    void ezflorastartprogram_callback(RESTContext context);
-    void ezflorastopprogram_callback(RESTContext context);
-    void ezflorastartvalve_callback(RESTContext context);
-    void ezflorastopvalve_callback(RESTContext context);
-    void ezfloraforcegetvalvestatus_callback(RESTContext context);
-    void raw_callback(RESTContext context);
-    void refreshAllLinksDatabase_callback(RESTContext context);
+    void startalllinkingasresponder_callback(RESTContext* context);
+    void sendAllLink_callback(RESTContext* context);
+    void clearmodules_callback(RESTContext* context);
+    void listmodules_callback(RESTContext* context);
+    void addmodule_callback(RESTContext* context);
+    void addezflora_callback(RESTContext* context);
+    void addIOLinc_callback(RESTContext* context);
+    void setcontroller_callback(RESTContext* context);
+    void ramp_callback(RESTContext* context);
+    void switch_callback(RESTContext* context);
+    void ezflorasetprogram_callback(RESTContext* context);
+    void ezflorastartprogram_callback(RESTContext* context);
+    void ezflorastopprogram_callback(RESTContext* context);
+    void ezflorastartvalve_callback(RESTContext* context);
+    void ezflorastopvalve_callback(RESTContext* context);
+    void ezfloraforcegetvalvestatus_callback(RESTContext* context);
+    void raw_callback(RESTContext* context);
+    void refreshAllLinksDatabase_callback(RESTContext* context);
     //void setThermostatOperatingMode_callback(RESTContext context);
     //void setThermostatPoint_callback(RESTContext context);
     //void setThermostatProgramPoint_callback(RESTContext context);

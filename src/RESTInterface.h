@@ -2,12 +2,12 @@
 #define RESTINTERFACE_H
 
 #include <string>
-#include "JSON.h"
+#include "json/JSON.h"
 #include "ModuleProvider.h"
 #include "Schedule.h"
 #include "WeatherHelper.h"
 #include <pthread.h>
-#include "RESTEngine.h"
+#include "rest/RESTEngine.h"
 
 class RESTInterface{
 private:
@@ -25,14 +25,14 @@ public:
     void init();
     bool processQuery(Dumais::JSON::JSON& json, const std::string& query);
 
-    void led_callback(RESTContext context);
-    void lcd_callback(RESTContext context);
-    void resetlcd_callback(RESTContext context);
-    void showevents_callback(RESTContext context);
-    void addevent_callback(RESTContext context);
-    void removeevent_callback(RESTContext context);
-    void gettime_callback(RESTContext context);
-    void help_callback(RESTContext context);
+    void led_callback(RESTContext* context);
+    void lcd_callback(RESTContext* context);
+    void resetlcd_callback(RESTContext* context);
+    void showevents_callback(RESTContext* context);
+    void addevent_callback(RESTContext* context);
+    void removeevent_callback(RESTContext* context);
+    void gettime_callback(RESTContext* context);
+    void help_callback(RESTContext* context);
     std::string getAPI();
 
 

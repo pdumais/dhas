@@ -2,7 +2,7 @@
 #define SCHEDULEDEVENT_H
 #define HAVE_CXX_STDHEADERS
 #include <db_cxx.h>
-#include "JSON.h"
+#include "json/JSON.h"
 
 class ScheduledEvent{
 private:
