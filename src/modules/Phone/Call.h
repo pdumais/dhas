@@ -15,13 +15,14 @@ enum CallState
 };
 
 
-class Call: public resip::AppDialogSet, public Dumais::Sound::ISoundPlaylistObserver{
+class Call: public resip::AppDialogSet, public Dumais::Sound::ISoundPlaylistObserver
+{
 public:
 	Call(resip::DialogUsageManager &dum);
 	~Call();
 
-    void setPlayString(std::string playString);
     void addRTPObserver(RTPObserver *obs);
+    void removeRTPObserver(RTPObserver *obs);
 
     void onSoundQueueEmpty();
     void setRTPSession(Dumais::Sound::RTPSession *rtpSession);
@@ -41,7 +42,8 @@ public:
     resip::NameAddr getFrom();
     resip::NameAddr getContact();
     std::string getID();
-    void invokeAfterSoundsHandler();
+    void invokeAnswerHandler();
+    void notifySoundsEmpty();
 
     void toJSON(Dumais::JSON::JSON& json);
 
@@ -53,11 +55,10 @@ private:
     CallState mCallState;
     resip::InviteSessionHandle mInviteSessionHandle;
 
-    std::string mPlayString;
     Dumais::Sound::RTPSession *mRtpSession;
     std::list<RTPObserver*> mRtpObservers;
     bool mIncomming;
-    IPhoneAction* mAfterSoundsHandler;
+    IPhoneAction* mAnsweredAction;
     std::string mDigitQueue;
     resip::NameAddr mFrom;
     resip::NameAddr mOwner;

@@ -6,7 +6,7 @@
 
 typedef std::map<Subscription*,std::string> BLFList;
 
-class PhoneModule: public Module, public TelephonyObserver, public RTPObserver
+class PhoneModule: public Module, public TelephonyObserver
 {
 private:
     SIPEngine* mpSIPEngine;
@@ -48,7 +48,6 @@ public:
     void play_callback(RESTContext* context);
 
 
-    virtual void onRTPSessionSoundQueueEmpty(Call *call);
     int getMWI();
 
     virtual void onMWI(int num);

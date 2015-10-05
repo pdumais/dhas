@@ -449,25 +449,6 @@
 		},
 		{
 			"method" : "GET",
-			"path" : "/phone/play",
-			"params" : [
-				{
-					"description" : "[true/false] if you want the call to be released after sound finished playing",
-					"name" : "releaseaftersounds"
-				},
-				{
-					"description" : "call ID",
-					"name" : "id"
-				},
-				{
-					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
-					"name" : "sound"
-				}
-			],
-			"description" : "Play sounds on an active call using given callID."
-		},
-		{
-			"method" : "GET",
 			"path" : "/phone/click2dial",
 			"params" : [
 				{

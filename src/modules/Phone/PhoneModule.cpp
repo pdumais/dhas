@@ -2,7 +2,7 @@
 #include "PhoneModule.h"
 #include "ReleasePhoneAction.h"
 #include "TransferPhoneAction.h"
-#include "SoundListParser.h"
+#include "PlayPhoneAction.h"
 #include "ModuleRegistrar.h"
 #include <resip/dum/ClientSubscription.hxx>
 
@@ -58,11 +58,11 @@ void PhoneModule::registerCallBacks(RESTEngine* pEngine)
     p->addParam("id","Call ID");
     pEngine->addCallBack("/phone/release","GET",p);
 
-    p = new RESTCallBack(this,&PhoneModule::play_callback,"Play sounds on an active call using given callID.");
+    /*p = new RESTCallBack(this,&PhoneModule::play_callback,"Play sounds on an active call using given callID.");
     p->addParam("sound",PLAYSTRING_DESCRIPTION);
     p->addParam("id","call ID");
     p->addParam("releaseaftersounds","[true/false] if you want the call to be released after sound finished playing");
-    pEngine->addCallBack("/phone/play","GET",p);
+    pEngine->addCallBack("/phone/play","GET",p);*/
 
     tmp = "Sound to play when source answers, before transfering to destination. ";
     tmp += PLAYSTRING_DESCRIPTION;
@@ -128,14 +128,14 @@ void PhoneModule::release_callback(RESTContext* context)
     this->releaseCall(params->getParam("id"));
 }
 
-void PhoneModule::play_callback(RESTContext* context)
+/*void PhoneModule::play_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
     bool releaseAfterSounds = true;
     if (params->getParam("releaseaftersounds")=="false") releaseAfterSounds = false;
     this->playOnCall(params->getParam("id"),params->getParam("sound"),releaseAfterSounds);
-}
+}*/
 
 void PhoneModule::onMWI(int num)
 {
@@ -144,23 +144,7 @@ void PhoneModule::onMWI(int num)
 
 void PhoneModule::onAnswer(Call *pCall)
 {
-    SoundListParser parser(pCall->mPlayString);
-    std::vector<std::string> list = parser.getSoundList();
-    for (std::vector<std::string>::iterator it = list.begin();it!=list.end();it++)
-    {
-        std::string sound = *it;
-        if (sound[0]=='$')
-        {
-            std::string st = sound.substr(1,std::string::npos);
-            int duration = atoi(st.c_str());
-            Logging::log("Queuing %i seconds silence on call \r\n",duration);
-            pCall->getRTPSession()->silence(duration);
-        } else {
-            std::string st = this->mSoundsFolder+(sound)+"-ulaw.wav";
-            Logging::log("Queuing %s on call \r\n",st.c_str());
-            pCall->getRTPSession()->play(st.c_str(), Dumais::Sound::G711);
-        }
-    }
+    pCall->invokeAnswerHandler();
 }
 
 void PhoneModule::onNewDevicePresence(Subscription *pSub)
@@ -234,7 +218,6 @@ bool PhoneModule::onNewCallUas(Call *call)
             return false;
         }
     }
-    call->addRTPObserver(this);
     mCallsList[call->getID()]=call;
     return true;
 }
@@ -325,9 +308,10 @@ void PhoneModule::releaseCall(std::string id)
         mpSIPEngine->releaseCall(it->second);
     }
 }
-
+/*
 void PhoneModule::playOnCall(std::string id, std::string playstring, bool hangupAfterSounds)
 {
+//TODO: this should be using an action
     //TODO: This will be called from another thread. Make it safe
     std::map<std::string,Call*>::iterator it = mCallsList.find(id);
     if (it!=mCallsList.end())
@@ -358,7 +342,7 @@ void PhoneModule::playOnCall(std::string id, std::string playstring, bool hangup
         }
     }
 
-}
+}*/
 
 Call* PhoneModule::click2dial(std::string source, std::string destination,std::string playString)
 {
@@ -366,28 +350,22 @@ Call* PhoneModule::click2dial(std::string source, std::string destination,std::s
     Call *call = mpSIPEngine->makeCall(source);
     if (call==0) return 0;
 
-    call->mAfterSoundsHandler = new TransferPhoneAction(mpSIPEngine, destination);
-    //call->mHangupAfterSounds = false;
-    call->setPlayString(playString);
-    call->addRTPObserver(this);
+    PlayPhoneAction* pa = new PlayPhoneAction(mpSIPEngine, playString, this->mSoundsFolder);
+    pa->setSoundsEmptyAction(new TransferPhoneAction(mpSIPEngine, destination));
+    call->mAnsweredAction = pa;
 
     return call;
 }
 
 Call* PhoneModule::call(std::string destination,std::string playString, bool hangupAfterSounds)
 {
-
     //TODO: This will be called from another thread. Make it safe
     Call *call = mpSIPEngine->makeCall(destination);
     if (call==0) return 0;
 
-    if (hangupAfterSounds)
-    {
-       call->mAfterSoundsHandler = new ReleasePhoneAction(mpSIPEngine);
-    }
-//    call->mHangupAfterSounds = hangupAfterSounds;
-    call->setPlayString(playString);
-    call->addRTPObserver(this);
+    PlayPhoneAction* pa = new PlayPhoneAction(mpSIPEngine, playString, this->mSoundsFolder);
+    if (hangupAfterSounds) pa->setSoundsEmptyAction(new ReleasePhoneAction(mpSIPEngine));
+    call->mAnsweredAction = pa;
 
     return call;
 }
@@ -431,15 +409,6 @@ void PhoneModule::registerUserAgent(std::string user, std::string pin, std::stri
 }
 
 
-void PhoneModule::onRTPSessionSoundQueueEmpty(Call *call)
-{
-    Logging::log("RTP Sound Queue Empty");
-    call->invokeAfterSoundsHandler();
-    /*if (call->mHangupAfterSounds)
-    {
-        mpSIPEngine->releaseCall(call);
-    }*/
-}
 
 
 

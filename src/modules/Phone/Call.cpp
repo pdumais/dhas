@@ -4,6 +4,7 @@
 
 #include "resip/dum/InviteSession.hxx"
 #include "resip/dum/ClientInviteSession.hxx"
+#include "AppDialogSetNotifySoundsEmptyCommand.h"
 
 using namespace resip;
 
@@ -12,12 +13,17 @@ Call::Call(resip::DialogUsageManager &dum):AppDialogSet(dum)
     this->mCallState = Initial;
     this->mRtpSession = 0;
     this->mIncomming = false;
-    this->mAfterSoundsHandler = 0;
-//    this->mHangupAfterSounds = false;
+    this->mAnsweredAction = 0;
 }
 
 Call::~Call()
 {
+    if (this->mAnsweredAction)
+    {
+        delete this->mAnsweredAction;
+        this->mAnsweredAction = 0;
+    }
+
     if (this->mRtpSession)
     {
         delete this->mRtpSession;
@@ -25,13 +31,11 @@ Call::~Call()
     }
 }
 
-void Call::invokeAfterSoundsHandler()
+void Call::invokeAnswerHandler()
 {
-    if (this->mAfterSoundsHandler)
+    if (this->mAnsweredAction)
     {
-        this->mAfterSoundsHandler->invoke(this);
-        delete this->mAfterSoundsHandler;
-        this->mAfterSoundsHandler = 0;
+        this->mAnsweredAction->invoke(this);
     }
 }
 
@@ -40,14 +44,19 @@ CallState Call::getCallState()
     return mCallState;
 }
 
-void Call::setPlayString(std::string playString)
-{
-    mPlayString = playString;
-}
-
 void Call::setIncomming(bool i)
 {
     this->mIncomming = i;
+}
+
+void Call::removeRTPObserver(RTPObserver *obs)
+{
+    for (auto it = this->mRtpObservers.begin(); it != this->mRtpObservers.end(); it++)
+    {
+        if (*it != obs) continue;
+        this->mRtpObservers.erase(it);
+        return; 
+    }
 }
 
 void Call::addRTPObserver(RTPObserver *obs)
@@ -67,13 +76,22 @@ Dumais::Sound::RTPSession* Call::getRTPSession()
     return this->mRtpSession;
 }
 
+//WARNING: This is called from the sound player thread
 void Call::onSoundQueueEmpty()
 {
-    for (std::list<RTPObserver*>::iterator it = this->mRtpObservers.begin();it!=this->mRtpObservers.end();it++)
+    // Don't notify from this thread, post it on the dum's thread
+    AppDialogSetNotifySoundsEmptyCommand* cmd = new AppDialogSetNotifySoundsEmptyCommand(this);
+    this->mDum.post(cmd);
+}
+
+void Call::notifySoundsEmpty()
+{
+    // we copy the list because observers could unsubscribe in the meantime
+    auto list = this->mRtpObservers;
+    for (std::list<RTPObserver*>::iterator it = list.begin();it!=list.end();it++)
     {
         (*it)->onRTPSessionSoundQueueEmpty(this);
     }
-
 }
 
 DialogUsageManager& Call::getDUM()
