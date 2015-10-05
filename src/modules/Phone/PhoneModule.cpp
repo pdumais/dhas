@@ -1,5 +1,7 @@
 #include "Logging.h"
 #include "PhoneModule.h"
+#include "ReleasePhoneAction.h"
+#include "TransferPhoneAction.h"
 #include "SoundListParser.h"
 #include "ModuleRegistrar.h"
 #include <resip/dum/ClientSubscription.hxx>
@@ -28,7 +30,9 @@ void PhoneModule::configure(Dumais::JSON::JSON& config)
 
 void PhoneModule::registerCallBacks(RESTEngine* pEngine)
 {
+    std::string tmp;
     RESTCallBack *p;
+
     p = new RESTCallBack(this,&PhoneModule::call_callback,"Will call the given extension and optionally play sound when the remote peer answers the call. Placing a call only works if the user agent was previously registered. Called extension must be know by the proxy because direct URI are not supported. To make an intercom call (where the UAS will autoanswer) this needs to be configured on the proxy. ");
     p->addParam("ext","extention to call");
     p->addParam("play",PLAYSTRING_DESCRIPTION);
@@ -60,8 +64,24 @@ void PhoneModule::registerCallBacks(RESTEngine* pEngine)
     p->addParam("releaseaftersounds","[true/false] if you want the call to be released after sound finished playing");
     pEngine->addCallBack("/phone/play","GET",p);
 
+    tmp = "Sound to play when source answers, before transfering to destination. ";
+    tmp += PLAYSTRING_DESCRIPTION;
+    p = new RESTCallBack(this,&PhoneModule::click2dial_callback,"Click-2-Dial");
+    p->addParam("sound",tmp);
+    p->addParam("src","Source extension to call");
+    p->addParam("dst","Destination extension to which the source will be patched.");
+    pEngine->addCallBack("/phone/click2dial","GET",p);
+
 }
 
+
+void PhoneModule::click2dial_callback(RESTContext* context)
+{
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
+    this->click2dial(params->getParam("src"),params->getParam("dst"),params->getParam("sound"));
+
+}
 
 void PhoneModule::call_callback(RESTContext* context)
 {
@@ -313,7 +333,12 @@ void PhoneModule::playOnCall(std::string id, std::string playstring, bool hangup
     if (it!=mCallsList.end())
     {
         Call *pCall = it->second;
-        pCall->mHangupAfterSounds = hangupAfterSounds;
+        if (hangupAfterSounds)
+        {
+           pCall->mAfterSoundsHandler = new ReleasePhoneAction(mpSIPEngine);
+        }
+
+//        pCall->mHangupAfterSounds = hangupAfterSounds;
         SoundListParser parser(playstring);
         std::vector<std::string> list = parser.getSoundList();
         for (std::vector<std::string>::iterator it = list.begin();it!=list.end();it++)
@@ -335,6 +360,20 @@ void PhoneModule::playOnCall(std::string id, std::string playstring, bool hangup
 
 }
 
+Call* PhoneModule::click2dial(std::string source, std::string destination,std::string playString)
+{
+    //TODO: This will be called from another thread. Make it safe
+    Call *call = mpSIPEngine->makeCall(source);
+    if (call==0) return 0;
+
+    call->mAfterSoundsHandler = new TransferPhoneAction(mpSIPEngine, destination);
+    //call->mHangupAfterSounds = false;
+    call->setPlayString(playString);
+    call->addRTPObserver(this);
+
+    return call;
+}
+
 Call* PhoneModule::call(std::string destination,std::string playString, bool hangupAfterSounds)
 {
 
@@ -342,7 +381,11 @@ Call* PhoneModule::call(std::string destination,std::string playString, bool han
     Call *call = mpSIPEngine->makeCall(destination);
     if (call==0) return 0;
 
-    call->mHangupAfterSounds = hangupAfterSounds;
+    if (hangupAfterSounds)
+    {
+       call->mAfterSoundsHandler = new ReleasePhoneAction(mpSIPEngine);
+    }
+//    call->mHangupAfterSounds = hangupAfterSounds;
     call->setPlayString(playString);
     call->addRTPObserver(this);
 
@@ -391,10 +434,11 @@ void PhoneModule::registerUserAgent(std::string user, std::string pin, std::stri
 void PhoneModule::onRTPSessionSoundQueueEmpty(Call *call)
 {
     Logging::log("RTP Sound Queue Empty");
-    if (call->mHangupAfterSounds)
+    call->invokeAfterSoundsHandler();
+    /*if (call->mHangupAfterSounds)
     {
         mpSIPEngine->releaseCall(call);
-    }
+    }*/
 }
 
 

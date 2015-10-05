@@ -5,6 +5,7 @@
 #include "RTPObserver.h"
 #include "RTPSession.h"
 #include "json/JSON.h"
+#include "IPhoneAction.h"
 
 enum CallState
 {
@@ -40,6 +41,7 @@ public:
     resip::NameAddr getFrom();
     resip::NameAddr getContact();
     std::string getID();
+    void invokeAfterSoundsHandler();
 
     void toJSON(Dumais::JSON::JSON& json);
 
@@ -55,7 +57,7 @@ private:
     Dumais::Sound::RTPSession *mRtpSession;
     std::list<RTPObserver*> mRtpObservers;
     bool mIncomming;
-    bool mHangupAfterSounds;
+    IPhoneAction* mAfterSoundsHandler;
     std::string mDigitQueue;
     resip::NameAddr mFrom;
     resip::NameAddr mOwner;

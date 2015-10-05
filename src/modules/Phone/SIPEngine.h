@@ -44,6 +44,7 @@ public:
 	~SIPEngine();
 
     Call* makeCall(std::string extension);
+    void transferCall(Call* call, const std::string& extension);
     void start();
     void stop();
     void run();

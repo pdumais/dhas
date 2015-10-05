@@ -17,6 +17,7 @@ private:
     Dumais::JSON::JSON mConfig;
 
     Call* call(std::string destination,std::string playString, bool hangupAfterSounds=true);
+    Call* click2dial(std::string source, std::string destination,std::string playString);
     void playOnCall(std::string id, std::string playstring, bool hangupAfterSounds=false);
     void subscribeBLF(std::string device);
     void subscribeMWI(std::string device);
@@ -37,6 +38,7 @@ public:
 
     void registerCallBacks(RESTEngine* pEngine);
 
+    void click2dial_callback(RESTContext* context);
     void call_callback(RESTContext* context);
     void register_callback(RESTContext* context);
     void blf_callback(RESTContext* context);

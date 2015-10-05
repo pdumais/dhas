@@ -112,6 +112,25 @@ void SIPEngine::releaseCall(Call *pCall)
     this->mDum->post(cmd);
 }
 
+void SIPEngine::transferCall(Call* call, const std::string& ext)
+{
+    Logging::log("Blind transferring to %s\r\n",ext.c_str());
+
+//    SharedPtr<UserProfile> up(mDum->getMasterUserProfile());
+
+
+    std::stringstream sst;
+    sst << "sip:";
+    sst << ext << "@" <<settings.mProxy;
+    NameAddr to(sst.str().c_str());
+
+    /*  refer with implicit subscription. If we specify "no implicit subscription" (rfc 4488),
+        then the recipient will not send NOTIFYs to us.
+    */
+    call->mInviteSessionHandle.get()->refer(to);
+    releaseCall(call); //TODO: should wait for notify before killing the call
+}
+
 Call* SIPEngine::makeCall(std::string extension)
 {
     SharedPtr<UserProfile> up(mDum->getMasterUserProfile());
@@ -372,6 +391,7 @@ void SIPEngine::onNewSession(resip::ServerInviteSessionHandle sis, resip::Invite
 void SIPEngine::onNewSession(resip::ClientInviteSessionHandle cis, resip::InviteSession::OfferAnswerType oat, const resip::SipMessage& msg)
 {
     Call *call = dynamic_cast<Call*>(cis->getAppDialogSet().get());
+    call->mInviteSessionHandle = cis->getSessionHandle();
     mpObserver->onNewCallUac(call);
 }
 

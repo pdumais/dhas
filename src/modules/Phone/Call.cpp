@@ -12,7 +12,8 @@ Call::Call(resip::DialogUsageManager &dum):AppDialogSet(dum)
     this->mCallState = Initial;
     this->mRtpSession = 0;
     this->mIncomming = false;
-    this->mHangupAfterSounds = false;
+    this->mAfterSoundsHandler = 0;
+//    this->mHangupAfterSounds = false;
 }
 
 Call::~Call()
@@ -21,6 +22,16 @@ Call::~Call()
     {
         delete this->mRtpSession;
         this->mRtpSession = 0;
+    }
+}
+
+void Call::invokeAfterSoundsHandler()
+{
+    if (this->mAfterSoundsHandler)
+    {
+        this->mAfterSoundsHandler->invoke(this);
+        delete this->mAfterSoundsHandler;
+        this->mAfterSoundsHandler = 0;
     }
 }
 
