@@ -6,6 +6,7 @@
 #include "RTPSession.h"
 #include "json/JSON.h"
 #include "IPhoneAction.h"
+#include "ActionMachine.h"
 
 enum CallState
 {
@@ -18,7 +19,7 @@ enum CallState
 class Call: public resip::AppDialogSet, public Dumais::Sound::ISoundPlaylistObserver
 {
 public:
-	Call(resip::DialogUsageManager &dum);
+	Call(resip::DialogUsageManager &dum, ActionMachine *am);
 	~Call();
 
     void addRTPObserver(RTPObserver *obs);
@@ -42,8 +43,12 @@ public:
     resip::NameAddr getFrom();
     resip::NameAddr getContact();
     std::string getID();
-    void invokeAnswerHandler();
     void notifySoundsEmpty();
+
+    void appendAction(IPhoneAction* action);
+    void onCallAnswered();
+    void setCurrentAction(IPhoneAction* action);
+    IPhoneAction* getCurrentAction();
 
     void toJSON(Dumais::JSON::JSON& json);
 
@@ -54,11 +59,12 @@ private:
 
     CallState mCallState;
     resip::InviteSessionHandle mInviteSessionHandle;
+    ActionMachine* mpActionMachine;
 
     Dumais::Sound::RTPSession *mRtpSession;
     std::list<RTPObserver*> mRtpObservers;
     bool mIncomming;
-    IPhoneAction* mAnsweredAction;
+    IPhoneAction* mpCurrentAction;
     std::string mDigitQueue;
     resip::NameAddr mFrom;
     resip::NameAddr mOwner;

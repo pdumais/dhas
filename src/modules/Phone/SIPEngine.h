@@ -16,6 +16,7 @@
 #include "SoundDeviceFactory.h"
 #include "TelephonyObserver.h"
 #include <thread>
+#include "ActionMachine.h"
 
 struct DevicePresence
 {
@@ -38,9 +39,9 @@ private:
     int mRONATimeout;
     Dumais::Sound::SoundDeviceFactory *mpSoundDeviceFactory;
     bool mStopping;
-
+    ActionMachine *mpActionMachine;
 public:
-	SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, int ronatimeout);
+	SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, int ronatimeout, ActionMachine *am);
 	~SIPEngine();
 
     Call* makeCall(std::string extension);

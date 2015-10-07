@@ -95,4 +95,7 @@ installapp: application
 
 upgrade: killha installapp
 	$(APPPATH)/homeautomation -d < /dev/null >/dev/null
+
+debug: killha installapp
+	gdb $(APPPATH)/homeautomation
 	

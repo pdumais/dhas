@@ -8,21 +8,18 @@
 
 using namespace resip;
 
-Call::Call(resip::DialogUsageManager &dum):AppDialogSet(dum)
+Call::Call(resip::DialogUsageManager &dum, ActionMachine* am):AppDialogSet(dum)
 {
+    this->mpActionMachine = am;
     this->mCallState = Initial;
     this->mRtpSession = 0;
     this->mIncomming = false;
-    this->mAnsweredAction = 0;
+    this->mpCurrentAction = 0;
 }
 
 Call::~Call()
 {
-    if (this->mAnsweredAction)
-    {
-        delete this->mAnsweredAction;
-        this->mAnsweredAction = 0;
-    }
+    mpActionMachine->destroyChain(this);
 
     if (this->mRtpSession)
     {
@@ -31,12 +28,15 @@ Call::~Call()
     }
 }
 
-void Call::invokeAnswerHandler()
+void Call::setCurrentAction(IPhoneAction* a)
 {
-    if (this->mAnsweredAction)
-    {
-        this->mAnsweredAction->invoke(this);
-    }
+    this->mpCurrentAction = a;
+}
+
+void Call::onCallAnswered()
+{
+    // The call is answered by UAS, this is what triggers the action chain
+    mpActionMachine->asyncRunAction(this);
 }
 
 CallState Call::getCallState()
@@ -47,6 +47,11 @@ CallState Call::getCallState()
 void Call::setIncomming(bool i)
 {
     this->mIncomming = i;
+}
+
+IPhoneAction* Call::getCurrentAction()
+{
+    return mpCurrentAction;
 }
 
 void Call::removeRTPObserver(RTPObserver *obs)
@@ -61,9 +66,35 @@ void Call::removeRTPObserver(RTPObserver *obs)
 
 void Call::addRTPObserver(RTPObserver *obs)
 {
+    for (auto it = this->mRtpObservers.begin(); it != this->mRtpObservers.end(); it++)
+    {
+        if (*it == obs) return;
+    }
+
     this->mRtpObservers.push_back(obs);
 }
 
+void Call::appendAction(IPhoneAction* action)
+{
+    if (mpCurrentAction == 0)
+    {
+        mpCurrentAction = action;
+
+        //if no action was set and the call was answered, then schedule the action to run
+        if (getCallState() == Answered) mpActionMachine->asyncRunAction(this);
+    }
+    else
+    {
+        // if an action is already in queue, it means that we can just append to it and
+        // it will eventually get invoked
+        IPhoneAction *a = mpCurrentAction;
+        while (a->getNextAction() != 0)
+        {
+            a = a->getNextAction();    
+        }
+        a->setNextAction(action);
+    }
+}
 
 void Call::setRTPSession(Dumais::Sound::RTPSession *rtpSession)
 {

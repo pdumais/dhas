@@ -4,15 +4,18 @@
 
 using namespace resip;
 
-CallFactory::CallFactory(){
+CallFactory::CallFactory(ActionMachine *am)
+{
+    this->mpActionMachine = am;
 }
 
-CallFactory::~CallFactory(){
+CallFactory::~CallFactory()
+{
 }
 
 AppDialogSet* CallFactory::createAppDialogSet(DialogUsageManager& dum, const SipMessage& msg)
 {
-    Call *call = new Call(dum);
+    Call *call = new Call(dum,this->mpActionMachine);
     return call;
 }
 

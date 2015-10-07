@@ -6,32 +6,23 @@
 
 PlayPhoneAction::PlayPhoneAction(SIPEngine* engine, const std::string& playString, const std::string& soundsFolder): IPhoneAction(engine)
 {
-    this->mSoundListEmptyAction = 0;
     this->mPlayString = playString;
     this->mSoundsFolder = soundsFolder;
 }
 
 PlayPhoneAction::~PlayPhoneAction()
 {
-    if (this->mSoundListEmptyAction)
-    {
-        delete this->mSoundListEmptyAction;
-    }
-
-    this->mSoundListEmptyAction = 0;
-
-    // Don't need to remove ourself from RTP observer list of call since the call's destructor
-    // is deleting this object.
 }
 
 void PlayPhoneAction::invoke(Call* call)
 {
+    Logging::log("PlayPhoneAction::invoke");
     call->addRTPObserver(this);
     SoundListParser parser(this->mPlayString);
     std::vector<std::string> list = parser.getSoundList();
     if (list.size() == 0)
     {
-        if (this->mSoundListEmptyAction) this->mSoundListEmptyAction->invoke(call);
+        this->onActionTerminated(call);
     }
     else
     {
@@ -53,14 +44,13 @@ void PlayPhoneAction::invoke(Call* call)
     }
 }
 
-void PlayPhoneAction::setSoundsEmptyAction(IPhoneAction* a)
-{
-    this->mSoundListEmptyAction = a;
-}
-
 void PlayPhoneAction::onRTPSessionSoundQueueEmpty(Call *call)
 {
     Logging::log("RTP Sound Queue Empty");
-    if (this->mSoundListEmptyAction) this->mSoundListEmptyAction->invoke(call);
+    this->onActionTerminated(call);
+}
+
+void PlayPhoneAction::clean(Call *call)
+{
     call->removeRTPObserver(this);
 }

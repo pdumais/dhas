@@ -20,7 +20,7 @@
 using namespace resip;
 
 
-SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, int ronatimeout): mProfile(new MasterProfile){
+SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, int ronatimeout, ActionMachine *actionMachine): mProfile(new MasterProfile){
 
 //    Log::setLevel(Log::Debug);
     Log::setLevel(Log::None);
@@ -35,13 +35,16 @@ SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, 
     this->mSipStack->addTransport(UDP,sipport);
     // Create DUM
     this->mDum = new DialogUsageManager(*this->mSipStack);
+    actionMachine->setDum(this->mDum);
 
     this->mRegistrationManager.setDum(this->mDum);
     this->mRegistrationManager.addObserver(this);
 
+    this->mpActionMachine = actionMachine;
+
     //Set Handlers
     this->mDum->setClientRegistrationHandler(&this->mRegistrationManager);
-    std::auto_ptr<AppDialogSetFactory> factory(new CallFactory());
+    std::auto_ptr<AppDialogSetFactory> factory(new CallFactory(actionMachine));
     this->mDum->setAppDialogSetFactory(factory);
 
     this->mProfile->setUserAgent("DumaisHomeAutomation");
@@ -140,7 +143,7 @@ Call* SIPEngine::makeCall(std::string extension)
     dest = NameAddr(Uri(uri.c_str()));
     Logging::log("Attempting to call %s\r\n",uri.c_str());
 
-    Call *call = new Call(*mDum);
+    Call *call = new Call(*mDum, mpActionMachine);
     Dumais::Sound::RTPSession *rtpSession = this->mpSoundDeviceFactory->createRTPSession();
     call->setRTPSession(rtpSession);
     std::stringstream ss;
@@ -279,6 +282,7 @@ void SIPEngine::onConnected(resip::InviteSessionHandle is, const resip::SipMessa
     Call *call = (Call*)is->getAppDialogSet().get();
     if (call)
     {
+        call->mCallState = Answered;
         Dumais::Sound::RTPSession *rtpSession = call->getRTPSession();
         rtpSession->start();
         mpObserver->onConnectedUas(call);
@@ -306,9 +310,9 @@ void SIPEngine::onAnswer(resip::InviteSessionHandle is, const resip::SipMessage&
     rtpSession->setPeerAddress(peerIP, peerPort);
     rtpSession->start();
 
+    pCall->mCallState = Answered;
     mpObserver->onAnswer(pCall);
 
-    pCall->mCallState = Answered;
 }
 
 void SIPEngine::onEarlyMedia(resip::ClientInviteSessionHandle, const resip::SipMessage& msg, const resip::SdpContents& sdp)

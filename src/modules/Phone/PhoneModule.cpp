@@ -58,11 +58,11 @@ void PhoneModule::registerCallBacks(RESTEngine* pEngine)
     p->addParam("id","Call ID");
     pEngine->addCallBack("/phone/release","GET",p);
 
-    /*p = new RESTCallBack(this,&PhoneModule::play_callback,"Play sounds on an active call using given callID.");
+    p = new RESTCallBack(this,&PhoneModule::play_callback,"Play sounds on an active call using given callID.");
     p->addParam("sound",PLAYSTRING_DESCRIPTION);
     p->addParam("id","call ID");
     p->addParam("releaseaftersounds","[true/false] if you want the call to be released after sound finished playing");
-    pEngine->addCallBack("/phone/play","GET",p);*/
+    pEngine->addCallBack("/phone/play","GET",p);
 
     tmp = "Sound to play when source answers, before transfering to destination. ";
     tmp += PLAYSTRING_DESCRIPTION;
@@ -128,14 +128,14 @@ void PhoneModule::release_callback(RESTContext* context)
     this->releaseCall(params->getParam("id"));
 }
 
-/*void PhoneModule::play_callback(RESTContext* context)
+void PhoneModule::play_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
     bool releaseAfterSounds = true;
     if (params->getParam("releaseaftersounds")=="false") releaseAfterSounds = false;
     this->playOnCall(params->getParam("id"),params->getParam("sound"),releaseAfterSounds);
-}*/
+}
 
 void PhoneModule::onMWI(int num)
 {
@@ -144,7 +144,7 @@ void PhoneModule::onMWI(int num)
 
 void PhoneModule::onAnswer(Call *pCall)
 {
-    pCall->invokeAnswerHandler();
+    pCall->onCallAnswered();
 }
 
 void PhoneModule::onNewDevicePresence(Subscription *pSub)
@@ -308,41 +308,25 @@ void PhoneModule::releaseCall(std::string id)
         mpSIPEngine->releaseCall(it->second);
     }
 }
-/*
+
 void PhoneModule::playOnCall(std::string id, std::string playstring, bool hangupAfterSounds)
 {
-//TODO: this should be using an action
+
     //TODO: This will be called from another thread. Make it safe
     std::map<std::string,Call*>::iterator it = mCallsList.find(id);
     if (it!=mCallsList.end())
     {
         Call *pCall = it->second;
+        PlayPhoneAction* pa = new PlayPhoneAction(mpSIPEngine, playstring, this->mSoundsFolder);
+        mActionMachine.asyncAddAction(pCall,pa);
         if (hangupAfterSounds)
         {
-           pCall->mAfterSoundsHandler = new ReleasePhoneAction(mpSIPEngine);
-        }
-
-//        pCall->mHangupAfterSounds = hangupAfterSounds;
-        SoundListParser parser(playstring);
-        std::vector<std::string> list = parser.getSoundList();
-        for (std::vector<std::string>::iterator it = list.begin();it!=list.end();it++)
-        {
-            std::string sound = *it;
-            if (sound[0]=='$')
-            {
-                std::string st = sound.substr(1,std::string::npos);
-                int duration = atoi(st.c_str());
-                Logging::log("Queuing %i seconds silence on call \r\n",duration);
-                pCall->getRTPSession()->silence(duration);
-            } else {
-                std::string st = this->mSoundsFolder+(*it)+"-ulaw.wav";
-                Logging::log("Queuing %s on call \r\n",st.c_str());
-                pCall->getRTPSession()->play(st.c_str(), Dumais::Sound::G711);
-            }
+            ReleasePhoneAction *ra = new ReleasePhoneAction(mpSIPEngine);
+            mActionMachine.asyncAddAction(pCall,ra);
         }
     }
 
-}*/
+}
 
 Call* PhoneModule::click2dial(std::string source, std::string destination,std::string playString)
 {
@@ -351,8 +335,9 @@ Call* PhoneModule::click2dial(std::string source, std::string destination,std::s
     if (call==0) return 0;
 
     PlayPhoneAction* pa = new PlayPhoneAction(mpSIPEngine, playString, this->mSoundsFolder);
-    pa->setSoundsEmptyAction(new TransferPhoneAction(mpSIPEngine, destination));
-    call->mAnsweredAction = pa;
+    TransferPhoneAction *ta = new TransferPhoneAction(mpSIPEngine, destination);
+    mActionMachine.asyncAddAction(call,pa);
+    mActionMachine.asyncAddAction(call,ta);
 
     return call;
 }
@@ -364,14 +349,15 @@ Call* PhoneModule::call(std::string destination,std::string playString, bool han
     if (call==0) return 0;
 
     PlayPhoneAction* pa = new PlayPhoneAction(mpSIPEngine, playString, this->mSoundsFolder);
-    if (hangupAfterSounds) pa->setSoundsEmptyAction(new ReleasePhoneAction(mpSIPEngine));
-    call->mAnsweredAction = pa;
+    mActionMachine.asyncAddAction(call,pa);
+    if (hangupAfterSounds)
+    {
+        ReleasePhoneAction *ra = new ReleasePhoneAction(mpSIPEngine);
+        mActionMachine.asyncAddAction(call,ra);
+    }
 
     return call;
 }
-
-
-
 
 void PhoneModule::run()
 {
@@ -380,8 +366,10 @@ void PhoneModule::run()
         mConfig["rtphigh"].toInt(),
         mConfig["localip"].str(),
         mConfig["sipport"].toInt(),
-        mConfig["ronatimeout"].toInt());
+        mConfig["ronatimeout"].toInt(),
+        &mActionMachine);
     mpSIPEngine->setTelephonyObserver(this);
+    mActionMachine.setMainThreadId(std::this_thread::get_id());
     mpSIPEngine->start();
     setStarted();
     while (!stopping())

@@ -126,6 +126,7 @@ int main(int argc, char** argv)
         printf("       -d launch daemon\r\n");
         printf("       -g generate API doc\r\n");
         printf("       -r send SIGHUP to daemon\r\n");
+        printf("       -c run normal mode\r\n");
         exit(0);
     }
 

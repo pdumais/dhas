@@ -3,12 +3,14 @@
 
 #include "Module.h"
 #include "SIPEngine.h"
+#include "ActionMachine.h"
 
 typedef std::map<Subscription*,std::string> BLFList;
 
 class PhoneModule: public Module, public TelephonyObserver
 {
 private:
+    ActionMachine mActionMachine;
     SIPEngine* mpSIPEngine;
     std::map<std::string,Call*> mCallsList;
     BLFList mBLFList;
