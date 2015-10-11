@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "PhoneModule.h"
 #include "ReleasePhoneAction.h"
 #include "TransferPhoneAction.h"
@@ -149,7 +149,7 @@ void PhoneModule::onAnswer(Call *pCall)
 
 void PhoneModule::onNewDevicePresence(Subscription *pSub)
 {
-    //Logging::log("PhoneModule::onNewDevicePresence: %i",pSub);
+    //LOG("PhoneModule::onNewDevicePresence: %i",pSub);
 
     // After expiry, we will get here but it will still be the same Subscription instance
     if (mBLFList.find(pSub)==mBLFList.end())
@@ -178,7 +178,7 @@ void PhoneModule::onPresence(Subscription *pSub)
             json.addValue(pSub->getDeviceState(),"status");
             mpEventProcessor->processEvent(json);
 
-            Logging::log("Presence: device %s state is %s",pSub->getDevice().c_str(),pSub->getDeviceState().c_str());
+            LOG("Presence: device "<<pSub->getDevice().c_str()<<" state is "<<pSub->getDeviceState().c_str());
 
             if (pSub->getDeviceState()=="terminated")
             {
@@ -209,7 +209,7 @@ void PhoneModule::onCallTerminated(Call *call)
 
 bool PhoneModule::onNewCallUas(Call *call)
 {
-    Logging::log("Incoming call\r\n");
+    LOG("Incoming call");
     for (std::map<std::string,Call*>::iterator it=mCallsList.begin();it!=mCallsList.end();it++)
     {
         // Only allow one incomming call at a atime
@@ -376,7 +376,7 @@ void PhoneModule::run()
     {
         mpSIPEngine->run();
     }
-    Logging::log("SIP thread ending");
+    LOG("SIP thread ending");
 }
 
 void PhoneModule::stop()

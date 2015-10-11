@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "Schedule.h"
 #include "config.h"
 #include <string.h>
@@ -26,7 +26,7 @@ Schedule::Schedule()
     }
 
     pCursor->c_close(pCursor);
-    Logging::log("Schedule database opened\r\n");
+    LOG("Schedule database opened\r\n");
    
 }
 

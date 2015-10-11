@@ -1,4 +1,4 @@
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include "ThermostatProgram.h"
 #include "config.h"
 #include <string.h>

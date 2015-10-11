@@ -1,5 +1,5 @@
 #include "SIPEngine.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <resip/dum/ClientAuthManager.hxx>
 #include <resip/stack/MessageWaitingContents.hxx>
 #include <rutil/Log.hxx>
@@ -110,14 +110,14 @@ void SIPEngine::subscribeBLF(std::string device)
 
 void SIPEngine::releaseCall(Call *pCall)
 {
-    Logging::log("%i Will post End Command for %s",std::this_thread::get_id(),pCall->getID().c_str());
+    LOG("Will post End Command for "<<pCall->getID().c_str());
     AppDialogSetEndCommand* cmd = new AppDialogSetEndCommand(pCall->getHandle());
     this->mDum->post(cmd);
 }
 
 void SIPEngine::transferCall(Call* call, const std::string& ext)
 {
-    Logging::log("Blind transferring to %s\r\n",ext.c_str());
+    LOG("Blind transferring to "<<ext.c_str());
 
 //    SharedPtr<UserProfile> up(mDum->getMasterUserProfile());
 
@@ -141,7 +141,7 @@ Call* SIPEngine::makeCall(std::string extension)
     NameAddr dest;
     std::string uri = "sip:" + extension + "@" + settings.mProxy;
     dest = NameAddr(Uri(uri.c_str()));
-    Logging::log("Attempting to call %s\r\n",uri.c_str());
+    LOG("Attempting to call "<<uri.c_str());
 
     Call *call = new Call(*mDum, mpActionMachine);
     Dumais::Sound::RTPSession *rtpSession = this->mpSoundDeviceFactory->createRTPSession();
@@ -204,9 +204,9 @@ void SIPEngine::onRegistered(bool registered)
     if (registered)
     {
         mIsRegistered = true;
-        Logging::log("User agent is registered\r\n");
+        LOG("User agent is registered");
     } else {
-        Logging::log("User agent failed to register\r\n");
+        LOG("User agent failed to register");
     }
 }
 
@@ -263,7 +263,7 @@ void SIPEngine::onProvisional(resip::ClientInviteSessionHandle cis, const resip:
         {
             if (call->mCallState==Initial)
             {
-                Logging::log("Call is ringing\r\n");
+                LOG("Call is ringing");
                 call->mCallState = Ringing;            
                 AppDialogSetRONACommand cmd(call->getHandle());
                 mDum->getSipStack().post(cmd,mRONATimeout,mDum);
@@ -304,7 +304,7 @@ void SIPEngine::onAnswer(resip::InviteSessionHandle is, const resip::SipMessage&
     const char* peerIP = sdp.session().origin().getAddress().c_str();
     unsigned int peerPort = sdp.session().media().front().port();
 
-    Logging::log("Outgoing call was answered. SDP: %s:%i\r\n",peerIP,peerPort);
+    LOG("Outgoing call was answered. SDP: "<<peerIP<<":"<<peerPort);
 
     Dumais::Sound::RTPSession *rtpSession = pCall->getRTPSession();
     rtpSession->setPeerAddress(peerIP, peerPort);
@@ -385,7 +385,7 @@ void SIPEngine::onNewSession(resip::ServerInviteSessionHandle sis, resip::Invite
 
     if (!mpObserver->onNewCallUas(call))
     {
-        Logging::log("Call refused (Busy here)\r\n");
+        LOG("Call refused (Busy here)");
         sis->reject(486);
         return;
     }
@@ -404,7 +404,7 @@ void SIPEngine::onTerminated(resip::InviteSessionHandle is, resip::InviteSession
     Call *call = (Call*)is->getAppDialogSet().get();
     if (call)
     {
-        Logging::log("Call terminated\r\n");
+        LOG("Call terminated");
         Dumais::Sound::RTPSession *rtp = call->getRTPSession();
         if (rtp)
         {
@@ -417,7 +417,7 @@ void SIPEngine::onTerminated(resip::InviteSessionHandle is, resip::InviteSession
 
 void SIPEngine::onOffer(resip::InviteSessionHandle is, const resip::SipMessage& msg, const resip::SdpContents& sdp)
 {
-    Logging::log("PhoneModule::onOffer. uas\r\n");
+    LOG("PhoneModule::onOffer. uas");
     Call *call = dynamic_cast<Call*>(is->getAppDialogSet().get());
     if (call)
     {
@@ -460,7 +460,7 @@ void SIPEngine::answerIncomming(Call* call)
         if (sis)
         {
             sis->provideAnswer(sdp2);
-            Logging::log("Answering incomming call\r\n");
+            LOG("Answering incomming call");
             sis->accept();
 
         }
@@ -477,7 +477,7 @@ void SIPEngine::onFailure(resip::ClientOutOfDialogReqHandle, const resip::SipMes
 
 void SIPEngine::onReceivedRequest(resip::ServerOutOfDialogReqHandle ood, const resip::SipMessage& request)
 {
-    Logging::log("PhoneModule::onReceivedRequest");
+    LOG("PhoneModule::onReceivedRequest");
 /*    if ((request.header(h_ContentType).type() == "application") && (request.header(h_ContentType).subType() == "simple-message-summary"))
     {
         MessageWaitingContents* mwi = dynamic_cast<MessageWaitingContents*>(request.getContents());
@@ -503,7 +503,7 @@ void SIPEngine::onUpdateActive (ClientSubscriptionHandle is, const SipMessage &m
         MessageWaitingContents* mwi = dynamic_cast<MessageWaitingContents*>(msg.getContents());
 
         int num = mwi->header(mw_voice).newCount();
-        Logging::log("Got MWI event (%i)",num);
+        LOG("Got MWI event (%i)",num);
         mpObserver->onMWI(num);
         return;
     } else { // Presence*/
@@ -567,7 +567,7 @@ int SIPEngine::onRequestRetry (ClientSubscriptionHandle, int retrySeconds, const
 
 void SIPEngine::onTerminated (ClientSubscriptionHandle is, const SipMessage *msg)
 {
-//    Logging::log("PhoneModule::onTerminated");
+//    LOG("PhoneModule::onTerminated");
     Subscription *pSubscription = dynamic_cast<Subscription*>(is->getAppDialogSet().get());
     if (pSubscription)
     {

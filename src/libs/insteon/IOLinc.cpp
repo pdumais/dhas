@@ -1,4 +1,4 @@
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include "IOLinc.h"
 #include <iomanip>
 IOLinc::IOLinc(std::string name, InsteonID id, InsteonModem *p): InsteonDevice(name,id,p)

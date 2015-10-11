@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "RegistrationDialogSet.h"
 
 RegistrationDialogSet::RegistrationDialogSet(resip::DialogUsageManager &dum):AppDialogSet(dum){

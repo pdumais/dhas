@@ -1,5 +1,5 @@
 #include "SMTPModule.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -31,7 +31,7 @@ void SMTPModule::configure(Dumais::JSON::JSON& config)
 
 void SMTPModule::stop()
 {
-    Logging::log("Attempting to shutdown SMTP server");
+    LOG("Attempting to shutdown SMTP server");
     if (mServerSocket) shutdown(mServerSocket,SHUT_RDWR);
 }
 
@@ -53,7 +53,7 @@ void SMTPModule::run()
 
 
     if (bind(mServerSocket,(struct sockaddr *)&sockadd,sizeof(sockadd))<0){
-        Logging::log("Could not bind SMTP server socket\r\n");
+        LOG("Could not bind SMTP server socket");
         return;
     }
 
@@ -69,7 +69,7 @@ void SMTPModule::run()
         {
             break;
         }
-        Logging::log("New SMTP client connection");
+        LOG("New SMTP client connection");
         send(clientSocket,"220\r\n",5,0);
         
         int size=0;
@@ -81,7 +81,7 @@ void SMTPModule::run()
         {
             //TODO: right now we assume that this is comming from alarm system. We should check the From address to make sure of this
             size=read(clientSocket,buf,BUF_SIZE);
-      //      Logging::log("SMTP: Got %i bytes",size);
+      //      LOG("SMTP: Got %i bytes",size);
             if (size>0)
             {
                 if (!strncmp(buf,"QUIT",4)){
@@ -89,7 +89,7 @@ void SMTPModule::run()
                     finished = true;
                 } else if (!strncmp(buf,"DATA",4)){
                     send(clientSocket,"354 start message\r\n",19,0);
-                    Logging::log("SMTP: Getting data");
+                    LOG("SMTP: Getting data");
                     receivingData = true;
                 } else {
                     if (receivingData){
@@ -120,7 +120,7 @@ void SMTPModule::run()
         }
 
         data[n]=0;
-        Logging::log("Closing SMTP client connection");
+        LOG("Closing SMTP client connection");
         close(clientSocket);
         AlarmState as;
         Dumais::JSON::JSON json;

@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "ModuleProvider.h"
 
 #include "InsteonModule.h"
@@ -28,7 +28,7 @@ ModuleProvider::~ModuleProvider()
 
 void ModuleProvider::addModule(Module *p)
 {
-    Logging::log("Adding Module [%s]",p->getName().c_str());
+    LOG("Adding Module ["<<p->getName().c_str()<<"]");
     mModuleMap[p->getName()]=p;
 }
 
@@ -62,18 +62,18 @@ void ModuleProvider::startModules(IEventProcessor *p)
     for (ModuleMap::iterator it = mModuleMap.begin();it!=mModuleMap.end();it++)
     {
         Module *pModule = it->second;
-        Logging::log("Starting %s service\r\n",pModule->getName().c_str());
+        LOG("Starting "<<pModule->getName().c_str()<<" service");
         pModule->startModule(p);
     }
 
-    Logging::log("Waiting for all services to be up");
+    LOG("Waiting for all services to be up");
     for (ModuleMap::iterator it = mModuleMap.begin();it!=mModuleMap.end();it++)
     {
         Module *pModule = it->second;
         pModule->waitReady();
     }
 
-    Logging::log("All services are up");
+    LOG("All services are up");
 
 }
 
@@ -83,7 +83,7 @@ void ModuleProvider::stopModules()
     {
         it->second->stop();
         it->second->waitCompletion();
-        Logging::log("Stopped %s service\r\n",it->second->getName().c_str());
+        LOG("Stopped "<< it->second->getName().c_str() <<" service");
     }
 }
 

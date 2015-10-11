@@ -1,5 +1,5 @@
 #include "WebNotificationEngine.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <sstream>
 
 // This is used for Server Sent Events
@@ -36,7 +36,7 @@ void WebNotificationEngine::activateSubscription(int socket)
 
 void WebNotificationEngine::subscribe(int socket)
 {
-    Logging::log("A client is subscribing to notifications %i",socket);
+    LOG("A client is subscribing to notifications "<<socket);
     pthread_mutex_lock(&mSocketListLock);
     mSocketList[socket]= false;
     pthread_mutex_unlock(&mSocketListLock);
@@ -48,7 +48,7 @@ void WebNotificationEngine::unsubscribe(int socket)
     if (mSocketList.find(socket) != mSocketList.end())
     {
         mSocketList.erase(socket);
-        Logging::log("A client is unsubscribing to notifications %i",socket);
+        LOG("A client is unsubscribing to notifications "<<socket);
     }
     pthread_mutex_unlock(&mSocketListLock);
 }

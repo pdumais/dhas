@@ -1,4 +1,4 @@
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include "KeypadLinc.h"
 #include <iomanip>
 KeypadLinc::KeypadLinc(std::string name, InsteonID id, InsteonModem *p): InsteonDevice(name,id,p)

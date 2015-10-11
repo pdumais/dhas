@@ -1,6 +1,6 @@
 #include <iomanip>
 #include "InsteonModem.h"
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include <unistd.h>
 #include "StandardOrExtendedMessage.h"
 #include "GroupCleanupMessage.h"

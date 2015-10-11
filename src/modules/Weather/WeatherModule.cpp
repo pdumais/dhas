@@ -1,5 +1,5 @@
 #include "WeatherModule.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -40,7 +40,7 @@ void WeatherModule::configure(Dumais::JSON::JSON& config)
 
 void WeatherModule::stop()
 {
-    Logging::log("Attempting to shutdown Weather Module");
+    LOG("Attempting to shutdown Weather Module");
 }
 
 
@@ -109,7 +109,7 @@ void WeatherModule::setIP_callback(RESTContext* context)
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
     mServer = params->getParam("ip");
-    Logging::log("Weather service server: %s",mServer.c_str());
+    LOG("Weather service server: "<<mServer.c_str());
     json.addValue("ok","status");
 }
 

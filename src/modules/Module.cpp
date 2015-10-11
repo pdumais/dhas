@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "Module.h"
 
 #include "ModuleProvider.h"

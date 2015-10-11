@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "ActionMachine.h"
 #include "Call.h"
 #include "IPhoneAction.h"
@@ -23,7 +23,7 @@ void ActionMachine::asyncAddAction(Call* call,IPhoneAction* action)
 
 void ActionMachine::asyncDelAction(Call* call,IPhoneAction* action)
 {
-    Logging::log("Scheduling deletion of action %s",action->getName().c_str());
+    LOG("Scheduling deletion of action "<<action->getName().c_str());
 
     // We do the claning here because we want to be sure that starting immediately, the action
     // wont get any callbacks. Also, the owning call could be deleted by the time we delete the action.
@@ -43,7 +43,7 @@ void ActionMachine::asyncRunAction(Call* call)
 
 void ActionMachine::destroyChain(Call* call)
 {
-    if (!isMainThread()) Logging::log("ERROR: ActionMachine::destroyChain called from another thread");
+    if (!isMainThread()) LOG("ERROR: ActionMachine::destroyChain called from another thread");
     IPhoneAction* action = call->getCurrentAction();
     if (!action) return;
 
@@ -57,7 +57,7 @@ void ActionMachine::destroyChain(Call* call)
 
 void ActionMachine::actionTerminated(Call* call, IPhoneAction* action)
 {
-    if (!isMainThread()) Logging::log("ERROR: ActionMachine::actionTerminated called from another thread");
+    if (!isMainThread()) LOG("ERROR: ActionMachine::actionTerminated called from another thread");
 
     IPhoneAction *nextAction = action->getNextAction();
     call->setCurrentAction(nextAction);
@@ -67,7 +67,7 @@ void ActionMachine::actionTerminated(Call* call, IPhoneAction* action)
     
 void ActionMachine::addAction(Call* call, IPhoneAction* action)
 {
-    if (!isMainThread()) Logging::log("ERROR: ActionMachine::addAction called from another thread");
+    if (!isMainThread()) LOG("ERROR: ActionMachine::addAction called from another thread");
 
     action->setActionMachine(this);
     call->appendAction(action);
@@ -75,7 +75,7 @@ void ActionMachine::addAction(Call* call, IPhoneAction* action)
     
 void ActionMachine::runAction(Call* call)
 {
-    if (!isMainThread()) Logging::log("ERROR: ActionMachine::runAction called from another thread");
+    if (!isMainThread()) LOG("ERROR: ActionMachine::runAction called from another thread");
 
     IPhoneAction *action = call->getCurrentAction();
     if (!action) return;
@@ -86,9 +86,9 @@ void ActionMachine::runAction(Call* call)
     
 void ActionMachine::deleteAction(IPhoneAction *action)
 {
-    if (!isMainThread()) Logging::log("ERROR: ActionMachine::deleteAction called from another thread");
+    if (!isMainThread()) LOG("ERROR: ActionMachine::deleteAction called from another thread");
 
-    Logging::log("Deleting action %s",action->getName().c_str());
+    LOG("Deleting action "<<action->getName().c_str());
 
     // It would be nice to make sure that call.currentAction is not set to that action
     // but at this point, the call could already have been deleted

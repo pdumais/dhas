@@ -1,4 +1,4 @@
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include "InsteonDevice.h"
 
 InsteonDevice::InsteonDevice(std::string name, InsteonID id, InsteonModem* p)

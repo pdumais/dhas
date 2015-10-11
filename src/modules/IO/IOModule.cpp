@@ -1,5 +1,5 @@
 #include "IOModule.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -29,12 +29,12 @@ IOModule::IOModule()
     std::string port = UDev::findDevice("03eb","204b");
     if (port == "")
     {
-        Logging::log("Could not find an IO board device");
+        LOG("Could not find an IO board device");
         mpSerialPort = 0;
     }
     else
     {
-        Logging::log("IO board device found at %s",port.c_str());
+        LOG("IO board device found at "<<port.c_str());
         mpSerialPort = new SerialPort(port.c_str());
     }
     mCurrentInputStatus = 0;
@@ -49,7 +49,7 @@ void IOModule::configure(Dumais::JSON::JSON& config)
 
 void IOModule::stop()
 {
-    Logging::log("Attempting to shutdown IO Module");
+    LOG("Attempting to shutdown IO Module");
 }
 
 
@@ -98,7 +98,7 @@ void IOModule::run()
             // So we need to try to do a write to check for an error
             if (mpSerialPort->Write("\0",1)<1)
             {
-                Logging::log("Serial port error");
+                LOG("Serial port error");
                 delete mpSerialPort;
                 mpSerialPort = 0;
             }
@@ -109,7 +109,7 @@ void IOModule::run()
             std::string port = UDev::findDevice("03eb","204b");
             if (port != "")
             {       
-                Logging::log("new IO board device was found at %s",port.c_str());
+                LOG("new IO board device was found at "<<port.c_str());
                 mpSerialPort = new SerialPort(port.c_str());
             }
         }
@@ -196,7 +196,7 @@ void IOModule::triggerIORelay_callback(RESTContext* context)
         mSerialPortLock.lock();
         if (mpSerialPort)
         {
-            Logging::log("IO: Writing '%c' to serial port",b);
+            LOG("IO: Writing '"<<b<<"' to serial port");
             mpSerialPort->Write(&b,1);
             json.addValue("ok","status");
         }
@@ -209,7 +209,7 @@ void IOModule::triggerIORelay_callback(RESTContext* context)
     }
     else
     {
-        Logging::log("IO service invalid IOrelay: %s, %x",val.c_str(),number);
+        LOG("IO service invalid IOrelay: "<<val.c_str()<<", "<< std::hex << number);
     }
 
     json.addValue("error","status");
@@ -224,7 +224,7 @@ void IOModule::addWebRelay_callback(RESTContext* context)
     r.ip = params->getParam("ip");
     r.id = params->getParam("id");
     mWebRelayList[params->getParam("name")] = r;
-    Logging::log("IO: Webrelay added: %s:%s",r.ip.c_str(),r.id.c_str());
+    LOG("IO: Webrelay added: "<<r.ip.c_str()<<":"<<r.id.c_str());
     json.addValue("ok","status");
 }
 

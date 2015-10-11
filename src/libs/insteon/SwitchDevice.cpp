@@ -1,4 +1,4 @@
-#include "InsteonLogging.h"
+#include "utils/Logging.h"
 #include "SwitchDevice.h"
 #include <iomanip>
 SwitchDevice::SwitchDevice(std::string name, InsteonID id, InsteonModem *p): InsteonDevice(name,id,p)

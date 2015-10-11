@@ -1,5 +1,5 @@
 #include "ModuleRegistrar.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 
 ModuleChainedList* ModuleRegistrar::moduleChainedList = 0;
 

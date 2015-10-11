@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "PlayPhoneAction.h"
 #include "Call.h"
 #include "SIPEngine.h"
@@ -16,7 +16,7 @@ PlayPhoneAction::~PlayPhoneAction()
 
 void PlayPhoneAction::invoke(Call* call)
 {
-    Logging::log("PlayPhoneAction::invoke");
+    LOG("PlayPhoneAction::invoke");
     call->addRTPObserver(this);
     SoundListParser parser(this->mPlayString);
     std::vector<std::string> list = parser.getSoundList();
@@ -33,11 +33,11 @@ void PlayPhoneAction::invoke(Call* call)
             {
                 std::string st = sound.substr(1,std::string::npos);
                 int duration = atoi(st.c_str());
-                Logging::log("Queuing %i seconds silence on call \r\n",duration);
+                LOG("Queuing "<<duration<<" seconds silence on call");
                 call->getRTPSession()->silence(duration);
             } else {
                 std::string st = this->mSoundsFolder+(sound)+"-ulaw.wav";
-                Logging::log("Queuing %s on call \r\n",st.c_str());
+                LOG("Queuing "<<st.c_str()<<" on call ");
                 call->getRTPSession()->play(st.c_str(), Dumais::Sound::G711);
             }
         }
@@ -46,7 +46,7 @@ void PlayPhoneAction::invoke(Call* call)
 
 void PlayPhoneAction::onRTPSessionSoundQueueEmpty(Call *call)
 {
-    Logging::log("RTP Sound Queue Empty");
+    LOG("RTP Sound Queue Empty");
     this->onActionTerminated(call);
 }
 

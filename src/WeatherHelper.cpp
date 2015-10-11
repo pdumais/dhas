@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "WeatherHelper.h"
 #include <cmath>
 #include <sys/types.h>
@@ -40,7 +40,7 @@ void WeatherHelper::recalculate()
 
     // TODO: the mLastDay skips over a day if calculated after midnight UTC
     mLastDay = (floor((double)t/(double)((24*60*60)))+1)*(24*60*60)+GMT_CORRECTION; // tomorow midnight
-    Logging::log("Recalculating sunset/sunrise. Next recalculation will occur at %i",mLastDay);
+    LOG("Recalculating sunset/sunrise. Next recalculation will occur at "<<mLastDay);
     t = (t-JAN12000)/(60*60*24);
     julianDate = t  + JULIANJAN12000;
 
@@ -66,7 +66,7 @@ void WeatherHelper::recalculate()
     mSunrise = sunrise;
     
 
-    Logging::log("Sunrise: %i, Sunset: %i\r\n",mSunrise, mSunset);
+    LOG("Sunrise: "<<mSunrise<<", Sunset: "<< mSunset);
 }
 
 time_t WeatherHelper::getSunRise()

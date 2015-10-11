@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "AppDialogSetRONACommand.h"  
 #include <stdio.h> 
 #include "Call.h"
@@ -17,7 +17,7 @@ void AppDialogSetRONACommand::executeCommand()
         {
             if (call->getCallState() == Ringing)
             {
-                Logging::log("Clearing unanswered call\r\n");
+                LOG("Clearing unanswered call");
                 mHandle->end();
             }
         }

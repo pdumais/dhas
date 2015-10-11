@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -17,6 +17,7 @@
 #include "EventLogger.h"
 #include <fstream>
 #include <streambuf>
+
 
 volatile bool quit;
 EventProcessor *pEventProcessor;
@@ -98,7 +99,7 @@ void forkprocess()
             }
             else
             {
-                Logging::log("WARNING: stale pid file contains pid [%i] for process [%s]",pid,cmdline.c_str());
+                LOG("WARNING: stale pid file contains pid [" << pid << "] for process ["<< cmdline.c_str() << "]");
             }
         } 
     }
@@ -112,7 +113,8 @@ void forkprocess()
 //For examples on how to use GPIO, check out the bcm2835 C library
 int main(int argc, char** argv) 
 { 
-    Logging::syslogServer = SYSLOG_SERVER;
+    Dumais::Utils::Logging::logger = new SyslogLogging(SYSLOG_SERVER);
+
     pEventProcessor = 0;
     quit = false;
     bool daemon = false;
@@ -140,7 +142,8 @@ int main(int argc, char** argv)
         else if (param=="-g")
         {
             gendoc = true;
-            Logging::disabled = true;
+            delete Dumais::Utils::Logging::logger;
+            Dumais::Utils::Logging::logger = 0;
         }
         else if (param=="-r")
         {
@@ -173,7 +176,7 @@ int main(int argc, char** argv)
         forkprocess();
     }
 
-    Logging::log("Starting\r\n");
+    LOG("Starting");
     signal(SIGSEGV, handler);
     signal(SIGTERM, termHandler);
     Schedule schedule;
@@ -199,21 +202,21 @@ int main(int argc, char** argv)
     pEventProcessor->addEventListener(&eventLogger);
     pEventProcessor->addEventListener(&webNotificationEngine);
 
-    Logging::log("Starting Web Interface");
+    LOG("Starting Web Interface");
     pWebInterface->start();
 
     serviceProvider.startModules(pEventProcessor);
     pEventProcessor->reloadScript();
 
-    Logging::log("=========== Ready ===========");
+    LOG("=========== Ready ===========");
     while (pEventProcessor->timeSlice() && !quit);
-    Logging::log("Exiting");
-    Logging::log("Stopping Web Interface");
+    LOG("Exiting");
+    LOG("Stopping Web Interface");
     pWebInterface->stop();
     serviceProvider.stopModules();
 
     delete pEventProcessor;
     delete couch;
-    Logging::log("=========== DHAS is now down ===========");
+    LOG("=========== DHAS is now down ===========");
     return 0; 
 }

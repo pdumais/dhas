@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "EventLogger.h"
 
 EventLogger::EventLogger(CouchDB *pCouchDB)

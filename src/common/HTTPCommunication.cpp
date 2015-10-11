@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <netinet/tcp.h>
 #include "regex.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "stdlib.h"
 #include <sys/time.h>
 #include <errno.h>
@@ -123,7 +123,7 @@ std::string HTTPCommunication::getURL(std::string server, std::string url, int p
                     memcpy(num,(char*)&st.c_str()[s1],size1);
                     num[size1] = 0;
                     contentlength = atoi((char*)&num[0]);
-                    Logging::log("Content-length=%i",contentlength);
+                    LOG("Content-length="<<contentlength);
                 }
 
                 if (st.find("\r\n0\r\n\r\n")!=std::string::npos && chunked)
@@ -147,7 +147,7 @@ std::string HTTPCommunication::getURL(std::string server, std::string url, int p
         }
         if (size <0)
         {
-            Logging::log("Receiving from %s returned %i: %s",server.c_str(),errno,(char*)&st[0]);
+            LOG("Receiving from "<< server.c_str() <<" returned "<< errno <<": "<<(char*)&st[0]);
         }
         close(sock);
         regfree(&preg);
@@ -160,7 +160,7 @@ std::string HTTPCommunication::getURL(std::string server, std::string url, int p
     }
     else
     {
-        Logging::log("Could not connect to %s",server.c_str());
+        LOG("Could not connect to "<<server.c_str());
         regfree(&preg);
         regfree(&preg2);
         return "";

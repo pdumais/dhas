@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "AppDialogSetEndCommand.h"  
 #include <stdio.h> 
 #include <thread>
@@ -12,7 +12,7 @@ void AppDialogSetEndCommand::executeCommand()
 { 
     if(mHandle.isValid()) 
     { 
-        Logging::log("%i AppDialogSetEndCommand::executeCommand\r\n", std::this_thread::get_id());
+        LOG("AppDialogSetEndCommand::executeCommand");
         mHandle->end();
     }
 }

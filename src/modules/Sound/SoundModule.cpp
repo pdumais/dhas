@@ -1,7 +1,6 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "SoundModule.h"
 #include "SoundFile.h"
-#include "SoundLogging.h"
 #include <stdio.h>
 #include "SoundListParser.h"
 #include "ModuleRegistrar.h"
@@ -11,17 +10,8 @@
 
 REGISTER_MODULE(SoundModule)
 
-class SoundLogger: public Dumais::Sound::ILogger
-{
-    virtual void log(const std::string& ss)
-    {
-        Logging::log("%s",ss.c_str());
-    }
-};
-
 SoundModule::SoundModule()
 {
-    Dumais::Sound::Logging::logger = new SoundLogger();
 }
 
 SoundModule::~SoundModule()
@@ -41,7 +31,7 @@ void SoundModule::play_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
-    Logging::log("Play sound [%s]",params->getParam("sound").c_str());
+    LOG("Play sound ["<<params->getParam("sound").c_str()<<"]");
     SoundListParser slp(params->getParam("sound"));
     std::vector<std::string> list = slp.getSoundList();
     for (std::vector<std::string>::iterator it = list.begin();it!=list.end();it++)

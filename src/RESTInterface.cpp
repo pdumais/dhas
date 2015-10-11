@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "RESTInterface.h"
 #include <stdlib.h>
 #include <string>

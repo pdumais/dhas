@@ -1,4 +1,4 @@
-#include "../Logging.h"
+#include "../DHASLogging.h"
 #include "SerialPort.h"
 #include <string.h>
 #include <unistd.h>

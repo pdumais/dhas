@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include "MPSCRingBuffer.h"
+#include "utils/MPSCRingBuffer.h"
 
 class CouchDB
 {
@@ -14,7 +14,7 @@ private:
     std::thread   mThreadHandle;
     volatile bool        mStopping; 
     volatile bool        mMustCompact;
-    MPSCRingBuffer<std::string>* mpRequests;
+    Dumais::Utils::MPSCRingBuffer<std::string>* mpRequests;
     std::string mDb;
     std::mutex mConditionLock;
     std::condition_variable_any mWaitCondition;

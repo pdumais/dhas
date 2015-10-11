@@ -1,4 +1,4 @@
-#include "SoundLogging.h"
+#include "utils/Logging.h"
 #include "SilenceSound.h"
 #include <sstream>
 

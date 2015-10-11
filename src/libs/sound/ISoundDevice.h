@@ -1,6 +1,6 @@
 #pragma once
 #include "ISoundPlaylistObserver.h"
-#include "SoundMPSCRingBuffer.h"
+#include "utils/MPSCRingBuffer.h"
 #include <list>
 #include "ISound.h"
 #include <thread>
@@ -15,7 +15,7 @@ class ISoundDevice
 {
 protected:
     Dumais::Sound::ISound* mMusic;
-    Dumais::Sound::MPSCRingBuffer<Dumais::Sound::ISound*> mSoundQueue;
+    Dumais::Utils::MPSCRingBuffer<Dumais::Sound::ISound*> mSoundQueue;
     std::list<ISoundPlaylistObserver*> mObservers;
     Dumais::Sound::ISound *mCurrentSound;
     std::mutex mWaitLock;

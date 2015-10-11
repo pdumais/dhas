@@ -1,6 +1,6 @@
 #include "CouchDB.h"
 #include "config.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <unistd.h>
 #include <fstream>
 #include <streambuf>

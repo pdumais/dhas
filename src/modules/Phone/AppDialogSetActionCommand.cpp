@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "AppDialogSetActionCommand.h"  
 #include <stdio.h> 
 #include <thread>
@@ -15,7 +15,7 @@ AppDialogSetActionCommand::AppDialogSetActionCommand(Call *call, IPhoneAction* a
 
 void AppDialogSetActionCommand::executeCommand()
 { 
-    Logging::log("%x AppDialogSetActionCommand::executeCommand %i\r\n", std::this_thread::get_id(), mType);
+    LOG("AppDialogSetActionCommand::executeCommand " << (int)mType);
     switch (mType)
     {
         case ActionCommandType::Add:

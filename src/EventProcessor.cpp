@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 //#include "config.h"
 #include "EventProcessor.h"
 #include "LUAEngine.h"
@@ -78,13 +78,13 @@ void EventProcessor::checkSun(time_t t)
         json.addValue("sunrise","event");
         json.addValue((unsigned int)t,"timestamp");
         spEventProcessor->processEvent(json);
-        Logging::log("sunrise at %i (%i)",t,sunrise);
+        LOG("sunrise at "<<t<<" ("<<sunrise<<")");
     } else if (sunset >= t && sunset < (t+60)) {
         Dumais::JSON::JSON json;
         json.addValue("sunset","event");
         json.addValue((unsigned int)t,"timestamp");
         spEventProcessor->processEvent(json);
-        Logging::log("sunset at %i (%i)",t,sunset);
+        LOG("sunset at "<<t<<" ("<<sunset<<")");
     }
 
 }
@@ -108,7 +108,7 @@ void EventProcessor::removeEventListener(IEventNotificationListener* pl)
 
 void EventProcessor::scheduleScriptReload()
 {
-    Logging::log("Scheduling script reload");
+    LOG("Scheduling script reload");
     mNeedReloadScript = true;
     pthread_cond_signal(&mMessageQueueWaitCondition);
 }
@@ -120,7 +120,7 @@ void EventProcessor::stop()
 
 void EventProcessor::reloadScript()
 {
-    Logging::log("Reloading script");
+    LOG("Reloading script");
 //    mpModuleProvider->suspendModules();
     if (mpScriptEngine!=0)
     {

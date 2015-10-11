@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include <resip/dum/ClientRegistration.hxx>
 #include "RegistrationManager.h"
 

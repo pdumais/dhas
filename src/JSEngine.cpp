@@ -1,6 +1,6 @@
 #ifdef SCRIPTJS
 
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "JSEngine.h"
 #include <stdio.h>
 #include <sstream>
@@ -9,7 +9,7 @@
 int log(duk_context *ctx)
 {
     const char* query = duk_to_string(ctx, 0);
-    Logging::log("jscript: %s",query);
+    LOG("jscript: "<<query);
     return 0;
 }
 
@@ -73,10 +73,10 @@ JSEngine::~JSEngine()
 void JSEngine::notifyEvent(const Dumais::JSON::JSON& json)
 {
     std::string jsonEvent = json.stringify(false);
-    Logging::log("Script event: %s",jsonEvent.c_str());
+    LOG("Script event: "<<jsonEvent.c_str());
     if (this->context == 0)
     {
-        Logging::log("No script loaded");
+        LOG("No script loaded");
         return;
     }
     const char *st = jsonEvent.c_str();
@@ -89,12 +89,12 @@ void JSEngine::notifyEvent(const Dumais::JSON::JSON& json)
         duk_push_string(this->context, st);
         if (duk_pcall(this->context,1) != 0)
         {
-            Logging::log("ERROR: calling javascript onevent");
+            LOG("ERROR: calling javascript onevent");
         }
     }
     else
     {
-        Logging::log("No onevent handler has been defined in script");
+        LOG("No onevent handler has been defined in script");
     }
     duk_pop_n(this->context,3);
 }
@@ -105,7 +105,7 @@ void JSEngine::load(std::string script)
     this->prepareContext();
     if (duk_peval_file_noresult(this->context,script.c_str()) != 0)
     {
-        Logging::log("ERROR loading script file");
+        LOG("ERROR loading script file");
         duk_destroy_heap(this->context);
         this->context = 0;
     }

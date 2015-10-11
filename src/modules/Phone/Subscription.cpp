@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "Subscription.h"
 #include <stdio.h>
 

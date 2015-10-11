@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "WebInterface.h"
 #include <string.h>
 #include <stdio.h>
@@ -6,23 +6,12 @@
 #include <sstream>
 #include "json/JSON.h"
 #include <stdlib.h>
-#include "webserver/WebServerLogging.h"
 
 using namespace Dumais::WebServer;
-
-class WebServerInterfaceLogger: public Dumais::WebServer::IWebServerLogger
-{
-    virtual void log(const std::string& ss)
-    {
-        Logging::log("%s",ss.c_str());
-    }
-};
-
 
 WebInterface::WebInterface(int port,RESTInterface *pRESTInterface, WebNotificationEngine *pWebNotificationEngine)
 {
     mpRESTInterface = pRESTInterface;
-    Dumais::WebServer::WebServerLogging::logger = new WebServerInterfaceLogger();
 //    mpWebNotificationEngine = pWebNotificationEngine;
     mPort = port;
     mpWebServer = 0;
@@ -45,7 +34,7 @@ void WebInterface::stop()
 {
     if (mpWebServer)
     {
-        Logging::log("Attempting to shutdown Web server");
+        LOG("Attempting to shutdown Web server");
         mpWebServer->stop();
     }
     if (mpThread) mpThread->join();
@@ -54,7 +43,7 @@ void WebInterface::stop()
 void WebInterface::onConnectionOpen()
 {
 //    Logging::log("WebInterface::onConnectionOpen(%i)",sock);
-    if (mpWebServer->getConnectionCount()>10) Logging::log("WARNING: There are %i connections opened on web server",mpWebServer->getConnectionCount());
+    if (mpWebServer->getConnectionCount()>10) LOG("WARNING: There are "<< mpWebServer->getConnectionCount()<<" connections opened on web server");
 }
 
 void WebInterface::onConnectionClosed()

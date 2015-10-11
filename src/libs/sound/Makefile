@@ -3,7 +3,7 @@ clean: cleanapp
 
 SOURCESCPP=$(wildcard ./*.cpp)
 OBJECTS=$(SOURCESCPP:.cpp=.o)
-CFLAGS=-std=c++11 -g -rdynamic -I ./ -I../../common/
+CFLAGS=-std=c++11 -g -rdynamic -I ./ -I../../common/ -I../dumaislib
 
 cleanapp:
 	rm *.o

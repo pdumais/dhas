@@ -1,4 +1,4 @@
-#include "SoundLogging.h"
+#include "utils/Logging.h"
 #include "SoundCard.h"
 #include "SoundFile.h"
 #include "SilenceSound.h"

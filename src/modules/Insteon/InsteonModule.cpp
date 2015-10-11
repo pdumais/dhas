@@ -1,5 +1,4 @@
-#include "Logging.h"
-#include "InsteonLogging.h"
+#include "DHASLogging.h"
 #include "InsteonModule.h"
 #include "SwitchDevice.h"
 #include "EZFloraDevice.h"
@@ -15,15 +14,6 @@
 #define MAX_READ_SIZE 1024
 
 REGISTER_MODULE(Insteon)
-
-class InsteonLogger: public Dumais::Insteon::ILogger
-{
-    virtual void log(const std::string& ss)
-    {
-        Logging::log("%s",ss.c_str());
-    }
-};
-
 
 /*
 TODO: insteon API should be able to block until ACK/NAK/timeout
@@ -42,15 +32,11 @@ know about it. Manually refreshing the UI seems innevitable
 
 Insteon::Insteon()
 {
-    Dumais::Insteon::Logging::logger = new InsteonLogger();
 }
 
 Insteon::~Insteon()
 {
     delete mpInsteonModem;
-    Dumais::Insteon::ILogger *logger = Dumais::Insteon::Logging::logger;
-    Dumais::Insteon::Logging::logger = 0;
-    delete logger;
 }
 
 void Insteon::configure(Dumais::JSON::JSON& config)
@@ -630,7 +616,7 @@ void Insteon::onInsteonAllLinkRecordResponse(unsigned char *buf)
     std::map<InsteonID,InsteonDevice*>::iterator it = mModules.find(id);
     if (it==mModules.end()) return;
 
-    Logging::log("All-Link record response: %x%x%x flags=%x, group=%x, d1=%x, d2=%x, d3=%x",buf[4],buf[5],buf[6],buf[2],buf[3],buf[7],buf[8],buf[9]);
+    LOG("All-Link record response: "<<std::hex<<buf[4]<<buf[5]<<buf[6]<<" flags="<<buf[2]<<", group="<<buf[3]<<", d1="<<buf[7]<<", d2="<<buf[8]<<", d3="<<buf[9]);
     mModules[id]->setGroup(buf[3],buf[7],buf[8],buf[9]);
 
 }
@@ -652,7 +638,7 @@ void Insteon::onInsteonMessageSent(InsteonID id, IInsteonMessage* cmd)
     std::map<InsteonID,InsteonDevice*>::iterator it = mModules.find(id);
     if (it==mModules.end())
     {
-        Logging::log("Insteon::onInsteonMessageSent ID not found");
+        LOG("Insteon::onInsteonMessageSent ID not found");
         return;
     }
     

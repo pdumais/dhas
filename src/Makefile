@@ -33,7 +33,7 @@ VPATH:=$(INCLUDES)
 INCLUDES:=$(patsubst %,-I%,$(INCLUDES))
 
 CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG -DSCRIPT$(SCRIPTTYPE)
-LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -ludev
+LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -ludev -lssl -lcrypto
 ifeq ($(SCRIPTTYPE),LUA)
 LDFLAGS+= -llua
 endif

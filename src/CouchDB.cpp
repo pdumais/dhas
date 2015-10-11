@@ -1,8 +1,10 @@
 #include "CouchDB.h"
 #include "HTTPCommunication.h"
-#include "Logging.h"
+#include "DHASLogging.h"
 
 #define MAXREQUESTS 100
+
+using namespace Dumais::Utils;
 
 CouchDB::CouchDB(const std::string& db, const std::string& server, int port)
 {
@@ -41,7 +43,7 @@ void CouchDB::addDocument(const Dumais::JSON::JSON& json)
     std::string st = json.stringify(false);
     if (!this->mpRequests->put(st))
     {
-        Logging::log("Couchdb event queue overlofw. Dropping %s",st.c_str());
+        LOG("Couchdb event queue overlofw. Dropping " << st.c_str());
         return;
     }
     mConditionLock.lock();
@@ -61,7 +63,7 @@ bool CouchDB::unPoolDocument()
     bool ret = HTTPCommunication::postURL(mServer,url,data,"application/json",mPort);
     if (!ret)
     {
-        Logging::log("ERROR: Could not add document in CouchDB");
+        LOG("ERROR: Could not add document in CouchDB");
     }
     return true;
 }
@@ -87,12 +89,12 @@ void CouchDB::run()
             std::string st = HTTPCommunication::getURL(mServer,url,mPort);
             Dumais::JSON::JSON j;
             j.parse(st);
-            Logging::log("Will compact CouchDB. Size=%s",j["disk_size"].str().c_str());
+            LOG("Will compact CouchDB. Size="<<j["disk_size"].str().c_str());
 
             bool ret = HTTPCommunication::postURL(mServer,url+"_compact","","application/json",mPort);
             if (!ret)
             {
-                Logging::log("ERROR: Could not compact CouchDB Database");
+                LOG("ERROR: Could not compact CouchDB Database");
             }
         }
     }
@@ -105,12 +107,12 @@ void CouchDB::createDb()
     jv.parse(dbDoc);
     if (jv["db_name"].str() == this->mDb) return;
     
-    Logging::log("DB is missing in couchdb. Creating it");
+    LOG("DB is missing in couchdb. Creating it");
     
     bool ret = HTTPCommunication::putURL(mServer,"/"+this->mDb,"","application/json",mPort);
     if (!ret)
     {
-        Logging::log("ERROR: Could not add DB in CouchDB");
+        LOG("ERROR: Could not add DB in CouchDB");
     }
     
 }
@@ -139,12 +141,12 @@ void CouchDB::createViewsIfNonExistant(std::string views)
 
     if (!oneIsMissing) return;
 
-    Logging::log("Views are missing in couchdb. Creating them");
+    LOG("Views are missing in couchdb. Creating them");
     
     if (jv["_rev"].isValid()) j.addValue(jv["_rev"].str(),"_rev");
     bool ret = HTTPCommunication::putURL(mServer,"/"+this->mDb+"/_design/views",j.stringify(false),"application/json",mPort);
     if (!ret)
     {
-        Logging::log("ERROR: Could not add views in CouchDB");
+        LOG("ERROR: Could not add views in CouchDB");
     }
 }

@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "AlarmState.h"
 #include "regex.h"
 #include "string.h"
@@ -47,7 +47,7 @@ void AlarmState::onEmail(Dumais::JSON::JSON& json, char* buffer)
 	this->getLine(buffer,"Time:",(char*)&date);
 
 
-	Logging::log("Alarm: New status: %s initiated by %s\n",(char*)&status,(char*)&from);
+	LOG("Alarm: New status: "<< (char*)&status <<" initiated by "<<(char*)&from);
 	char query[1000];
 
 	char *wav = "";

@@ -1,6 +1,6 @@
 #ifdef SCRIPTLUA
 
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "LUAEngine.h"
 #include <stdio.h>
 #include <sstream>
@@ -12,7 +12,7 @@ static int initiateAction(lua_State *L)
 {
     LUAEngine *pEngine = LuaEngineMap[L];
     const char* query = lua_tostring(L,1);
-    //Logging::log("LUA: initiateAction(\"%s\")\r\n",query);
+    //LOG("LUA: initiateAction(\"%s\")\r\n",query);
     Dumais::JSON::JSON json;
     pEngine->getRESTInterface()->processQuery(json, query);
     
@@ -61,7 +61,7 @@ LUAEngine::~LUAEngine()
 void LUAEngine::notifyEvent(const Dumais::JSON::JSON& json)
 {
     std::string jsonEvent = json.stringify(false);
-    Logging::log("Script event: %s",jsonEvent.c_str());
+    LOG("Script event: %s",jsonEvent.c_str());
     const char *st = jsonEvent.c_str();
     lua_getglobal(mpLUA,"onEvent");
     lua_pushstring(mpLUA,st);

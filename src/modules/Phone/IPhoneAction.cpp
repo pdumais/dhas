@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "IPhoneAction.h"
 #include "SIPEngine.h"
 
@@ -20,11 +20,11 @@ void IPhoneAction::invokeAction(Call* call)
 {
     if (mInvoked)
     {
-        Logging::log("ERROR: This action was already invoked %i",this);
+        LOG("ERROR: This action was already invoked "<<this);
         return;
     }
     
-    Logging::log("Running action %s",getName().c_str());
+    LOG("Running action "<<getName().c_str());
     mInvoked = true;
     call->setCurrentAction(this);
     this->invoke(call);
@@ -34,7 +34,7 @@ bool IPhoneAction::cleanAction(Call* call)
 {
     if (mCleaned)
     {
-        Logging::log("ERROR: This action was already cleaned %i",this);
+        LOG("ERROR: This action was already cleaned "<<this);
         return false;
     }
     
@@ -55,7 +55,7 @@ void IPhoneAction::setActionMachine(ActionMachine* am)
 
 void IPhoneAction::onActionTerminated(Call* call)
 {
-    Logging::log("Action %s terminated",getName().c_str());
+    LOG("Action "<< getName().c_str() <<" terminated");
     mpActionMachine->actionTerminated(call,this);
 }
 

@@ -1,4 +1,4 @@
-#include "Logging.h"
+#include "DHASLogging.h"
 #include "AppDialogSetNotifySoundsEmptyCommand.h"  
 #include <stdio.h> 
 #include <thread>
