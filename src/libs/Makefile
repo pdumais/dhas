@@ -15,7 +15,4 @@ libs:
 	cp duktape/duktape.a $(OUTDIR)/
 	cp sound/sound.a $(OUTDIR)/
 	cp insteon/insteon.a $(OUTDIR)/
-	cp dumaislib/sdk/lib/rest.a $(OUTDIR)/
-	cp dumaislib/sdk/lib/json.a $(OUTDIR)/
-	cp dumaislib/sdk/lib/webserver.a $(OUTDIR)/
-	cp dumaislib/sdk/lib/utils.a $(OUTDIR)/
+	cp dumaislib/sdk/lib/dumaislib.a $(OUTDIR)/

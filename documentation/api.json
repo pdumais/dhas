@@ -12,19 +12,19 @@
 			"path" : "/events/add",
 			"params" : [
 				{
-					"description" : "hour of the day at which to trigger the event",
+					"description" : "hour",
 					"name" : "hour"
 				},
 				{
-					"description" : "minute of the hour at which to trigger the event",
+					"description" : "min",
 					"name" : "min"
 				},
 				{
-					"description" : "user defined data",
+					"description" : "p",
 					"name" : "p"
 				},
 				{
-					"description" : "Event name",
+					"description" : "name",
 					"name" : "name"
 				}
 			],
@@ -35,7 +35,7 @@
 			"path" : "/events/remove",
 			"params" : [
 				{
-					"description" : "event ID",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -67,15 +67,15 @@
 			"path" : "/io/addwebrelay",
 			"params" : [
 				{
-					"description" : "Name of relay. This will be used to trigger the relay later",
+					"description" : "name",
 					"name" : "name"
 				},
 				{
-					"description" : "ID of a web relay on the device",
+					"description" : "id",
 					"name" : "id"
 				},
 				{
-					"description" : "IP address of a web relay device",
+					"description" : "ip",
 					"name" : "ip"
 				}
 			],
@@ -86,11 +86,11 @@
 			"path" : "/io/setrelay",
 			"params" : [
 				{
-					"description" : "Name of relay. This will be used to trigger the relay later",
+					"description" : "name",
 					"name" : "name"
 				},
 				{
-					"description" : "'true' or 'false'",
+					"description" : "on",
 					"name" : "on"
 				}
 			],
@@ -101,11 +101,11 @@
 			"path" : "/io/setoutput",
 			"params" : [
 				{
-					"description" : "pin number",
+					"description" : "number",
 					"name" : "number"
 				},
 				{
-					"description" : "'true' or 'false'",
+					"description" : "on",
 					"name" : "on"
 				}
 			],
@@ -116,7 +116,7 @@
 			"path" : "/weather/setip",
 			"params" : [
 				{
-					"description" : "IP address of weather controller",
+					"description" : "ip",
 					"name" : "ip"
 				}
 			],
@@ -134,7 +134,7 @@
 			"path" : "/audio/play",
 			"params" : [
 				{
-					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1$4,sound2. This would make a 4 second pause between sound1 and sound2",
+					"description" : "sound",
 					"name" : "sound"
 				}
 			],
@@ -159,11 +159,11 @@
 			"path" : "/insteon/addmodule",
 			"params" : [
 				{
-					"description" : "The name of the module",
+					"description" : "name",
 					"name" : "name"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -174,11 +174,11 @@
 			"path" : "/insteon/addezflora",
 			"params" : [
 				{
-					"description" : "The name of the module",
+					"description" : "name",
 					"name" : "name"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -189,11 +189,11 @@
 			"path" : "/insteon/addiolinc",
 			"params" : [
 				{
-					"description" : "The name of the module",
+					"description" : "name",
 					"name" : "name"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -204,7 +204,7 @@
 			"path" : "/insteon/setcontroller",
 			"params" : [
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -215,23 +215,23 @@
 			"path" : "/insteon/switch",
 			"params" : [
 				{
-					"description" : "0 to 255. This is the ramp rate",
+					"description" : "rate",
 					"name" : "rate"
 				},
 				{
-					"description" : "for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant",
+					"description" : "subdev",
 					"name" : "subdev"
 				},
 				{
-					"description" : "0 to 255. Irrelevant if action is off or toggle",
+					"description" : "level",
 					"name" : "level"
 				},
 				{
-					"description" : "on/off/toggle",
+					"description" : "action",
 					"name" : "action"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -242,43 +242,43 @@
 			"path" : "/insteon/ezflora/setprogram",
 			"params" : [
 				{
-					"description" : "Zone 8 timer. 0 to 255 minutes",
+					"description" : "z8",
 					"name" : "z8"
 				},
 				{
-					"description" : "Zone 5 timer. 0 to 255 minutes",
+					"description" : "z5",
 					"name" : "z5"
 				},
 				{
-					"description" : "Zone 4 timer. 0 to 255 minutes",
+					"description" : "z4",
 					"name" : "z4"
 				},
 				{
-					"description" : "Zone 3 timer. 0 to 255 minutes",
+					"description" : "z3",
 					"name" : "z3"
 				},
 				{
-					"description" : "Zone 7 timer. 0 to 255 minutes",
+					"description" : "z7",
 					"name" : "z7"
 				},
 				{
-					"description" : "Zone 6 timer. 0 to 255 minutes",
+					"description" : "z6",
 					"name" : "z6"
 				},
 				{
-					"description" : "Zone 2 timer. 0 to 255 minutes",
+					"description" : "z2",
 					"name" : "z2"
 				},
 				{
-					"description" : "Zone 1 timer. 0 to 255 minutes",
+					"description" : "z1",
 					"name" : "z1"
 				},
 				{
-					"description" : "Program number. 1 to 4",
+					"description" : "p",
 					"name" : "p"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -289,7 +289,7 @@
 			"path" : "/insteon/ezflora/status",
 			"params" : [
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -300,71 +300,71 @@
 			"path" : "/insteon/raw",
 			"params" : [
 				{
-					"description" : "data byte 12 for extended data",
+					"description" : "d12",
 					"name" : "d12"
 				},
 				{
-					"description" : "data byte 10 for extended data",
+					"description" : "d10",
 					"name" : "d10"
 				},
 				{
-					"description" : "data byte 11 for extended data",
+					"description" : "d11",
 					"name" : "d11"
 				},
 				{
-					"description" : "data byte 9 for extended data",
+					"description" : "d9",
 					"name" : "d9"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"description" : "id",
 					"name" : "id"
 				},
 				{
-					"description" : "data byte 8 for extended data",
+					"description" : "d8",
 					"name" : "d8"
 				},
 				{
-					"description" : "data byte 3 for extended data",
+					"description" : "d3",
 					"name" : "d3"
 				},
 				{
-					"description" : "data byte 14 for extended data",
+					"description" : "d14",
 					"name" : "d14"
 				},
 				{
-					"description" : "command byte 1",
+					"description" : "cmd1",
 					"name" : "cmd1"
 				},
 				{
-					"description" : "command byte 2",
+					"description" : "cmd2",
 					"name" : "cmd2"
 				},
 				{
-					"description" : "data byte 1 for extended data",
+					"description" : "d1",
 					"name" : "d1"
 				},
 				{
-					"description" : "data byte 2 for extended data",
+					"description" : "d2",
 					"name" : "d2"
 				},
 				{
-					"description" : "data byte 13 for extended data",
+					"description" : "d13",
 					"name" : "d13"
 				},
 				{
-					"description" : "data byte 4 for extended data",
+					"description" : "d4",
 					"name" : "d4"
 				},
 				{
-					"description" : "data byte 6 for extended data",
+					"description" : "d6",
 					"name" : "d6"
 				},
 				{
-					"description" : "data byte 5 for extended data",
+					"description" : "d5",
 					"name" : "d5"
 				},
 				{
-					"description" : "data byte 7 for extended data",
+					"description" : "d7",
 					"name" : "d7"
 				}
 			],
@@ -382,11 +382,11 @@
 			"path" : "/phone/call",
 			"params" : [
 				{
-					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
+					"description" : "play",
 					"name" : "play"
 				},
 				{
-					"description" : "extention to call",
+					"description" : "ext",
 					"name" : "ext"
 				}
 			],
@@ -397,15 +397,15 @@
 			"path" : "/phone/register",
 			"params" : [
 				{
-					"description" : "PBX IP address",
+					"description" : "proxy",
 					"name" : "proxy"
 				},
 				{
-					"description" : "pin associated to user",
+					"description" : "pin",
 					"name" : "pin"
 				},
 				{
-					"description" : "SIP user to register",
+					"description" : "user",
 					"name" : "user"
 				}
 			],
@@ -416,7 +416,7 @@
 			"path" : "/phone/blf",
 			"params" : [
 				{
-					"description" : "extension",
+					"description" : "ext",
 					"name" : "ext"
 				}
 			],
@@ -441,7 +441,7 @@
 			"path" : "/phone/release",
 			"params" : [
 				{
-					"description" : "Call ID",
+					"description" : "id",
 					"name" : "id"
 				}
 			],
@@ -452,15 +452,15 @@
 			"path" : "/phone/play",
 			"params" : [
 				{
-					"description" : "[true/false] if you want the call to be released after sound finished playing",
+					"description" : "releaseaftersounds",
 					"name" : "releaseaftersounds"
 				},
 				{
-					"description" : "call ID",
+					"description" : "id",
 					"name" : "id"
 				},
 				{
-					"description" : "Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
+					"description" : "sound",
 					"name" : "sound"
 				}
 			],
@@ -471,15 +471,15 @@
 			"path" : "/phone/click2dial",
 			"params" : [
 				{
-					"description" : "Destination extension to which the source will be patched.",
+					"description" : "dst",
 					"name" : "dst"
 				},
 				{
-					"description" : "Source extension to call",
+					"description" : "src",
 					"name" : "src"
 				},
 				{
-					"description" : "Sound to play when source answers, before transfering to destination. Coma separated list of files to play. digits can be used. They will be decoded and the proper sound files will be constructed. I.e: sound1,29,4,sound2 would play sound files: sound1.wav,20.wav,9.wav,4.wav,sound2.wav Note that number reconstruction only work for french grammar and only supports numbers -59..59 inclusively. For playing silence, you can use the number of seconds prefixed by a dollar sign. I.e: sound1.wav,$4,sound2.wav. This would make a 4 second pause between sound1 and sound2",
+					"description" : "sound",
 					"name" : "sound"
 				}
 			],
