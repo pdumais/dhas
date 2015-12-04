@@ -13,18 +13,20 @@ std::string UDev::findDevice(const std::string& vendorstr, const std::string& pr
     std::string devString;
     struct udev_list_entry *devices, *dev_list_entry;
     struct udev_device *dev;
+    struct udev_device *dev2;
     struct udev *udev = udev_new();
     struct udev_enumerate *enumerate = udev_enumerate_new(udev);
 
     udev_enumerate_scan_devices(enumerate);
     devices = udev_enumerate_get_list_entry(enumerate);
-    udev_list_entry_foreach(dev_list_entry, devices) {
+    udev_list_entry_foreach(dev_list_entry, devices) 
+    {
         dev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(dev_list_entry));
 
         const char* devpath = udev_device_get_devnode(dev);
-        dev = udev_device_get_parent_with_subsystem_devtype(dev,"usb","usb_device");
-        const char* vendor = udev_device_get_sysattr_value(dev,"idVendor");
-        const char* product = udev_device_get_sysattr_value(dev,"idProduct");
+        dev2 = udev_device_get_parent_with_subsystem_devtype(dev,"usb","usb_device");
+        const char* vendor = udev_device_get_sysattr_value(dev2,"idVendor");
+        const char* product = udev_device_get_sysattr_value(dev2,"idProduct");
 
         if (vendor != 0 && product != 0 && devpath != 0)
         {

@@ -7,7 +7,6 @@
 
 int main(int argc, char** argv)
 {
-    Logging::syslog = false;
 
     CouchDB* couch = new CouchDB("dhas2","127.0.0.1",5984);
 
