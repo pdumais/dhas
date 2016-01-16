@@ -57,6 +57,28 @@
 		},
 		{
 			"method" : "GET",
+			"path" : "/dwn/sendraw",
+			"params" : [
+				{
+					"description" : "raw data to be sent",
+					"name" : "data"
+				},
+				{
+					"description" : "IP address of the node",
+					"name" : "destination"
+				}
+			],
+			"description" : "send raw data to wifi node"
+		},
+		{
+			"method" : "GET",
+			"path" : "/dwn/list",
+			"params" : [
+			],
+			"description" : "list connected wifi nodes"
+		},
+		{
+			"method" : "GET",
 			"path" : "/io/getstatus",
 			"params" : [
 			],

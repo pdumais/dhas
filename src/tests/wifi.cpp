@@ -28,32 +28,15 @@ public:
 int main(int argc, char** argv) 
 { 
     Dumais::Utils::Logging::logger = new Dumais::Utils::ConsoleLogger();
-    LOG("Starting\r\n");
-
-    std::string sounddev = "default";
-    if (argc > 1)
-    {
-        sounddev = argv[1];
-    }
 
     Dumais::JSON::JSON jsonConfig;
-    jsonConfig.addObject("smtp");
-    jsonConfig.addObject("web");
-    jsonConfig.addObject("phone");
-    jsonConfig.addObject("audio");
-    jsonConfig.addObject("insteon");
-    jsonConfig["phone"].addValue(SOUNDS_FOLDER,"soundsfolder");
-    jsonConfig["phone"].addValue(RTP_LOW_PORT+1000,"rtplow");
-    jsonConfig["phone"].addValue(RTP_HIGH_PORT+1000,"rtphigh");
-    jsonConfig["phone"].addValue(LOCAL_IP,"localip");
-    jsonConfig["phone"].addValue(5588,"sipport");
-    jsonConfig["phone"].addValue(RONA_TIMEOUT,"ronatimeout");
-    jsonConfig["audio"].addValue(sounddev,"sounddevice");
-    jsonConfig["audio"].addValue(SOUNDS_FOLDER,"soundsfolder");
+    jsonConfig.addObject("DHASWifiNodesModule");
 
 
     ModuleProvider serviceProvider(jsonConfig);
     serviceProvider.disableModule("IO");
+    serviceProvider.disableModule("phone");
+    serviceProvider.disableModule("audio");
     serviceProvider.disableModule("Weather");
     serviceProvider.disableModule("insteon");
     serviceProvider.disableModule("smtp");
@@ -62,15 +45,17 @@ int main(int argc, char** argv)
     pRESTInterface->init();
     serviceProvider.startModules(&epmock);
 
-    Dumais::JSON::JSON j;
     sleep(1);
-  //  pRESTInterface->processQuery(j,"/audio/play?sound=mange,$4,mange");
-    pRESTInterface->processQuery(j,"/phone/register?user=dhastests&pin=dhaspass&proxy=192.168.1.3:5070");
-    sleep(1);
-    //pRESTInterface->processQuery(j,"/phone/call?ext=711&play=mange,$4,mange");
-    pRESTInterface->processQuery(j,"/phone/call?ext=711&play=$1,mange");
+//    sleep(1);
+//    pRESTInterface->processQuery(j,"/phone/call?ext=711&play=$1,mange");
 
-    while(1);
+    while(1)
+    {
+        getchar();
+        Dumais::JSON::JSON j;
+        pRESTInterface->processQuery(j,"/dwn/list");
+        LOG(j.stringify(true));
+    }
 
     serviceProvider.stopModules();
 

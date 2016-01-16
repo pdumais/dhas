@@ -1,0 +1,6 @@
+*.o
+*.test
+*.a
+bin
+.gitignore
+config.h
