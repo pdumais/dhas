@@ -85,6 +85,7 @@ void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
         json.addValue("closed","type");
         json.addValue(node->ip,"ip");
         json.addValue(node->name,"name");
+        json.addValue(node->id,"id");
         mpEventProcessor->processEvent(json);
 
         this->mNodesListLock.lock();
@@ -137,6 +138,7 @@ void DHASWifiNodesModule::checkHeartBeats()
             json.addValue("closed","type");
             json.addValue(node->ip,"ip");
             json.addValue(node->name,"name");
+            json.addValue(node->id,"id");
             mpEventProcessor->processEvent(json);
 
             this->mNodesListLock.lock();
@@ -189,7 +191,7 @@ void DHASWifiNodesModule::addFdToEpoll(int fd)
     epoll_ctl(mEpollFD, EPOLL_CTL_ADD, fd, &ev); 
 }
 
-void DHASWifiNodesModule::discoverNode(std::string name, std::string ip)
+void DHASWifiNodesModule::discoverNode(std::string name, std::string ip, std::string id)
 {
     if (ip == "0.0.0.0") return;
 
@@ -205,6 +207,7 @@ void DHASWifiNodesModule::discoverNode(std::string name, std::string ip)
         DHASWifiNode node;
         node.ip = ip;
         node.name = name;
+        node.id = id;
         time(&node.lastHeartBeat);
 
         if (connectNode(&node))
@@ -219,6 +222,7 @@ void DHASWifiNodesModule::discoverNode(std::string name, std::string ip)
             json.addValue("new","type");
             json.addValue(ip,"ip");
             json.addValue(name,"name");
+            json.addValue(id,"id");
             mpEventProcessor->processEvent(json);
         }
         else
@@ -249,7 +253,7 @@ bool DHASWifiNodesModule:: processDataFromMulticastSocket()
         Dumais::JSON::JSON json;
         json.parse(str);
         char* ip = inet_ntoa(src.sin_addr);
-        this->discoverNode(json["name"].str(),ip);
+        this->discoverNode(json["name"].str(),ip,json["id"].str());
     }
 
     return true;

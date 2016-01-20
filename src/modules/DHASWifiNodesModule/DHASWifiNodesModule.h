@@ -8,6 +8,7 @@ struct DHASWifiNode
 {
     std::string ip;
     std::string name;
+    std::string id;
     time_t lastHeartBeat;
     int socket;
 };
@@ -29,7 +30,7 @@ private:
     Dumais::Utils::MPSCRingBuffer<DataBuffer>* mpSendQueue;
     std::mutex mNodesListLock;
 
-    void discoverNode(std::string name, std::string ip);
+    void discoverNode(std::string name, std::string ip, std::string id);
     bool connectNode(DHASWifiNode* node);
     void checkHeartBeats();
     void receiveFromNode(DHASWifiNode* node);
