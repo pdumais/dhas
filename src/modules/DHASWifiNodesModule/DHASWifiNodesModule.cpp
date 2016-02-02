@@ -25,12 +25,11 @@ REGISTER_MODULE(DHASWifiNodesModule)
 
 DHASWifiNodesModule::DHASWifiNodesModule()
 {
-    mpSendQueue = new MPSCRingBuffer<DataBuffer>(500);
+    mpRestEngine = 0;
 }
 
 DHASWifiNodesModule::~DHASWifiNodesModule()
 {
-    delete mpSendQueue;
 }
 
 void DHASWifiNodesModule::configure(Dumais::JSON::JSON& config)
@@ -54,7 +53,7 @@ void DHASWifiNodesModule::closeAllNodes()
     }
 }
 
-void DHASWifiNodesModule::registerCallBacks(RESTEngine* pEngine)
+void DHASWifiNodesModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
     p = new RESTCallBack(this,&DHASWifiNodesModule::sendRaw_callback,"send raw data to wifi node");
@@ -64,6 +63,8 @@ void DHASWifiNodesModule::registerCallBacks(RESTEngine* pEngine)
 
     p = new RESTCallBack(this,&DHASWifiNodesModule::getDevices_callback,"list connected wifi nodes");
     pEngine->addCallBack("/dwn/list","GET",p);
+
+    mpRestEngine = pEngine;
 
 }
 
@@ -77,19 +78,24 @@ void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
     {
         if (n==-1 && errno == EAGAIN) return;
 
-        LOG("Node failed [" << node->name << "] @ " << node->ip << " (" << errno << "). Removing");
+        LOG("Node failed [" << node->driver->getName() << "] @ " << node->driver->getInfo().ip << " (" << errno << "). Removing");
         close(node->socket);
 
         Dumais::JSON::JSON json;
         json.addValue("dwn","event");
         json.addValue("closed","type");
-        json.addValue(node->ip,"ip");
-        json.addValue(node->name,"name");
-        json.addValue(node->id,"id");
+        json.addValue(node->driver->getInfo().ip,"ip");
+        json.addValue(node->driver->getName(),"name");
+        json.addValue(node->driver->getInfo().id,"id");
         mpEventProcessor->processEvent(json);
 
+        std::string ip = node->driver->getInfo().ip;
+        node->driver->unRegisterCallBacks(mpRestEngine);
+        delete node->driver;
+        node->driver = 0;
+
         this->mNodesListLock.lock();
-        mNodes.erase(node->ip);
+        mNodes.erase(ip);
         this->mNodesListLock.unlock();
         return;
     }
@@ -101,23 +107,24 @@ void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
         time(&node->lastHeartBeat);
     }
     else
-    {   
-        //TODO: send received message to event processor as an event
+    {  
+        if (node->driver == 0)
+        {
+            LOG("ERROR: Can't process data from " << node->driver->getName() <<" ("<<node->driver->getInfo().id<<". Driver not associated");
+        }
+        else
+        { 
+            Dumais::JSON::JSON j;
+            if (node->driver->processData(buf,n,j))
+            {
+                j.addValue("dwn","event");
+                j.addValue(node->driver->getInfo().ip,"ip");
+                j.addValue(node->driver->getName(),"name");
+                j.addValue(node->driver->getInfo().id,"id");
+                mpEventProcessor->processEvent(j);
+            }
+        }
     }
-}
-
-
-void DHASWifiNodesModule::sendToNode(const std::string& id, char* data, unsigned char size)
-{
-    uint64_t tmp = 1;
-    DataBuffer b;
-    b.destination = id;
-    memcpy(b.data,data,size);
-    b.size = size;
-    mpSendQueue->put(b);
-    std::string dataStr(data,size);
-    write(mSelfFD,&tmp,8);
-    LOG("Pooled DWN message [" << dataStr << "] to " << id);
 }
 
 void DHASWifiNodesModule::checkHeartBeats()
@@ -130,19 +137,24 @@ void DHASWifiNodesModule::checkHeartBeats()
         DHASWifiNode* node = &it.second;
         if (node->lastHeartBeat <= t)
         {
-            LOG("Node [" << node->name <<"] @ " << node->ip << " heartbeat failure. Disconnecting");
+            LOG("Node [" << node->driver->getName() <<"] @ " << node->driver->getInfo().ip << " heartbeat failure. Disconnecting");
             close(node->socket);
     
             Dumais::JSON::JSON json;
             json.addValue("dwn","event");
             json.addValue("closed","type");
-            json.addValue(node->ip,"ip");
-            json.addValue(node->name,"name");
-            json.addValue(node->id,"id");
+            json.addValue(node->driver->getInfo().ip,"ip");
+            json.addValue(node->driver->getName(),"name");
+            json.addValue(node->driver->getInfo().id,"id");
             mpEventProcessor->processEvent(json);
 
+            std::string ip = node->driver->getInfo().ip;
+            node->driver->unRegisterCallBacks(mpRestEngine);
+            delete node->driver;
+            node->driver = 0;
+
             this->mNodesListLock.lock();
-            mNodes.erase(node->ip);
+            mNodes.erase(ip);
             this->mNodesListLock.unlock();
         }
     }
@@ -157,7 +169,7 @@ bool DHASWifiNodesModule::connectNode(DHASWifiNode* node)
     memset(&sockadd,0,sizeof(sockadd));
 
     struct hostent *he;
-    he = gethostbyname(node->ip.c_str());
+    he = gethostbyname(node->driver->getInfo().ip.c_str());
     sockadd.sin_family = AF_INET;
     sockadd.sin_port = htons(242);
     memcpy(&sockadd.sin_addr, he->h_addr_list[0], he->h_length);
@@ -168,12 +180,6 @@ bool DHASWifiNodesModule::connectNode(DHASWifiNode* node)
         int flags = fcntl(node->socket,F_GETFL,0);
         fcntl(node->socket, F_SETFL, flags | O_NONBLOCK);
         addFdToEpoll(node->socket);
-
-//this is only a test
-//sendToNode(node->ip,"r0",4);
-//sendToNode(node->ip,"g0",4);
-//sendToNode(node->ip,"b0",4);
-
         return true;
     }
     
@@ -203,11 +209,20 @@ void DHASWifiNodesModule::discoverNode(std::string name, std::string ip, std::st
             LOG("ERROR: The number of nodes registered in the system has reached maximum capacity");
             return;
         }
+    
+        IDWN* driver = IDWN::createDriverInstance(name);
+        if (driver == 0)
+        {
+            // TODO: should probably ignore all further broadcasts.
+            LOG("ERROR: No suitable driver found for wifi node [" << name << "]");
+            return;
+        }
 
         DHASWifiNode node;
-        node.ip = ip;
-        node.name = name;
-        node.id = id;
+        node.driver = driver;
+        node.driver->getInfo().ip = ip;
+        node.driver->getInfo().id = id;
+        node.driver->getInfo().sendQueue = &mSendQueue;
         time(&node.lastHeartBeat);
 
         if (connectNode(&node))
@@ -216,6 +231,8 @@ void DHASWifiNodesModule::discoverNode(std::string name, std::string ip, std::st
             this->mNodesListLock.lock();
             mNodes[ip] = node;
             this->mNodesListLock.unlock();
+            
+            node.driver->registerCallBacks(mpRestEngine);
 
             Dumais::JSON::JSON json;
             json.addValue("dwn","event");
@@ -265,7 +282,12 @@ void DHASWifiNodesModule::run()
     struct epoll_event *events;
     events = new epoll_event[MAX_NODES_COUNT + 2];
     mEpollFD = epoll_create1(0);
-    mSelfFD = eventfd(0,EFD_NONBLOCK);
+
+    std::vector<std::string> submodules = IDWN::getRegisteredSubModulesNames();
+    for (auto& it : submodules)
+    {
+        LOG("Registered DWN driver for ["<<it<<"]");
+    }
 
     mSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -301,7 +323,7 @@ void DHASWifiNodesModule::run()
     int flags = fcntl(mSocket,F_GETFL,0);
     fcntl(mSocket, F_SETFL, flags | O_NONBLOCK);
 
-    addFdToEpoll(mSelfFD);
+    addFdToEpoll(mSendQueue.getSelfFD());
     addFdToEpoll(mSocket);
     setStarted();
     while (!stopping())
@@ -309,11 +331,11 @@ void DHASWifiNodesModule::run()
         int n = epoll_wait(mEpollFD, events, MAX_NODES_COUNT + 2, 2000);
         for (int i = 0; i < n; i++)
         {   
-            if (events[i].data.fd == mSelfFD)
+            if (events[i].data.fd == mSendQueue.getSelfFD())
             {
                 // This was just to interrupt the epoll_wait. Ignore data
                 char tmp[8];
-                read(mSelfFD,tmp,8);
+                read(events[i].data.fd,tmp,8);
             }
             else if (events[i].data.fd == mSocket)
             {
@@ -332,7 +354,7 @@ void DHASWifiNodesModule::run()
             }
         } 
 
-        while (this->mpSendQueue->get(data))
+        while (this->mSendQueue.get(data))
         {
             if (mNodes.find(data.destination) != mNodes.end())
             {
@@ -345,7 +367,6 @@ void DHASWifiNodesModule::run()
     }
 
     if (mSocket) close(mSocket);
-    close(mSelfFD);
     closeAllNodes();
 }
 
@@ -359,8 +380,9 @@ void DHASWifiNodesModule::getDevices_callback(RESTContext* context)
     for (auto& it : mNodes)
     {
         Dumais::JSON::JSON& obj = json["modules"].addObject("module");
-        obj.addValue(it.second.name,"name");
-        obj.addValue(it.second.ip,"ip");
+        obj.addValue(it.second.driver->getName(),"name");
+        obj.addValue(it.second.driver->getInfo().ip,"ip");
+        obj.addValue(it.second.driver->getInfo().id,"id");
     }
     this->mNodesListLock.unlock();
 }
@@ -371,7 +393,7 @@ void DHASWifiNodesModule::sendRaw_callback(RESTContext* context)
     Dumais::JSON::JSON& json = context->returnData;
     std::string ip = params->getParam("destination");
     std::string data = params->getParam("data");
-    sendToNode(ip,data.c_str(),data.size());
+    mSendQueue.sendToNode(ip,data.c_str(),data.size());
     json.addValue("ok","status");
     return;
 }

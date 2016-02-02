@@ -26,6 +26,8 @@ DHAS is modular. Every different technology is represented by a module. The curr
       Used to play sounds on the local soundard. Can be used to play alerts or notifications.
     - Weather
       Used to query temperature from webrelay temperature modules.
+    - DHASWifiNodes
+      Used to interface with homemade wifi devices based on ESP8266
 
 Script
 ==============
@@ -99,7 +101,7 @@ Dependencies
     - libasound (Alsa)
     - libudev
     - ortp
-    - git submodules: json, rest, webserver (clone the project with --recursive to get them automatically)
+    - git submodules: dumaislib (clone the project with --recursive to get them automatically)
 
 Invoking
 ==============

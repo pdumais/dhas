@@ -1,23 +1,15 @@
 #pragma once
 #include "Module.h"
 #include <map>
-#include "utils/MPSCRingBuffer.h"
 #include <mutex>
+#include "IDWN.h"
+#include "DWNSendQueue.h"
 
 struct DHASWifiNode
 {
-    std::string ip;
-    std::string name;
-    std::string id;
-    time_t lastHeartBeat;
     int socket;
-};
-
-struct DataBuffer
-{
-    std::string destination;
-    char data[256];
-    unsigned char size;
+    time_t lastHeartBeat;
+    IDWN* driver;
 };
 
 class DHASWifiNodesModule: public Module
@@ -25,10 +17,10 @@ class DHASWifiNodesModule: public Module
 private:
     int mSocket;
     int mEpollFD;
-    int mSelfFD;
     std::map<std::string, DHASWifiNode> mNodes;
-    Dumais::Utils::MPSCRingBuffer<DataBuffer>* mpSendQueue;
     std::mutex mNodesListLock;
+    DWNSendQueue mSendQueue;
+    ThreadSafeRestEngine* mpRestEngine;
 
     void discoverNode(std::string name, std::string ip, std::string id);
     bool connectNode(DHASWifiNode* node);
@@ -52,7 +44,7 @@ public:
 
     void sendRaw_callback(RESTContext* context);
     void getDevices_callback(RESTContext* context);
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 };
 
 

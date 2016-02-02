@@ -50,7 +50,7 @@ std::string WeatherModule::getTemperature(int id)
     return mTemperatures[id];
 }
 
-void WeatherModule::registerCallBacks(RESTEngine* pEngine)
+void WeatherModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
     p = new RESTCallBack(this,&WeatherModule::setIP_callback,"set IP of weather controller");

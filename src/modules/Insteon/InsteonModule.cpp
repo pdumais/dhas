@@ -44,7 +44,7 @@ void Insteon::configure(Dumais::JSON::JSON& config)
     mpInsteonModem = new InsteonModem(config["serialport"].str().c_str(),this);
 }
 
-void Insteon::registerCallBacks(RESTEngine* pEngine)
+void Insteon::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack* p;
 //    p = new RESTCallBack<Insteon>(this,&Insteon::startalllinkingasresponder_callback,"");

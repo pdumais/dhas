@@ -2,7 +2,7 @@
 #define SERVICE_H
 #include <pthread.h>
 #include "IEventProcessor.h"
-#include "rest/RESTEngine.h"
+#include "ThreadSafeRestEngine.h"
 #include "json/JSON.h"
 #include <functional>
 #include <future>
@@ -37,7 +37,7 @@ public:
     virtual std::string getName()=0;
     virtual void configure(Dumais::JSON::JSON& config)=0;
 
-    virtual void registerCallBacks(RESTEngine*)=0;
+    virtual void registerCallBacks(ThreadSafeRestEngine*)=0;
     static std::vector<std::function<Module*()>> mModuleBuilders;
     virtual void appendPeriodicData(Dumais::JSON::JSON& data);
 

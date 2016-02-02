@@ -23,7 +23,7 @@ public:
     void play_callback(RESTContext* context);
 
     void abortPlayList();
-    void registerCallBacks(RESTEngine* pEngine);    
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);    
 
     virtual void run();
     virtual std::string getName(){return "audio";}

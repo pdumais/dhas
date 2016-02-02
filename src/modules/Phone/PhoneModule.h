@@ -38,7 +38,7 @@ public:
     virtual std::string getName(){return "phone";}
     virtual void stop();
 
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 
     void click2dial_callback(RESTContext* context);
     void call_callback(RESTContext* context);

@@ -7,7 +7,7 @@
 #include "Schedule.h"
 #include "WeatherHelper.h"
 #include <pthread.h>
-#include "rest/RESTEngine.h"
+#include "ThreadSafeRestEngine.h"
 
 class RESTInterface{
 private:
@@ -16,7 +16,7 @@ private:
     Schedule* mpSchedule;
     WeatherHelper *mpWeatherHelper;
 
-    RESTEngine mRESTEngine;
+    ThreadSafeRestEngine mRESTEngine;
 
 public:
 	RESTInterface(ModuleProvider *pModuleProvider,Schedule* pSchedule,WeatherHelper *pWeather);

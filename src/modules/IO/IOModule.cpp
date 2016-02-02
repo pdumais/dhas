@@ -53,7 +53,7 @@ void IOModule::stop()
 }
 
 
-void IOModule::registerCallBacks(RESTEngine* pEngine)
+void IOModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
     p = new RESTCallBack(this,&IOModule::getStatus_callback,"Get current status of sensors");

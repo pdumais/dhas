@@ -7,7 +7,7 @@
 #include "SoundModule.h"
 #include "SMTPModule.h"
 #include "IEventProcessor.h"
-#include "rest/RESTEngine.h"
+#include "ThreadSafeRestEngine.h"
 #include "ModuleRegistrar.h"
 #include <thread>
 
@@ -48,7 +48,7 @@ void ModuleProvider::disableModule(const std::string& name)
     mModuleMap.erase(it); 
 }
 
-void ModuleProvider::registerCallBacks(RESTEngine* pEngine)
+void ModuleProvider::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     for (ModuleMap::iterator it = mModuleMap.begin();it!=mModuleMap.end();it++)
     {

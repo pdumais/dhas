@@ -28,7 +28,7 @@ void PhoneModule::configure(Dumais::JSON::JSON& config)
     mConfig = config;
 }
 
-void PhoneModule::registerCallBacks(RESTEngine* pEngine)
+void PhoneModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     std::string tmp;
     RESTCallBack *p;

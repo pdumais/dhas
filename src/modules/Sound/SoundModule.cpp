@@ -49,7 +49,7 @@ void SoundModule::play_callback(RESTContext* context)
     }
 }
 
-void SoundModule::registerCallBacks(RESTEngine* pEngine)
+void SoundModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
 

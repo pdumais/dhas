@@ -48,7 +48,7 @@ public:
     virtual void onInsteonAllLinkRecordResponse(unsigned char *buf);
     virtual void onInsteonMessageSent(InsteonID id, IInsteonMessage* cmd);
 
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 
     void startalllinkingasresponder_callback(RESTContext* context);
     void sendAllLink_callback(RESTContext* context);

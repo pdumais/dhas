@@ -37,7 +37,7 @@ public:
     void addWebRelay_callback(RESTContext* context);    
     void triggerRelay_callback(RESTContext* context);    
     void triggerIORelay_callback(RESTContext* context);    
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 };
 
 #endif

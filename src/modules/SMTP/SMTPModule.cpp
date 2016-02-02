@@ -36,7 +36,7 @@ void SMTPModule::stop()
 }
 
 
-void SMTPModule::registerCallBacks(RESTEngine* pEngine)
+void SMTPModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
 }
 

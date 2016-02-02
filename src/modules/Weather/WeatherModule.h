@@ -23,7 +23,7 @@ public:
     std::string getTemperature(int id);
     void setIP_callback(RESTContext* context);    
     void getStats_callback(RESTContext* context);
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 };
 
 #endif

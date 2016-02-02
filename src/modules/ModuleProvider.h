@@ -3,7 +3,7 @@
 #include <map>
 #include "json/JSON.h"
 
-class RESTEngine;
+class ThreadSafeRestEngine;
 class IEventProcessor;
 class Module;
 
@@ -19,7 +19,7 @@ public:
     void addModule(Module *p);
     Module* getModule(const std::string& name);
 
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
     void startModules(IEventProcessor *p);
     void stopModules();
     void appendPeriodicData(Dumais::JSON::JSON& data);

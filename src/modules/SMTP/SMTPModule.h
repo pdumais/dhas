@@ -18,7 +18,7 @@ public:
     virtual void run();
     virtual std::string getName(){return "smtp";}
 
-    void registerCallBacks(RESTEngine* pEngine);
+    void registerCallBacks(ThreadSafeRestEngine* pEngine);
 
 };
 
