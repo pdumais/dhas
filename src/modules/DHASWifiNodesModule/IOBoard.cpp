@@ -1,17 +1,17 @@
-#include "AlarmNode.h"
+#include "IOBoard.h"
 
-REGISTER_NODE_NAME(AlarmNode,"ESP8266 ALARM PGM");
+REGISTER_NODE_NAME(IOBoard,"ESP8266 IO BOARD");
 
-AlarmNode::AlarmNode()
+IOBoard::IOBoard()
 {
     mPgms = 0;
 }
 
-AlarmNode::~AlarmNode()
+IOBoard::~IOBoard()
 {
 }
 
-bool AlarmNode::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
+bool IOBoard::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
 {
     if (size != 2) return false;
 
@@ -28,16 +28,16 @@ bool AlarmNode::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
     return false;
 }
 
-void AlarmNode::registerCallBacks(ThreadSafeRestEngine* pEngine)
+void IOBoard::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
 
-    p = new RESTCallBack(this,&AlarmNode::status_callback,"Get PGM status");
+    p = new RESTCallBack(this,&IOBoard::status_callback,"Get PGM status");
     pEngine->addCallBack("/dwn/"+mInfo.id+"/status","GET",p);
     mRestCallbacks.push_back(p);
 }
 
-void AlarmNode::status_callback(RESTContext* context)
+void IOBoard::status_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
