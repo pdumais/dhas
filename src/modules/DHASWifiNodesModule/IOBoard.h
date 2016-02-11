@@ -5,7 +5,8 @@
 class IOBoard: public IDWN
 {
 private:
-    uint8_t mPgms;
+    uint32_t mPgms;
+    uint8_t  mPgmCount;
 
 public:
     IOBoard();
@@ -15,4 +16,5 @@ public:
     void registerCallBacks(ThreadSafeRestEngine* pEngine);
 
     void status_callback(RESTContext* context);
+    void setoutput_callback(RESTContext* context);
 };

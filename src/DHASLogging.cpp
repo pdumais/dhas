@@ -29,9 +29,11 @@ void SyslogLogging::log(const std::string& str)
     ss<<"<190>"; // facility 23, level 6: 23*8 + 6 = 190
     ss <<" DHAS: ";
     ss<< str;
-    const char* buf = ss.str().c_str();
 
-    sendto(sock,buf,ss.str().size(),0,(struct sockaddr *)&s,sizeof(s));
+    std::string logstr = ss.str();
+    const char* buf = logstr.c_str();
+
+    sendto(sock,buf,logstr.size(),0,(struct sockaddr *)&s,sizeof(s));
     close(sock);
 
 }
