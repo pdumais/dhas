@@ -79,62 +79,6 @@
 		},
 		{
 			"method" : "GET",
-			"path" : "/io/getstatus",
-			"params" : [
-			],
-			"description" : "Get current status of sensors"
-		},
-		{
-			"method" : "GET",
-			"path" : "/io/addwebrelay",
-			"params" : [
-				{
-					"description" : "Name of relay. This will be used to trigger the relay later",
-					"name" : "name"
-				},
-				{
-					"description" : "ID of a web relay on the device",
-					"name" : "id"
-				},
-				{
-					"description" : "IP address of a web relay device",
-					"name" : "ip"
-				}
-			],
-			"description" : "add web relay device"
-		},
-		{
-			"method" : "GET",
-			"path" : "/io/setrelay",
-			"params" : [
-				{
-					"description" : "Name of relay. This will be used to trigger the relay later",
-					"name" : "name"
-				},
-				{
-					"description" : "'true' or 'false'",
-					"name" : "on"
-				}
-			],
-			"description" : "Set relay on or off"
-		},
-		{
-			"method" : "GET",
-			"path" : "/io/setoutput",
-			"params" : [
-				{
-					"description" : "pin number",
-					"name" : "number"
-				},
-				{
-					"description" : "'true' or 'false'",
-					"name" : "on"
-				}
-			],
-			"description" : "Set IO board output pin on or off"
-		},
-		{
-			"method" : "GET",
 			"path" : "/weather/setip",
 			"params" : [
 				{

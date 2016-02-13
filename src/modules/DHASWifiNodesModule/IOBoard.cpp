@@ -1,7 +1,7 @@
 #include "DHASLogging.h"
 #include "IOBoard.h"
 
-REGISTER_NODE_NAME(IOBoard,"EDISSON IO CONTROLLER");
+REGISTER_NODE_NAME(IOBoard,"EDISON IO CONTROLLER");
 
 IOBoard::IOBoard()
 {
@@ -24,10 +24,12 @@ bool IOBoard::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
         json.addValue("ioboardnode","node");
         json.addList("pgms");
         mPgmCount = data["pins"].size();
+        mPgms = 0;
         for (int i = 0; i < mPgmCount; i++)
         {
             uint8_t tmp = 0;
             if (data["pins"][i].toBool()) tmp = 1; 
+            mPgms |= (tmp << i);
             json["pgms"].addValue(tmp);
         }
 
@@ -40,10 +42,12 @@ bool IOBoard::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
         json.addValue(data["pin"].toInt(),"pin");
         json.addList("pgms");
         mPgmCount = data["pins"].size();
+        mPgms = 0;
         for (int i = 0; i < mPgmCount; i++)
         {
             uint8_t tmp = 0;
             if (data["pins"][i].toBool()) tmp = 1;
+            mPgms |= (tmp << i);
             json["pgms"].addValue(tmp);
         }
 

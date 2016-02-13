@@ -1,10 +1,12 @@
 #pragma once
 #include "rest/RESTEngine.h"
+#include <mutex>
 
 class ThreadSafeRestEngine
 {
 private:
     RESTEngine restEngine;
+    std::mutex engineLock;
 public:
     void addCallBack(std::string uri, std::string method, RESTCallBack* p);
     void removeCallBack(RESTCallBack* p);

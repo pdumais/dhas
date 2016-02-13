@@ -8,7 +8,7 @@
             "map" : "function(doc){if (doc.event == \"alarmstate\"){emit(doc.timestamp, {status:doc.status,from:doc.from});}}"
         },
         "io": {
-            "map" : "function(doc){if (doc.event == \"inputpin\"){emit(doc.timestamp, doc.pins);}}"
+            "map" : "function(doc){if (doc.event == \"dwn\" && doc.node==\"ioboardnode\" && doc.subtype==\"changed\"){emit(doc.timestamp, doc.pgms);}}"
         }
     }
 }
