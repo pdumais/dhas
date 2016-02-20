@@ -55,6 +55,8 @@ void getConfig(Dumais::JSON::JSON& jsonConfig)
     jsonConfig["insteon"].addValue(INSTEON_SERIAL_PORT,"serialport");
     jsonConfig["smtp"].addValue(SMTP_PORT,"bind");
     jsonConfig["web"].addValue(PASSWD_FILE,"passwd");
+    jsonConfig["web"].addValue("/etc/httpd/conf/ssl.key/dumaisnet.key","ssl_key");
+    jsonConfig["web"].addValue("/etc/httpd/conf/ssl.crt/dumaisnet.crt","ssl_cert");
     jsonConfig["phone"].addValue(SOUNDS_FOLDER,"soundsfolder");
     jsonConfig["phone"].addValue(RTP_LOW_PORT,"rtplow");
     jsonConfig["phone"].addValue(RTP_HIGH_PORT,"rtphigh");

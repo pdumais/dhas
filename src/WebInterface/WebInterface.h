@@ -17,6 +17,8 @@ private:
     int connectionCount;
     std::string mPasswdFile;
     std::thread *mpThread;
+    std::string mSSLCert;
+    std::string mSSLKey;
 
 protected:
 public:

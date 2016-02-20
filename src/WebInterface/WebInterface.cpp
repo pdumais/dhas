@@ -28,6 +28,8 @@ WebInterface::~WebInterface()
 void WebInterface::configure(Dumais::JSON::JSON& config)
 {
     this->mPasswdFile = config["passwd"].str();
+    this->mSSLCert = config["ssl_cert"].str();
+    this->mSSLKey = config["ssl_key"].str();
 }
 
 void WebInterface::stop()
@@ -101,6 +103,7 @@ void WebInterface::start()
     mpWebServer = new WebServer(mPort, "0.0.0.0",100);
     mpWebServer->requireAuth(this->mPasswdFile.c_str(), 10);
     mpWebServer->setListener(this);
-    this->mpWebServer->start();
+    //this->mpWebServer->start();
+    this->mpWebServer->startSecure(this->mSSLCert.c_str(),this->mSSLKey.c_str());
 }
 
