@@ -26,7 +26,7 @@ Schedule::Schedule()
     }
 
     pCursor->c_close(pCursor);
-    LOG("Schedule database opened\r\n");
+    LOG("Schedule database opened");
    
 }
 

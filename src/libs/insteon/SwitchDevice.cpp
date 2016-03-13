@@ -91,7 +91,7 @@ void SwitchDevice::processEvent(Dumais::JSON::JSON& json, unsigned char* buf)
             {
                 this->setInitialized();
                 // The first time we get this, we don't wanna notify anyone.
-                LOG("Initial level for device "<<std::hex<<mID<<" is " << cmd2);
+                LOG("Initial level for device "<<std::hex<<mID<<" is " << (int)cmd2);
             }
         } 
         else if (command==0x11 || command==0x12)

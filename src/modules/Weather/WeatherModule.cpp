@@ -67,11 +67,11 @@ void WeatherModule::run()
     mLastPollTime = 0;
     time_t t=0;
     regex_t preg[4];
-    regcomp(&preg[0],"<sensor1temp>([-\\.0-9]*)</sensor1temp>",REG_EXTENDED|REG_NEWLINE);
-    regcomp(&preg[1],"<sensor2temp>([-\\.0-9]*)</sensor2temp>",REG_EXTENDED|REG_NEWLINE);
-    regcomp(&preg[2],"<sensor3temp>([-\\.0-9]*)</sensor3temp>",REG_EXTENDED|REG_NEWLINE);
-    regcomp(&preg[3],"<sensor4temp>([-\\.0-9]*)</sensor4temp>",REG_EXTENDED|REG_NEWLINE);
-    regmatch_t matches[3];
+    regcomp(&preg[0],"<(indoorTemp|sensor1temp)>([-\\.0-9]*)</",REG_EXTENDED|REG_NEWLINE);
+    regcomp(&preg[1],"<(outdoorTemp|sensor2temp)>([-\\.0-9]*)</",REG_EXTENDED|REG_NEWLINE);
+    regcomp(&preg[2],"<(humidity|sensor3temp)>([-\\.0-9]*)</",REG_EXTENDED|REG_NEWLINE);
+    regcomp(&preg[3],"<(sensor4temp)>([-\\.0-9]*)</",REG_EXTENDED|REG_NEWLINE);
+    regmatch_t matches[4];
 
     setStarted();
     while (!stopping())
@@ -85,12 +85,12 @@ void WeatherModule::run()
                 std::string st = HTTPCommunication::getURL(mServer,"/state.xml");
                 for (int i=0;i<4;i++)
                 {
-                    int err = regexec(&preg[i],st.c_str(),2,matches,0);
+                    int err = regexec(&preg[i],st.c_str(),3,matches,0);
                     if (err != REG_NOMATCH)
                     {
                         char num[10];
-                        int s1 = matches[1].rm_so;
-                        int e1 = matches[1].rm_eo;
+                        int s1 = matches[2].rm_so;
+                        int e1 = matches[2].rm_eo;
                         int size = e1-s1;
                         mTemperatures[i] = st.substr(s1,size);
                     }

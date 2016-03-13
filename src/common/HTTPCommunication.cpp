@@ -123,7 +123,7 @@ std::string HTTPCommunication::getURL(std::string server, std::string url, int p
                     memcpy(num,(char*)&st.c_str()[s1],size1);
                     num[size1] = 0;
                     contentlength = atoi((char*)&num[0]);
-                    LOG("Content-length="<<contentlength);
+                    //LOG("Content-length="<<contentlength);
                 }
 
                 if (st.find("\r\n0\r\n\r\n")!=std::string::npos && chunked)

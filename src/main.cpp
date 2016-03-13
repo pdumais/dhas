@@ -47,13 +47,13 @@ void termHandler(int sig)
 void getConfig(Dumais::JSON::JSON& jsonConfig)
 {
     //TODO: this should be read from a file on disk
-    jsonConfig.addObject("smtp");
+    //jsonConfig.addObject("smtp");
     jsonConfig.addObject("web");
     jsonConfig.addObject("phone");
     jsonConfig.addObject("audio");
     jsonConfig.addObject("insteon");
     jsonConfig["insteon"].addValue(INSTEON_SERIAL_PORT,"serialport");
-    jsonConfig["smtp"].addValue(SMTP_PORT,"bind");
+    //jsonConfig["smtp"].addValue(SMTP_PORT,"bind");
     jsonConfig["web"].addValue(PASSWD_FILE,"passwd");
     jsonConfig["web"].addValue("/etc/httpd/conf/ssl.key/dumaisnet.key","ssl_key");
     jsonConfig["web"].addValue("/etc/httpd/conf/ssl.crt/dumaisnet.crt","ssl_cert");

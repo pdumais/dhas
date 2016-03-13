@@ -7,12 +7,12 @@
 
 int main(int argc, char** argv) 
 { 
-    Logging::syslog  = false;
+//    Logging::syslog  = false;
 
     IScriptEngine* p = new JSEngine();
     p->load(argv[1]);
     
-    p->notifyEvent("{\"event\":\"test1\"}");
+ //   p->notifyEvent("{\"event\":\"test1\"}");
 
     delete p;
 
