@@ -34,18 +34,18 @@ void PhoneModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
     RESTCallBack *p;
 
     p = new RESTCallBack(this,&PhoneModule::call_callback,"Will call the given extension and optionally play sound when the remote peer answers the call. Placing a call only works if the user agent was previously registered. Called extension must be know by the proxy because direct URI are not supported. To make an intercom call (where the UAS will autoanswer) this needs to be configured on the proxy. ");
-    p->addParam("ext","extention to call");
-    p->addParam("play",PLAYSTRING_DESCRIPTION);
+    p->addParam("ext","extention to call",false);
+    p->addParam("play",PLAYSTRING_DESCRIPTION,false);
     pEngine->addCallBack("/phone/call","GET",p);
 
     p = new RESTCallBack(this,&PhoneModule::register_callback,"Will register the phone service user agent to the given PBX. This is usually done during initialization ");
-    p->addParam("user","SIP user to register");
-    p->addParam("pin","pin associated to user");
-    p->addParam("proxy","PBX IP address");
+    p->addParam("user","SIP user to register",false);
+    p->addParam("pin","pin associated to user",false);
+    p->addParam("proxy","PBX IP address",false);
     pEngine->addCallBack("/phone/register","GET",p);
 
     p = new RESTCallBack(this,&PhoneModule::blf_callback,"Will subscribe for presence events for the given extension. The extension must be a known extension in the subscribe context of our UA (if using Asterisk). ");
-    p->addParam("ext","extension");
+    p->addParam("ext","extension",false);
     pEngine->addCallBack("/phone/blf","GET",p);
 
     p = new RESTCallBack(this,&PhoneModule::showcalls_callback,"Get the list of active calls in the system ");
@@ -55,21 +55,21 @@ void PhoneModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
     pEngine->addCallBack("/phone/showblf","GET",p);
 
     p = new RESTCallBack(this,&PhoneModule::release_callback,"release a call using call ID (usually provided in call events) ");
-    p->addParam("id","Call ID");
+    p->addParam("id","Call ID",false);
     pEngine->addCallBack("/phone/release","GET",p);
 
     p = new RESTCallBack(this,&PhoneModule::play_callback,"Play sounds on an active call using given callID.");
-    p->addParam("sound",PLAYSTRING_DESCRIPTION);
-    p->addParam("id","call ID");
-    p->addParam("releaseaftersounds","[true/false] if you want the call to be released after sound finished playing");
+    p->addParam("sound",PLAYSTRING_DESCRIPTION,false);
+    p->addParam("id","call ID",false);
+    p->addParam("releaseaftersounds","[true/false] if you want the call to be released after sound finished playing",false);
     pEngine->addCallBack("/phone/play","GET",p);
 
     tmp = "Sound to play when source answers, before transfering to destination. ";
     tmp += PLAYSTRING_DESCRIPTION;
     p = new RESTCallBack(this,&PhoneModule::click2dial_callback,"Click-2-Dial");
-    p->addParam("sound",tmp);
-    p->addParam("src","Source extension to call");
-    p->addParam("dst","Destination extension to which the source will be patched.");
+    p->addParam("sound",tmp,false);
+    p->addParam("src","Source extension to call",false);
+    p->addParam("dst","Destination extension to which the source will be patched.",false);
     pEngine->addCallBack("/phone/click2dial","GET",p);
 
 }

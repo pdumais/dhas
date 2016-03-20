@@ -1,5 +1,6 @@
 #pragma once
 #include "rest/RESTEngine.h"
+#include "rest/RESTCallBack.h"
 #include <mutex>
 
 class ThreadSafeRestEngine

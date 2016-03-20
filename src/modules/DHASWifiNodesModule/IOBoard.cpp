@@ -67,8 +67,8 @@ void IOBoard::registerCallBacks(ThreadSafeRestEngine* pEngine)
 
     p = new RESTCallBack(this,&IOBoard::setoutput_callback,"set output");
     pEngine->addCallBack("/dwn/"+mInfo.id+"/set","GET",p);
-    p->addParam("out","0-4");
-    p->addParam("level","0 or 1");
+    p->addParam("out","0-4",false);
+    p->addParam("level","0 or 1",false);
     mRestCallbacks.push_back(p);
 }
 

@@ -8,6 +8,7 @@
 #include "WeatherHelper.h"
 #include <pthread.h>
 #include "ThreadSafeRestEngine.h"
+#include "rest/RESTCallBack.h"
 
 class RESTInterface{
 private:

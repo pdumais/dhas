@@ -61,18 +61,18 @@ void Insteon::registerCallBacks(ThreadSafeRestEngine* pEngine)
     pEngine->addCallBack("/insteon/listmodules","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addmodule_callback,"add a Insteon module definition");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("name","The name of the module");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
+    p->addParam("name","The name of the module",false);
     pEngine->addCallBack("/insteon/addmodule","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addezflora_callback,"add a Insteon ezflora module definition");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("name","The name of the module");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
+    p->addParam("name","The name of the module",false);
     pEngine->addCallBack("/insteon/addezflora","GET",p);
 
     p = new RESTCallBack(this,&Insteon::addIOLinc_callback,"add a Insteon iolinc module definition");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("name","The name of the module");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
+    p->addParam("name","The name of the module",false);
     pEngine->addCallBack("/insteon/addiolinc","GET",p);
 
     /*p = new RESTCallBack<Insteon>(this,&Insteon::addKeypadLinc_callback,"add a Insteon keypadlinc module definition");
@@ -86,52 +86,52 @@ void Insteon::registerCallBacks(ThreadSafeRestEngine* pEngine)
     pEngine->addCallBack("/insteon/addthermostat",p);*/
 
     p = new RESTCallBack(this,&Insteon::setcontroller_callback,"set Insteon controller ID (PLM)");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
     pEngine->addCallBack("/insteon/setcontroller","GET",p);
 
     p = new RESTCallBack(this,&Insteon::switch_callback,"Turn on or off a device");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("action","on/off/toggle");
-    p->addParam("level","0 to 255. Irrelevant if action is off or toggle");
-    p->addParam("rate","0 to 255. This is the ramp rate");
-    p->addParam("subdev","for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
+    p->addParam("action","on/off/toggle",false);
+    p->addParam("level","0 to 255. Irrelevant if action is off or toggle",false);
+    p->addParam("rate","0 to 255. This is the ramp rate",false);
+    p->addParam("subdev","for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant",false);
     pEngine->addCallBack("/insteon/switch","GET",p);
 
     p = new RESTCallBack(this,&Insteon::ezflorasetprogram_callback,"Sets a program on the EZFlora");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("p","Program number. 1 to 4");
-    p->addParam("z1","Zone 1 timer. 0 to 255 minutes");
-    p->addParam("z2","Zone 2 timer. 0 to 255 minutes");
-    p->addParam("z3","Zone 3 timer. 0 to 255 minutes");
-    p->addParam("z4","Zone 4 timer. 0 to 255 minutes");
-    p->addParam("z5","Zone 5 timer. 0 to 255 minutes");  
-    p->addParam("z6","Zone 6 timer. 0 to 255 minutes");
-    p->addParam("z7","Zone 7 timer. 0 to 255 minutes");
-    p->addParam("z8","Zone 8 timer. 0 to 255 minutes");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
+    p->addParam("p","Program number. 1 to 4",false);
+    p->addParam("z1","Zone 1 timer. 0 to 255 minutes",false);
+    p->addParam("z2","Zone 2 timer. 0 to 255 minutes",false);
+    p->addParam("z3","Zone 3 timer. 0 to 255 minutes",false);
+    p->addParam("z4","Zone 4 timer. 0 to 255 minutes",false);
+    p->addParam("z5","Zone 5 timer. 0 to 255 minutes",false);  
+    p->addParam("z6","Zone 6 timer. 0 to 255 minutes",false);
+    p->addParam("z7","Zone 7 timer. 0 to 255 minutes",false);
+    p->addParam("z8","Zone 8 timer. 0 to 255 minutes",false);
     pEngine->addCallBack("/insteon/ezflora/setprogram","GET",p);
 
     p = new RESTCallBack(this,&Insteon::ezfloraforcegetvalvestatus_callback,"Forces an update of EZFlora status");
-    p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
+    p->addParam("id","the Insteon device ID formated as 0xNNNNNN",false);
     pEngine->addCallBack("/insteon/ezflora/status","GET",p);
 
     p = new RESTCallBack(this,&Insteon::raw_callback,"Send raw insteon command");
     p->addParam("id","the Insteon device ID formated as 0xNNNNNN");
-    p->addParam("cmd1","command byte 1");
-    p->addParam("cmd2","command byte 2");
-    p->addParam("d1","data byte 1 for extended data");
-    p->addParam("d2","data byte 2 for extended data");
-    p->addParam("d3","data byte 3 for extended data");
-    p->addParam("d4","data byte 4 for extended data");
-    p->addParam("d5","data byte 5 for extended data");
-    p->addParam("d6","data byte 6 for extended data");
-    p->addParam("d7","data byte 7 for extended data");
-    p->addParam("d8","data byte 8 for extended data");
-    p->addParam("d9","data byte 9 for extended data");
-    p->addParam("d10","data byte 10 for extended data");
-    p->addParam("d11","data byte 11 for extended data");
-    p->addParam("d12","data byte 12 for extended data");
-    p->addParam("d13","data byte 13 for extended data");
-    p->addParam("d14","data byte 14 for extended data");
+    p->addParam("cmd1","command byte 1",false);
+    p->addParam("cmd2","command byte 2",false);
+    p->addParam("d1","data byte 1 for extended data",false);
+    p->addParam("d2","data byte 2 for extended data",false);
+    p->addParam("d3","data byte 3 for extended data",false);
+    p->addParam("d4","data byte 4 for extended data",false);
+    p->addParam("d5","data byte 5 for extended data",false);
+    p->addParam("d6","data byte 6 for extended data",false);
+    p->addParam("d7","data byte 7 for extended data",false);
+    p->addParam("d8","data byte 8 for extended data",false);
+    p->addParam("d9","data byte 9 for extended data",false);
+    p->addParam("d10","data byte 10 for extended data",false);
+    p->addParam("d11","data byte 11 for extended data",false);
+    p->addParam("d12","data byte 12 for extended data",false);
+    p->addParam("d13","data byte 13 for extended data",false);
+    p->addParam("d14","data byte 14 for extended data",false);
     pEngine->addCallBack("/insteon/raw","GET",p);
 
     p = new RESTCallBack(this,&Insteon::refreshAllLinksDatabase_callback,"retrieve all-link database");

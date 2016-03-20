@@ -5,7 +5,6 @@
 #include "webserver/WebServer.h"
 #include "PhoneModule.h"
 #include "SoundModule.h"
-#include "SMTPModule.h"
 #include "IEventProcessor.h"
 #include "ThreadSafeRestEngine.h"
 #include "ModuleRegistrar.h"

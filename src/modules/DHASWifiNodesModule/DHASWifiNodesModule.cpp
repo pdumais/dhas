@@ -57,8 +57,8 @@ void DHASWifiNodesModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 {
     RESTCallBack *p;
     p = new RESTCallBack(this,&DHASWifiNodesModule::sendRaw_callback,"send raw data to wifi node");
-    p->addParam("destination","IP address of the node");
-    p->addParam("data","raw data to be sent");
+    p->addParam("destination","IP address of the node",false);
+    p->addParam("data","raw data to be sent",false);
     pEngine->addCallBack("/dwn/sendraw","GET",p);
 
     p = new RESTCallBack(this,&DHASWifiNodesModule::getDevices_callback,"list connected wifi nodes");

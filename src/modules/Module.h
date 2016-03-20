@@ -6,6 +6,7 @@
 #include "json/JSON.h"
 #include <functional>
 #include <future>
+#include "rest/RESTCallBack.h"
 
 
 class Module{

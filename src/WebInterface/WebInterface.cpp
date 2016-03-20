@@ -34,6 +34,7 @@ void WebInterface::configure(Dumais::JSON::JSON& config)
 
 void WebInterface::stop()
 {
+    mStopped = true;
     if (mpWebServer)
     {
         LOG("Attempting to shutdown Web server");
@@ -100,9 +101,17 @@ HTTPResponse* WebInterface::processHTTPRequest(HTTPRequest* request)
 // This server accepts one connection at a time only. So sockets are blocking
 void WebInterface::start()
 {
+    mStopped = false;
     mpWebServer = new WebServer(mPort, "0.0.0.0",100);
     mpWebServer->requireAuth(this->mPasswdFile.c_str(), 10);
     mpWebServer->setListener(this);
+    mpWebServer->setStopEventHandler([this](){
+        if (!mStopped)
+        {
+            LOG("ERROR: The webserver closed unexpectedly");
+            // TODO: we should be able to send an email out in that case
+        }
+    });
     //this->mpWebServer->start();
     this->mpWebServer->startSecure(this->mSSLCert.c_str(),this->mSSLKey.c_str());
 }

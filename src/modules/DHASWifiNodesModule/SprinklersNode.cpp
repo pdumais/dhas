@@ -45,7 +45,7 @@ void SprinklersNode::registerCallBacks(ThreadSafeRestEngine* pEngine)
     RESTCallBack *p;
 
     p = new RESTCallBack(this,&SprinklersNode::valveOn_callback,"Activate a sprinkler");
-    p->addParam("valve","a,b,c or d");
+    p->addParam("valve","a,b,c or d",false);
     pEngine->addCallBack("/dwn/"+mInfo.id+"/on","GET",p);
     mRestCallbacks.push_back(p);
 

@@ -97,6 +97,49 @@
 		},
 		{
 			"method" : "GET",
+			"path" : "/weather/getthermostat",
+			"params" : [
+			],
+			"description" : "retrieve thermostat status"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/setpoint",
+			"params" : [
+				{
+					"description" : "value between 10 and 30 with 0.5 increment",
+					"name" : "temp"
+				}
+			],
+			"description" : "Configure setpoint"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/resetfilter",
+			"params" : [
+			],
+			"description" : "Reset filter days count"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/setmode",
+			"params" : [
+				{
+					"description" : "heat/cool/off",
+					"name" : "mode"
+				}
+			],
+			"description" : "Set thermostat running mode"
+		},
+		{
+			"method" : "GET",
+			"path" : "/weather/toggleschedule",
+			"params" : [
+			],
+			"description" : "Enable/disable schedule"
+		},
+		{
+			"method" : "GET",
 			"path" : "/audio/play",
 			"params" : [
 				{

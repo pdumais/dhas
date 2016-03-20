@@ -19,6 +19,7 @@ private:
     std::thread *mpThread;
     std::string mSSLCert;
     std::string mSSLKey;
+    bool        mStopped;
 
 protected:
 public:

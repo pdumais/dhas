@@ -54,7 +54,7 @@ void SoundModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
     RESTCallBack *p;
 
     p = new RESTCallBack(this,&SoundModule::play_callback,"plays files defined by PLAY_STRING on onboard sound device");
-    p->addParam("sound",PLAYSTRING_DESCRIPTION);
+    p->addParam("sound",PLAYSTRING_DESCRIPTION,false);
     pEngine->addCallBack("/audio/play","GET",p);
 }
 
