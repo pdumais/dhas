@@ -27,6 +27,7 @@ WeatherModule::WeatherModule()
     mTemperatures[1]="N/A";
     mTemperatures[2]="N/A";
     mTemperatures[3]="N/A";
+    mRunStatus = Off;
     mServer = "";
 }
 
@@ -101,7 +102,7 @@ ThermostatInfo WeatherModule::parseState(const std::string& str)
     temp = getXMLValue(str,"<hold>([0-1]*)</",1);
     if (temp == "11") info.schedule = true; else info.schedule = false;
     temp = getXMLValue(str,"<heatMode>([0-2])</",1);
-    if (temp == "2") info.mode = ThermostatInfo::Cool; else if (temp=="1") info.mode=ThermostatInfo::Heat; else info.mode=ThermostatInfo::Off;
+    if (temp == "2") info.mode = Cool; else if (temp=="1") info.mode=Heat; else info.mode=Off;
     temp = getXMLValue(str,"<heat>([0-1])</",1);
     if (temp == "1") info.heat = true; else info.heat = false;
     temp = getXMLValue(str,"<cool>([0-1])</",1);
@@ -129,6 +130,16 @@ void WeatherModule::run()
                 std::string st = HTTPCommunication::getURL(mServer,"/state.xml");
                 ThermostatInfo info = parseState(st);
                 for (int i=0; i<4; i++) mTemperatures[i] = info.temperatures[i];
+                HeatMode temp = mRunStatus;
+                if (info.cool) mRunStatus = Cool; else if (info.heat) mRunStatus = Heat; else mRunStatus = Off;
+                if (mRunStatus != temp)
+                {
+                    Dumais::JSON::JSON json;
+                    json.addValue("thermostat","event");
+                    json.addValue("modechange","type");
+                    json.addValue(mRunStatus,"status");
+                    mpEventProcessor->processEvent(json);
+                }
             }
         }
         usleep(250000);
@@ -180,6 +191,7 @@ void WeatherModule::getStats_callback(RESTContext* context)
 
 void WeatherModule::appendPeriodicData(Dumais::JSON::JSON& data)
 {
+    data.addValue(mRunStatus,"thermostatrunstatus");
     data.addList("temperatures");
     data["temperatures"].addValue(this->getTemperature(0));
     data["temperatures"].addValue(this->getTemperature(1));

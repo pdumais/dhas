@@ -2,6 +2,13 @@
 #define WEATHERSERVICE_H
 #include "Module.h"
 
+enum HeatMode
+{
+    Off,
+    Heat,
+    Cool
+};
+
 struct ThermostatInfo
 {
     std::string temperatures[8];
@@ -11,12 +18,7 @@ struct ThermostatInfo
     bool fan;
     bool schedule;
     std::string filter;
-    enum HeatMode
-    {
-        Off,
-        Heat,
-        Cool
-    } mode;
+    HeatMode mode;
 };
 
 class WeatherModule: public Module{
@@ -27,6 +29,7 @@ private:
     volatile time_t mLastPollTime;
     std::string mServer;
     std::string mTemperatures[4];
+    HeatMode mRunStatus;
 
 protected:
     virtual void configure(Dumais::JSON::JSON& config);
