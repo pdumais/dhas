@@ -433,6 +433,17 @@
 		},
 		{
 			"method" : "GET",
+			"path" : "/phone/mwi",
+			"params" : [
+				{
+					"description" : "extension",
+					"name" : "ext"
+				}
+			],
+			"description" : "Will subscribe for mwi events for the given extension."
+		},
+		{
+			"method" : "GET",
 			"path" : "/phone/showcalls",
 			"params" : [
 			],

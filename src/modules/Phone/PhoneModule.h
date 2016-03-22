@@ -44,6 +44,7 @@ public:
     void call_callback(RESTContext* context);
     void register_callback(RESTContext* context);
     void blf_callback(RESTContext* context);
+    void mwi_callback(RESTContext* context);
     void showcalls_callback(RESTContext* context);
     void showblf_callback(RESTContext* context);
     void release_callback(RESTContext* context);

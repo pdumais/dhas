@@ -50,13 +50,13 @@ SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, 
     this->mProfile->setUserAgent("DumaisHomeAutomation");
     this->mProfile->addSupportedMethod(NOTIFY);
     this->mProfile->addSupportedMimeType(resip::NOTIFY, resip::Mime("application", "dialog-info+xml"));
-//    this->mProfile->addSupportedMimeType(NOTIFY, Mime("application", "simple-message-summary"));
+    this->mProfile->addSupportedMimeType(NOTIFY, Mime("application", "simple-message-summary"));
     this->mProfile->addSupportedMethod(resip::INFO);
     this->mProfile->addSupportedMimeType(resip::INFO, resip::Mime("application", "dtmf-relay"));
     this->mDum->setMasterProfile(this->mProfile);
     this->mDum->setInviteSessionHandler(this);
     this->mDum->addClientSubscriptionHandler("presence",this);
-//    this->mDum->addClientSubscriptionHandler("message-summary",this);
+    this->mDum->addClientSubscriptionHandler("message-summary",this);
     this->mDum->addOutOfDialogHandler(NOTIFY,this);
     std::auto_ptr<ClientAuthManager> clientAuth(new ClientAuthManager);
     this->mDum->setClientAuthManager(clientAuth);
@@ -81,7 +81,7 @@ void SIPEngine::stop()
 // in all mailboxes that belongs to the user agent. So we cannot get MWI for 2 different mailboxes
 void SIPEngine::subscribeMWI(std::string device)
 {
-/*    std::stringstream sst;
+    std::stringstream sst;
     sst << "sip:";
     sst << device << "@" <<settings.mProxy;
     NameAddr to(sst.str().c_str());
@@ -89,7 +89,7 @@ void SIPEngine::subscribeMWI(std::string device)
     SharedPtr<SipMessage> subMessage = mDum->makeSubscription(to, "message-summary");
     subMessage->header(h_Accepts).push_back(resip::Mime("application","simple-message-summary"));
     subMessage->header(h_Expires).value()=3600;
-    mDum->send(subMessage);*/
+    mDum->send(subMessage);
 }
 
 
@@ -104,7 +104,7 @@ void SIPEngine::subscribeBLF(std::string device)
     pSubscription->mDevice = device;
     SharedPtr<SipMessage> subMessage = mDum->makeSubscription(to, "presence",pSubscription);
     subMessage->header(h_Accepts).push_back(resip::Mime("application","dialog-info+xml"));
-    subMessage->header(h_Expires).value()=3600;
+    subMessage->header(h_Expires).value()=60;
     mDum->send(subMessage);
 }
 

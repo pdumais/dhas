@@ -48,6 +48,10 @@ void PhoneModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
     p->addParam("ext","extension",false);
     pEngine->addCallBack("/phone/blf","GET",p);
 
+    p = new RESTCallBack(this,&PhoneModule::mwi_callback,"Will subscribe for mwi events for the given extension.");
+    p->addParam("ext","extension",false);
+    pEngine->addCallBack("/phone/mwi","GET",p);
+
     p = new RESTCallBack(this,&PhoneModule::showcalls_callback,"Get the list of active calls in the system ");
     pEngine->addCallBack("/phone/showcalls","GET",p);
 
@@ -105,6 +109,13 @@ void PhoneModule::blf_callback(RESTContext* context)
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
     this->subscribeBLF(params->getParam("ext"));
+}
+
+void PhoneModule::mwi_callback(RESTContext* context)
+{
+    RESTParameters* params = context->params;
+    Dumais::JSON::JSON& json = context->returnData;
+    this->subscribeMWI(params->getParam("ext"));
 }
 
 void PhoneModule::showcalls_callback(RESTContext* context)
