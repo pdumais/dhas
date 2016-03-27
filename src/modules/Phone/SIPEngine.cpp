@@ -49,8 +49,9 @@ SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, 
 
     this->mProfile->setUserAgent("DumaisHomeAutomation");
     this->mProfile->addSupportedMethod(NOTIFY);
+    this->mProfile->addSupportedMimeType(resip::NOTIFY, resip::Mime("application", "pidf+xml"));
     this->mProfile->addSupportedMimeType(resip::NOTIFY, resip::Mime("application", "dialog-info+xml"));
-    this->mProfile->addSupportedMimeType(NOTIFY, Mime("application", "simple-message-summary"));
+    this->mProfile->addSupportedMimeType(resip::NOTIFY, resip::Mime("application", "simple-message-summary"));
     this->mProfile->addSupportedMethod(resip::INFO);
     this->mProfile->addSupportedMimeType(resip::INFO, resip::Mime("application", "dtmf-relay"));
     this->mDum->setMasterProfile(this->mProfile);
@@ -102,8 +103,13 @@ void SIPEngine::subscribeBLF(std::string device)
 
     Subscription* pSubscription = new Subscription(*mDum);
     pSubscription->mDevice = device;
+    pSubscription->mDeviceStatus = "N/A";
+    
+    // Unlike what I initially thought, the subscription needs to be made to "dialog" and not "presence"
     SharedPtr<SipMessage> subMessage = mDum->makeSubscription(to, "presence",pSubscription);
-    subMessage->header(h_Accepts).push_back(resip::Mime("application","dialog-info+xml"));
+    subMessage->header(h_Accepts).push_back(resip::Mime("application","pidf+xml"));
+//    SharedPtr<SipMessage> subMessage = mDum->makeSubscription(to, "dialog",pSubscription);
+//    subMessage->header(h_Accepts).push_back(resip::Mime("application","dialog-info+xml"));
     subMessage->header(h_Expires).value()=60;
     mDum->send(subMessage);
 }
@@ -478,17 +484,17 @@ void SIPEngine::onFailure(resip::ClientOutOfDialogReqHandle, const resip::SipMes
 void SIPEngine::onReceivedRequest(resip::ServerOutOfDialogReqHandle ood, const resip::SipMessage& request)
 {
     LOG("PhoneModule::onReceivedRequest");
-/*    if ((request.header(h_ContentType).type() == "application") && (request.header(h_ContentType).subType() == "simple-message-summary"))
+    if ((request.header(h_ContentType).type() == "application") && (request.header(h_ContentType).subType() == "simple-message-summary"))
     {
         MessageWaitingContents* mwi = dynamic_cast<MessageWaitingContents*>(request.getContents());
 
-        int num = 0;
+        int num = mwi->header(mw_voice).newCount();
         mpObserver->onMWI(num);
         
     }
     
     SharedPtr<SipMessage> resp = ood->accept();
-    mDum->send(resp);*/
+    mDum->send(resp);
 }
 
 void SIPEngine::onUpdatePending (ClientSubscriptionHandle, const SipMessage &notify, bool outOfOrder)
@@ -498,17 +504,17 @@ void SIPEngine::onUpdatePending (ClientSubscriptionHandle, const SipMessage &not
 void SIPEngine::onUpdateActive (ClientSubscriptionHandle is, const SipMessage &msg, bool outOfOrder)
 {
     is->acceptUpdate();
-    /*if ((msg.header(h_ContentType).type() == "application") && (msg.header(h_ContentType).subType() == "simple-message-summary"))
+    if ((msg.header(h_ContentType).type() == "application") && (msg.header(h_ContentType).subType() == "simple-message-summary"))
     { // MWI
         MessageWaitingContents* mwi = dynamic_cast<MessageWaitingContents*>(msg.getContents());
 
         int num = mwi->header(mw_voice).newCount();
-        LOG("Got MWI event (%i)",num);
+        LOG("Got MWI event " << num);
         mpObserver->onMWI(num);
         return;
-    } else { // Presence*/
+    } else if (msg.header(h_ContentType).subType() == "pidf+xml"){ // Presence*/
 
-        std::string presenceStatus="terminated";
+        std::string presenceStatus="";
         if(msg.getContents())
         {
             Data data = msg.getContents()->getBodyData();
@@ -517,42 +523,29 @@ void SIPEngine::onUpdateActive (ClientSubscriptionHandle is, const SipMessage &m
                 XMLCursor cursor(ParseBuffer(data.data(),data.size()));
                 if (cursor.firstChild())
                 {
-                    while (cursor.getTag()!="dialog")
+                    while (cursor.getTag()!="note")
                     {
                         cursor.nextSibling();
                     }
                     if (cursor.firstChild())
                     {
-                        while (cursor.getTag()!="state")
-                        {
-                            cursor.nextSibling();
-                        }
-                        if (cursor.firstChild())
-                        {
-                            presenceStatus = cursor.getValue().c_str();
-                        }
+                        presenceStatus = cursor.getValue().c_str();
                     }
                 }
             } catch (ParseException &e) {
             }
         }
 
-    Subscription *pSubscription = dynamic_cast<Subscription*>(is->getAppDialogSet().get());
-    if (pSubscription)
-    {
-        if (presenceStatus=="confirmed" || presenceStatus=="early")
+
+        Subscription *pSubscription = dynamic_cast<Subscription*>(is->getAppDialogSet().get());
+        if (pSubscription)
         {
-            pSubscription->mDeviceStatus = "busy";
+            if (pSubscription->mDeviceStatus != presenceStatus)
+            {
+                pSubscription->mDeviceStatus = presenceStatus;
+                mpObserver->onPresence(pSubscription);
+            }
         }
-        else if (presenceStatus=="terminated")
-        {
-            pSubscription->mDeviceStatus = "idle";
-        }
-        else
-        {
-            pSubscription->mDeviceStatus = "idle";
-        }
-        mpObserver->onPresence(pSubscription);
     }
 }
 

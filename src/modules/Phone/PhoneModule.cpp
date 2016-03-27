@@ -193,6 +193,7 @@ void PhoneModule::onPresence(Subscription *pSub)
 
             if (pSub->getDeviceState()=="terminated")
             {
+                LOG("ERROR: BLF subscription was terminated");
                 mBLFList.erase(it);
             }
         }
