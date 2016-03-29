@@ -35,6 +35,50 @@ bool IOBoard::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
 
         return true;
     }
+    else if (data["type"].str() == "alarm")
+    {
+        json.addValue("ioboardnode","node");
+        json.addValue("alarmpanel","subtype");
+
+        int group = data["group"].toInt();
+        int subGroup = data["subgroup"].toInt();
+        std::string label = data["label"].str();
+        json.addValue(label,"zonelabel");
+
+        if (group == 0)         // Zone OK
+        {
+            json.addValue("zoneoff","action");
+            return true;
+
+        } 
+        else if (group == 1)    // Zone open
+        {
+            json.addValue("zoneon","action");
+            return true;
+        }
+        else if (group == 2)    // Partition status
+        {
+            if (subGroup == 14)
+            {
+                json.addValue("Exit delay","action");
+            }
+            else if (subGroup == 12)
+            {
+                json.addValue("Armed","action");
+            }
+            else if (subGroup == 13)
+            {
+                json.addValue("Entry delay","action");
+            }
+            else if (subGroup == 11)
+            {
+                json.addValue("Disarmed","action");
+            }
+            return true;
+        }
+        return false;
+
+    }
     else if (data["type"].str() == "changed")
     {
         json.addValue("ioboardnode","node");
