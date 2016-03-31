@@ -5,7 +5,7 @@
             "map" : "function(doc){if (doc.event == \"timer\"){emit(doc.timestamp, doc.temperatures);}}"
         },
         "alarms": {
-            "map" : "function(doc){if (doc.event == \"alarmstate\"){emit(doc.timestamp, {status:doc.status,from:doc.from});}}"
+            "map" : "function(doc){if (doc.subtype == \"alarmpanel\" && (doc.action==\"Armed\" || doc.action==\"Disarmed\")){emit(doc.timestamp, {status:doc.action,from:doc.zonelabel});}}"
         },
         "io": {
             "map" : "function(doc){if (doc.event == \"dwn\" && doc.node==\"ioboardnode\" && doc.subtype==\"changed\"){emit(doc.timestamp, doc.pgms);}}"

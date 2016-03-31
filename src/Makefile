@@ -88,6 +88,8 @@ installapp: application
 	mkdir -p $(TARGETFOLDER)
 	cp config.h $(TARGETFOLDER)
 	cp views.json $(TARGETFOLDER)
+	cp dhaslog $(TARGETFOLDER)
+	chmod 555 $(TARGETFOLDER)/dhaslog
 	sed "s/SOUNDSFOLDERPLACEHOLDER/$(subst /,\/,$(SOUNDSFOLDER))/g" haconvertsounds > $(TARGETFOLDER)/haconvertsounds
 	@if [ ! -f "$(SCRIPTFILE)" ]; then echo -e "\r\n**NOTICE** Event script $(SCRIPTFILE) does not exist. Please create it (see example folder) and run 'homeautomation -r'"; fi
 	@if [ ! -f "$(PASSWDFILE)" ]; then echo "username:password" > $(PASSWDFILE); echo -e "\r\n**NOTICE** Default username/password created in $(PASSWDFILE). Please update them and reload homeautomation"; fi

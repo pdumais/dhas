@@ -61,19 +61,34 @@ bool IOBoard::processData(char* buf, size_t size, Dumais::JSON::JSON& json)
             if (subGroup == 14)
             {
                 json.addValue("Exit delay","action");
+                return true;
             }
             else if (subGroup == 12)
             {
-                json.addValue("Armed","action");
+//                json.addValue("Armed","action");
+//                return true;
             }
             else if (subGroup == 13)
             {
                 json.addValue("Entry delay","action");
+                return true;
             }
             else if (subGroup == 11)
             {
-                json.addValue("Disarmed","action");
+//                json.addValue("Disarmed","action");
+//                return true;
             }
+        }
+        else if (group == 29)
+        {
+            json.addValue("Armed","action");
+            json.addValue(subGroup,"usernumber");    
+            return true;
+        }
+        else if (group == 31)
+        {
+            json.addValue("Disarmed","action");
+            json.addValue(subGroup,"usernumber");    
             return true;
         }
         return false;

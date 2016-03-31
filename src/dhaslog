@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tail -f /var/log/syslog-local7 | grep --line-buffered "Script event"

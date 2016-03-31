@@ -71,6 +71,8 @@ void DHASWifiNodesModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
 void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
 {
 
+    //TODO: we could be receiving two messages in the same packet. we should accumulate in buffer until we find a terminating 0.
+    //      and all DWN devices should terminate a message with 0
     char buf[2000];
     int n = recv(node->socket,buf,2000,0);
     //LOG("receiving from node: " << n << "  " << errno);
@@ -101,7 +103,7 @@ void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
     }
 
     std::string payload (buf,n);
-    //LOG("payload: " << payload);
+    //LOG("payload (" << n << "): " << payload);
     if (payload == "yo!\r\n")
     {
         time(&node->lastHeartBeat);
