@@ -129,6 +129,18 @@ void DHASWifiNodesModule::receiveFromNode(DHASWifiNode* node)
     }
 }
 
+// Give some cycles to all nodes periodically
+void DHASWifiNodesModule::runNodes()
+{
+    time_t t;
+    time(&t);
+    for (auto& it : mNodes)
+    {
+        DHASWifiNode* node = &it.second;
+        node->driver->run(t);
+    }
+}
+
 void DHASWifiNodesModule::checkHeartBeats()
 {
     time_t t;
@@ -330,7 +342,7 @@ void DHASWifiNodesModule::run()
     setStarted();
     while (!stopping())
     {
-        int n = epoll_wait(mEpollFD, events, MAX_NODES_COUNT + 2, 2000);
+        int n = epoll_wait(mEpollFD, events, MAX_NODES_COUNT + 2, 1000);
         for (int i = 0; i < n; i++)
         {   
             if (events[i].data.fd == mSendQueue.getSelfFD())
@@ -366,6 +378,7 @@ void DHASWifiNodesModule::run()
         }
 
         this->checkHeartBeats();
+        this->runNodes();
     }
 
     if (mSocket) close(mSocket);
@@ -385,6 +398,7 @@ void DHASWifiNodesModule::getDevices_callback(RESTContext* context)
         obj.addValue(it.second.driver->getName(),"name");
         obj.addValue(it.second.driver->getInfo().ip,"ip");
         obj.addValue(it.second.driver->getInfo().id,"id");
+        it.second.driver->addInfo(obj);
     }
     this->mNodesListLock.unlock();
 }

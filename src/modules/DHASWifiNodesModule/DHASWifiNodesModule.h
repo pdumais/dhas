@@ -25,6 +25,7 @@ private:
     void discoverNode(std::string name, std::string ip, std::string id);
     bool connectNode(DHASWifiNode* node);
     void checkHeartBeats();
+    void runNodes();
     void receiveFromNode(DHASWifiNode* node);
     void sendToNode(const std::string& id, char* data, unsigned char size);  /* ID is the node's IP*/  
     void addFdToEpoll(int fd);

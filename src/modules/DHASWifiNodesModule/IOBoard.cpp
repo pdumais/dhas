@@ -156,3 +156,7 @@ void IOBoard::setoutput_callback(RESTContext* context)
     std::string st = j.stringify(false);
     this->mInfo.sendQueue->sendToNode(this->mInfo.ip,st.c_str(),st.size());
 }
+
+void IOBoard::run(time_t t)
+{
+}

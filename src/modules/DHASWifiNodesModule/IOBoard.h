@@ -14,6 +14,7 @@ public:
 
     bool processData(char* buf, size_t size, Dumais::JSON::JSON& reply);
     void registerCallBacks(ThreadSafeRestEngine* pEngine);
+    virtual void run(time_t t);
 
     void status_callback(RESTContext* context);
     void setoutput_callback(RESTContext* context);

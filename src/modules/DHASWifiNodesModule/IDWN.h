@@ -60,8 +60,10 @@ protected:
 public:
     virtual void registerCallBacks(ThreadSafeRestEngine* pEngine) = 0;
     virtual bool processData(char* buf, size_t size, Dumais::JSON::JSON& reply) = 0;
+    virtual void run(time_t t) = 0;
+    virtual void addInfo(Dumais::JSON::JSON&);
     void unRegisterCallBacks(ThreadSafeRestEngine* pEngine);
-
+    
     std::string getName() {return mName;}
     void setName(std::string name) {mName = name;}
     static std::vector<std::string> getRegisteredSubModulesNames();

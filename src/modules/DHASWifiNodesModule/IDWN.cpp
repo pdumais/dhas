@@ -24,6 +24,10 @@ IDWN* IDWN::createDriverInstance(std::string name)
     return 0;
 }
 
+void IDWN::addInfo(Dumais::JSON::JSON&)
+{
+}
+
 void IDWN::unRegisterCallBacks(ThreadSafeRestEngine* pEngine)
 {
     for (auto& it : mRestCallbacks)
