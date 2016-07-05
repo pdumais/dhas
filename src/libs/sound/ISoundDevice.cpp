@@ -15,6 +15,7 @@ void ISoundDevice::notifyQueueEmpty()
 
 void ISoundDevice::silence(int seconds)
 {
+    if (this->getSampleSize() == 0) return;
     LOG("Adding silence of " << seconds << " seconds in sound device queue");
     SilenceSound *sound = new SilenceSound(seconds, this->getSampleRate(), this->getSampleSize());
     this->mSoundQueue.put(sound);
@@ -23,6 +24,7 @@ void ISoundDevice::silence(int seconds)
 
 void ISoundDevice::play(const char *filename, Dumais::Sound::SoundFormat format)
 {
+    if (this->getSampleSize() == 0) return;
     LOG("Adding " << filename << " in sound device queue");
     SoundFile *file = new SoundFile();
     if (file->open(filename,format))
@@ -36,6 +38,7 @@ void ISoundDevice::play(const char *filename, Dumais::Sound::SoundFormat format)
 
 void ISoundDevice::setMusic(const char *filename, SoundFormat format)
 {
+    if (this->getSampleSize() == 0) return;
     if (this->mMusic) delete this->mMusic;
     this->mMusic = new SoundFile(true);
     ((SoundFile*)(this->mMusic))->open(filename,format);

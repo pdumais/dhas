@@ -191,13 +191,9 @@ int main(int argc, char** argv)
     pRESTInterface->init();
 
     // setup couchDB views at first
-    CouchDB *couch = new CouchDB("dhas",COUCHDB_SERVER,5984); 
-    couch->createDb();
-    std::ifstream file("views.json");
-    std::string st((std::istreambuf_iterator<char>(file)),std::istreambuf_iterator<char>());
-    couch->createViewsIfNonExistant(st);
+    Mysql *mysql = new Mysql("dhas",MYSQL_SERVER,3306,MYSQL_USER, MYSQL_PASSWORD); 
 
-    EventLogger eventLogger(couch);
+    EventLogger eventLogger(mysql);
 
     // This needs to be created after services because it will load a script
     pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE);
@@ -218,7 +214,7 @@ int main(int argc, char** argv)
     serviceProvider.stopModules();
 
     delete pEventProcessor;
-    delete couch;
+    delete mysql;
     LOG("=========== DHAS is now down ===========");
     return 0; 
 }

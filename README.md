@@ -100,6 +100,7 @@ Dependencies
     - liblua (if using Lua)
     - libasound (Alsa)
     - libudev
+    - libmysqlclient
     - ortp
     - git submodules: dumaislib (clone the project with --recursive to get them automatically)
 

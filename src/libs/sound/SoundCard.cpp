@@ -39,6 +39,8 @@ void SoundCard::start()
 
     // We can write the size of 1 period at each interrupt
     this->mChunkSize = this->mpAlsaPCM->getPeriodSizeInSamplesCount()*this->mpAlsaPCM->getSampleSize();
+    if (this->mChunkSize == 0) return;
+
     this->mBuffer = new unsigned char[this->mChunkSize];
 
     this->mStopping = false;
@@ -94,7 +96,12 @@ void SoundCard::work()
         this->mMusic->getSample(this->mChunkSize,(char*)&mBuffer[0]);
     }
 
-    int numberOfFramesToSend = this->mChunkSize / this->getSampleSize();
+    int sampleSize = this->getSampleSize();
+    int numberOfFramesToSend = this->mChunkSize;
+    if (sampleSize >0)
+    {
+        numberOfFramesToSend = numberOfFramesToSend/sampleSize;
+    }
     if (mCurrentSound)   // if there is a sound to be played from queue, hide the music
     {
         // overwrite music with sound

@@ -13,7 +13,8 @@ SOUNDSFOLDER=$(shell awk '/SOUNDS_FOLDER/ {gsub(/"/, "", $$3); print $$3}' confi
 #configuration
 OUTDIR=./bin
 APPPATH=/opt/ha
-TARGETFOLDER=$(APPPATH)
+TARGET=root@services
+TMPDIR=./tmp
 TESTSDIR=tests
 TESTSCPP=$(wildcard $(TESTSDIR)/*.cpp)
 TESTSOBJ=$(TESTSCPP:.cpp=.o)
@@ -30,10 +31,10 @@ OBJECTS:=$(addprefix $(OUTDIR)/,$(notdir $(OBJECTS)))
 INCLUDES=$(dir $(wildcard ./modules/*/)) ./WebInterface ./common $(dir $(wildcard ./libs/*/)) ./
 INCLUDES:=$(realpath $(sort $(INCLUDES)))
 VPATH:=$(INCLUDES)
-INCLUDES:=$(patsubst %,-I%,$(INCLUDES))
+INCLUDES:=$(patsubst %,-I%,$(INCLUDES)) -I/usr/include/mysql
 
 CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG -DSCRIPT$(SCRIPTTYPE)
-LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -ludev -lssl -lcrypto
+LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -lssl -lcrypto -lmysqlclient
 ifeq ($(SCRIPTTYPE),LUA)
 LDFLAGS+= -llua
 endif
@@ -56,6 +57,7 @@ cleantests:
 	-rm $(TESTSDIR)/*.test
 
 cleanapp: cleantests
+	-rm $(TMPDIR)
 	-rm $(OUTDIR)/*
 	-rmdir $(OUTDIR)
 	-cd libs && make clean
@@ -82,22 +84,21 @@ application: chkconfig outdir libraries $(OUTDIR)/main.o $(OBJECTS)
 	$(OUTDIR)/homeautomation -g > ../documentation/api.json
 
 killha:
-	-killall homeautomation -w
+	-ssh $(TARGET) "killall homeautomation -w"
 
 installapp: application
-	mkdir -p $(TARGETFOLDER)
-	cp config.h $(TARGETFOLDER)
-	cp views.json $(TARGETFOLDER)
-	cp dhaslog $(TARGETFOLDER)
-	chmod 555 $(TARGETFOLDER)/dhaslog
-	sed "s/SOUNDSFOLDERPLACEHOLDER/$(subst /,\/,$(SOUNDSFOLDER))/g" haconvertsounds > $(TARGETFOLDER)/haconvertsounds
+	mkdir -p $(TMPDIR)
+	cp config.h $(TMPDIR)
+	cp views.json $(TMPDIR)
+	cp dhaslog $(TMPDIR)
+	chmod 555 $(TMPDIR)/dhaslog
+	sed "s/SOUNDSFOLDERPLACEHOLDER/$(subst /,\/,$(SOUNDSFOLDER))/g" haconvertsounds > $(TMPDIR)/haconvertsounds
 	@if [ ! -f "$(SCRIPTFILE)" ]; then echo -e "\r\n**NOTICE** Event script $(SCRIPTFILE) does not exist. Please create it (see example folder) and run 'homeautomation -r'"; fi
 	@if [ ! -f "$(PASSWDFILE)" ]; then echo "username:password" > $(PASSWDFILE); echo -e "\r\n**NOTICE** Default username/password created in $(PASSWDFILE). Please update them and reload homeautomation"; fi
-	cp $(OUTDIR)/homeautomation $(TARGETFOLDER)
+	cp $(OUTDIR)/homeautomation $(TMPDIR)
 
 upgrade: killha installapp
-	$(APPPATH)/homeautomation -d < /dev/null >/dev/null
+	rsync $(TMPDIR)/* $(TARGET):$(APPPATH)
+	ssh $(TARGET) "$(APPPATH)/homeautomation -d < /dev/null >/dev/null"
 
-debug: killha installapp
-	gdb $(APPPATH)/homeautomation
 	

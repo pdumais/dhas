@@ -139,7 +139,11 @@ AlsaPCM::AlsaPCM(const char *device)
 
 AlsaPCM::~AlsaPCM()
 {
-    snd_pcm_drop(mpDeviceHandle);
+    if (mpDeviceHandle)
+    {
+        snd_pcm_drop(mpDeviceHandle);
+        mpDeviceHandle = 0;
+    }
 }
 
 void AlsaPCM::playChunk(char *buf, size_t numFrames)

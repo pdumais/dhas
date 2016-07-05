@@ -200,7 +200,7 @@ bool InsteonModem::waitForReply(IInsteonMessage *cmd)
                     std::stringstream ss;
                     ss << "Got unknown values while waiting for echo: ";
                     for (int i=0;i<size;i++) ss << "0x" <<std::hex << static_cast<int>(buf[i]) << " ";
-                    LOG(ss);
+                    LOG(ss.str());
                     return false;
                 }
             }

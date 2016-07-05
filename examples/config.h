@@ -12,7 +12,9 @@
 // devices
 #define SOUND_DEVICE "default" //hw:0,0 and plughw:0,0 wont let share between other apps
 #define INSTEON_SERIAL_PORT "/dev/ttyUSB7"
-#define COUCHDB_SERVER "127.0.0.1"
+#define MYSQL_SERVER "192.168.5.10"
+#define MYSQL_USER "username"
+#define MYSQL_PASSWORD "password"
 
 // IP addresses and ports
 #define SIP_PORT 5068

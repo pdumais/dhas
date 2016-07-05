@@ -15,7 +15,7 @@ IOLinc::~IOLinc(){
 
 bool IOLinc::getState()
 {
-    return mDeviceParameter==255;
+    return mDeviceParameter==0;
 }
 
 InsteonDeviceType IOLinc::getDeviceType()
@@ -69,8 +69,7 @@ void IOLinc::processEvent(Dumais::JSON::JSON& json, unsigned char* buf)
         // So we check what was the last message sent to associate this ACK to it.
         if (command==0x19)
         {
-            // if level == 1 it means the sensor is off. If level == 0, sensor is on. Seems to be opposite logic
-            this->setDeviceParameter((cmd2==0)?255:0);
+            this->setDeviceParameter((cmd2==0)?0:255);
             if (this->isInitialized())
             {
 

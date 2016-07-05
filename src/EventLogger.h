@@ -1,16 +1,15 @@
 #pragma once
 
-#include "CouchDB.h"
+#include "Mysql.h"
 #include "IEventNotificationListener.h"
 
 class EventLogger: public IEventNotificationListener
 {
 private:
-    CouchDB* mpCouchDB;
-    time_t mLastCouchCompact;
+    Mysql* mpMysql;
 
 public:
-    EventLogger(CouchDB *pCouchDB);
+    EventLogger(Mysql* pMysql);
     
     virtual void notifyEvent(const Dumais::JSON::JSON& jsonEvent);
 }; 

@@ -53,24 +53,28 @@ int main(int argc, char** argv)
 
 
     ModuleProvider serviceProvider(jsonConfig);
+    serviceProvider.disableModule("DHASWifiNodes");
     serviceProvider.disableModule("IO");
     serviceProvider.disableModule("Weather");
     serviceProvider.disableModule("insteon");
     serviceProvider.disableModule("smtp");
     EventProcessorMock epmock;
     RESTInterface *pRESTInterface = new RESTInterface(&serviceProvider,0,0);
+LOG("meow");
     pRESTInterface->init();
+LOG("woof");
     serviceProvider.startModules(&epmock);
 
     Dumais::JSON::JSON j;
-    sleep(1);
-  //  pRESTInterface->processQuery(j,"/audio/play?sound=mange,$4,mange");
-    pRESTInterface->processQuery(j,"/phone/register?user=dhastests&pin=dhaspass&proxy=192.168.1.3:5070");
-    sleep(1);
+//    sleep(1);
+    LOG("meow");
+    pRESTInterface->processQuery(j,"/audio/play?sound=pop");
+//    pRESTInterface->processQuery(j,"/phone/register?user=dhastests&pin=dhaspass&proxy=192.168.1.3:5070");
+  //  sleep(1);
     //pRESTInterface->processQuery(j,"/phone/call?ext=711&play=mange,$4,mange");
-    pRESTInterface->processQuery(j,"/phone/call?ext=711&play=$1,mange");
+//    pRESTInterface->processQuery(j,"/phone/call?ext=711&play=$1,mange");
 
-    while(1);
+    //while(1);
 
     serviceProvider.stopModules();
 

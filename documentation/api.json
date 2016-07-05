@@ -224,8 +224,16 @@
 			"path" : "/insteon/switch",
 			"params" : [
 				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				},
+				{
 					"description" : "0 to 255. This is the ramp rate",
 					"name" : "rate"
+				},
+				{
+					"description" : "on/off/toggle",
+					"name" : "action"
 				},
 				{
 					"description" : "for EZFlora, subdev is 1-7 for valves and 8-11 for programs 1-4. For switches, this is irrelevant",
@@ -234,14 +242,6 @@
 				{
 					"description" : "0 to 255. Irrelevant if action is off or toggle",
 					"name" : "level"
-				},
-				{
-					"description" : "on/off/toggle",
-					"name" : "action"
-				},
-				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
-					"name" : "id"
 				}
 			],
 			"description" : "Turn on or off a device"
@@ -267,6 +267,18 @@
 					"name" : "z3"
 				},
 				{
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
+				},
+				{
+					"description" : "Program number. 1 to 4",
+					"name" : "p"
+				},
+				{
+					"description" : "Zone 1 timer. 0 to 255 minutes",
+					"name" : "z1"
+				},
+				{
 					"description" : "Zone 7 timer. 0 to 255 minutes",
 					"name" : "z7"
 				},
@@ -277,18 +289,6 @@
 				{
 					"description" : "Zone 2 timer. 0 to 255 minutes",
 					"name" : "z2"
-				},
-				{
-					"description" : "Zone 1 timer. 0 to 255 minutes",
-					"name" : "z1"
-				},
-				{
-					"description" : "Program number. 1 to 4",
-					"name" : "p"
-				},
-				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
-					"name" : "id"
 				}
 			],
 			"description" : "Sets a program on the EZFlora"
@@ -325,16 +325,12 @@
 					"name" : "d9"
 				},
 				{
-					"description" : "the Insteon device ID formated as 0xNNNNNN",
-					"name" : "id"
+					"description" : "data byte 1 for extended data",
+					"name" : "d1"
 				},
 				{
-					"description" : "data byte 8 for extended data",
-					"name" : "d8"
-				},
-				{
-					"description" : "data byte 3 for extended data",
-					"name" : "d3"
+					"description" : "command byte 2",
+					"name" : "cmd2"
 				},
 				{
 					"description" : "data byte 14 for extended data",
@@ -345,12 +341,16 @@
 					"name" : "cmd1"
 				},
 				{
-					"description" : "command byte 2",
-					"name" : "cmd2"
+					"description" : "the Insteon device ID formated as 0xNNNNNN",
+					"name" : "id"
 				},
 				{
-					"description" : "data byte 1 for extended data",
-					"name" : "d1"
+					"description" : "data byte 8 for extended data",
+					"name" : "d8"
+				},
+				{
+					"description" : "data byte 3 for extended data",
+					"name" : "d3"
 				},
 				{
 					"description" : "data byte 2 for extended data",

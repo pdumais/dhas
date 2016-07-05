@@ -277,6 +277,15 @@ void PhoneModule::onConnectedUas(Call *call)
 
 void PhoneModule::subscribeBLF(std::string device)
 {
+    for (auto& it : mBLFList)
+    {
+        if (it.first->getDevice() == device)
+        {
+            LOG("Will not add BLF subscription for " << device << " because it already exists");
+            return;
+        }
+    }
+    LOG("Adding BLF subscription for " << device);
     mpSIPEngine->subscribeBLF(device);
 }
 
