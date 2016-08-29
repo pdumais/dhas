@@ -13,6 +13,26 @@ int log(duk_context *ctx)
     return 0;
 }
 
+int queryURL(duk_context *ctx)
+{
+    duk_push_current_function(ctx);
+    duk_get_prop_string(ctx, -1, "engine");
+    JSEngine* pEngine = (JSEngine*)duk_get_pointer(ctx,-1);
+    duk_pop_n(ctx,2);
+
+    const char* query = duk_to_string(ctx, 0);
+
+    std::string cmd = "curl --insecure -s ";
+    cmd += "\"";
+    cmd += query;
+    cmd += "\"";
+    system(cmd.c_str());
+    LOG(cmd.c_str());
+
+    duk_push_string(ctx,"OK");
+    return 1;
+}
+
 int initiateAction(duk_context *ctx)
 {
     duk_push_current_function(ctx);
@@ -53,10 +73,17 @@ void JSEngine::prepareContext()
     */
     duk_push_global_object(this->context);
     duk_push_object(this->context);
+
     duk_push_c_function(context, initiateAction, DUK_VARARGS);
     duk_push_pointer(context,this);
     duk_put_prop_string(context, -2, "engine"); //save  functionObject["engine"] = this
     duk_put_prop_string(context, -2, "initiateAction"); // Object["initiateAction"] = pushed function
+
+    duk_push_c_function(context, queryURL, DUK_VARARGS);
+    duk_push_pointer(context,this);
+    duk_put_prop_string(context, -2, "engine"); //save  functionObject["engine"] = this
+    duk_put_prop_string(context, -2, "queryURL"); // Object["queryURL"] = pushed function
+
     duk_push_c_function(context, log, DUK_VARARGS);
     duk_push_pointer(context,this);
     duk_put_prop_string(context, -2, "engine"); //save  functionObject["engine"] = this

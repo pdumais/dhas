@@ -165,6 +165,7 @@ int main(int argc, char** argv)
     getConfig(jsonConfig);
     ModuleProvider serviceProvider(jsonConfig);
 
+
     if (gendoc)
     {
         RESTInterface *pRESTInterface = new RESTInterface(&serviceProvider,0,0);
@@ -207,7 +208,7 @@ int main(int argc, char** argv)
     pEventProcessor->reloadScript();
 
     LOG("=========== Ready ===========");
-    while (pEventProcessor->timeSlice() && !quit);
+    while (pEventProcessor->timeSlice() && !quit) sleep(1);
     LOG("Exiting");
     LOG("Stopping Web Interface");
     pWebInterface->stop();

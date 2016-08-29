@@ -31,7 +31,7 @@ AlsaPCM::AlsaPCM(const char *device)
         mpDeviceHandle = 0;
         return;
     }
-    
+   
     snd_pcm_hw_params_alloca(&params);
 
     err=snd_pcm_hw_params_any(mpDeviceHandle, params);
