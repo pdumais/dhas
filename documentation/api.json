@@ -92,6 +92,10 @@
 			"method" : "GET",
 			"path" : "/weather/getstats",
 			"params" : [
+				{
+					"description" : "device index",
+					"name" : "id"
+				}
 			],
 			"description" : "retrieve stats"
 		},
@@ -99,6 +103,10 @@
 			"method" : "GET",
 			"path" : "/weather/getthermostat",
 			"params" : [
+				{
+					"description" : "device index",
+					"name" : "id"
+				}
 			],
 			"description" : "retrieve thermostat status"
 		},
@@ -109,6 +117,10 @@
 				{
 					"description" : "value between 10 and 30 with 0.5 increment",
 					"name" : "temp"
+				},
+				{
+					"description" : "device index",
+					"name" : "id"
 				}
 			],
 			"description" : "Configure setpoint"
@@ -117,6 +129,10 @@
 			"method" : "GET",
 			"path" : "/weather/resetfilter",
 			"params" : [
+				{
+					"description" : "device index",
+					"name" : "id"
+				}
 			],
 			"description" : "Reset filter days count"
 		},
@@ -127,6 +143,10 @@
 				{
 					"description" : "heat/cool/off",
 					"name" : "mode"
+				},
+				{
+					"description" : "device index",
+					"name" : "id"
 				}
 			],
 			"description" : "Set thermostat running mode"
@@ -135,6 +155,10 @@
 			"method" : "GET",
 			"path" : "/weather/toggleschedule",
 			"params" : [
+				{
+					"description" : "device index",
+					"name" : "id"
+				}
 			],
 			"description" : "Enable/disable schedule"
 		},

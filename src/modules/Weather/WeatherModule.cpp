@@ -23,12 +23,6 @@ REGISTER_MODULE(WeatherModule)
 
 WeatherModule::WeatherModule()
 {
-    mTemperatures[0]="N/A";
-    mTemperatures[1]="N/A";
-    mTemperatures[2]="N/A";
-    mTemperatures[3]="N/A";
-    mRunStatus = Off;
-    mServer = "";
 }
 
 WeatherModule::~WeatherModule(){
@@ -44,10 +38,12 @@ void WeatherModule::stop()
 }
 
 
-std::string WeatherModule::getTemperature(int id)
+std::string WeatherModule::getTemperature(int devid, int id)
 {
+    if (devid >= mDevices.size()) return "";
+    Device dev = mDevices[devid];
     if (id<0 || id>3) return "";
-    return mTemperatures[id];
+    return dev.mTemperatures[id];
 }
 
 void WeatherModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
@@ -58,23 +54,29 @@ void WeatherModule::registerCallBacks(ThreadSafeRestEngine* pEngine)
     pEngine->addCallBack("/weather/setip","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::getStats_callback,"retrieve stats");
+    p->addParam("id","device index",false);
     pEngine->addCallBack("/weather/getstats","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::getThermostat_callback,"retrieve thermostat status");
+    p->addParam("id","device index",false);
     pEngine->addCallBack("/weather/getthermostat","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::setpoint_callback,"Configure setpoint");
+    p->addParam("id","device index",false);
     p->addParam("temp","value between 10 and 30 with 0.5 increment",false);
     pEngine->addCallBack("/weather/setpoint","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::resetfilter_callback,"Reset filter days count");
+    p->addParam("id","device index",false);
     pEngine->addCallBack("/weather/resetfilter","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::setmode_callback,"Set thermostat running mode");
+    p->addParam("id","device index",false);
     p->addParam("mode","heat/cool/off",false);
     pEngine->addCallBack("/weather/setmode","GET",p);
 
     p = new RESTCallBack(this,&WeatherModule::toggleschedule_callback,"Enable/disable schedule");
+    p->addParam("id","device index",false);
     pEngine->addCallBack("/weather/toggleschedule","GET",p);
 
 }
@@ -125,21 +127,27 @@ void WeatherModule::run()
         if (t >= mLastPollTime)
         {
             mLastPollTime = t+30;
-            if (mServer!="")
+            int i = 0;
+            for (auto& dev : mDevices)
             {
-                std::string st = HTTPCommunication::getURL(mServer,"/state.xml");
-                ThermostatInfo info = parseState(st);
-                for (int i=0; i<4; i++) mTemperatures[i] = info.temperatures[i];
-                HeatMode temp = mRunStatus;
-                if (info.cool) mRunStatus = Cool; else if (info.heat) mRunStatus = Heat; else mRunStatus = Off;
-                if (mRunStatus != temp)
+                if (dev.mServer!="")
                 {
-                    Dumais::JSON::JSON json;
-                    json.addValue("thermostat","event");
-                    json.addValue("modechange","type");
-                    json.addValue(mRunStatus,"status");
-                    mpEventProcessor->processEvent(json);
+                    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml");
+                    ThermostatInfo info = parseState(st);
+                    for (int i=0; i<4; i++) dev.mTemperatures[i] = info.temperatures[i];
+                    HeatMode temp = dev.mRunStatus;
+                    if (info.cool) dev.mRunStatus = Cool; else if (info.heat) dev.mRunStatus = Heat; else dev.mRunStatus = Off;
+                    if (dev.mRunStatus != temp)
+                    {
+                        Dumais::JSON::JSON json;
+                        json.addValue(i,"devid");
+                        json.addValue("thermostat","event");
+                        json.addValue("modechange","type");
+                        json.addValue(dev.mRunStatus,"status");
+                        mpEventProcessor->processEvent(json);
+                    }
                 }
+                i++;
             }
         }
         usleep(250000);
@@ -152,8 +160,17 @@ void WeatherModule::setIP_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
-    mServer = params->getParam("ip");
-    LOG("Weather service server: "<<mServer.c_str());
+    Device dev; 
+    dev.mServer = params->getParam("ip");
+    dev.mTemperatures[0]="N/A";
+    dev.mTemperatures[1]="N/A";
+    dev.mTemperatures[2]="N/A";
+    dev.mTemperatures[3]="N/A";
+    dev.mRunStatus = Off;
+
+    //TODO: race condition with run() thread
+    mDevices.push_back(dev);
+    LOG("Weather service server: "<< dev.mServer.c_str());
     json.addValue("ok","status");
 }
 
@@ -172,8 +189,13 @@ void WeatherModule::getThermostat_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
 
-    std::string st = HTTPCommunication::getURL(mServer,"/state.xml");
+    Device dev = mDevices[devid];
+    
+    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml");
     ThermostatInfo info = parseState(st);
     convertInfoToJSON(json,info);
 }
@@ -182,28 +204,43 @@ void WeatherModule::getStats_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
+    Device dev = mDevices[devid];
+
     json.addList("temperatures");
-    json["temperatures"].addValue(mTemperatures[0]);
-    json["temperatures"].addValue(mTemperatures[1]);
-    json["temperatures"].addValue(mTemperatures[2]);
-    json["temperatures"].addValue(mTemperatures[3]);
+    json["temperatures"].addValue(dev.mTemperatures[0]);
+    json["temperatures"].addValue(dev.mTemperatures[1]);
+    json["temperatures"].addValue(dev.mTemperatures[2]);
+    json["temperatures"].addValue(dev.mTemperatures[3]);
 }
 
 void WeatherModule::appendPeriodicData(Dumais::JSON::JSON& data)
 {
-    data.addValue(mRunStatus,"thermostatrunstatus");
+    data.addValue(mDevices[0].mRunStatus,"thermostatrunstatus");
     data.addList("temperatures");
-    data["temperatures"].addValue(this->getTemperature(0));
-    data["temperatures"].addValue(this->getTemperature(1));
-    data["temperatures"].addValue(this->getTemperature(2));
-    data["temperatures"].addValue(this->getTemperature(3));
+    int devid = 0;
+    for (auto& dev : mDevices)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            data["temperatures"].addValue(this->getTemperature(devid,i));
+        }
+        devid++;
+    }
 }
 
 void WeatherModule::resetfilter_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
-    std::string st = HTTPCommunication::getURL(mServer,"/state.xml?rstFilt=1");
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
+    Device dev = mDevices[devid];
+
+    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml?rstFilt=1");
     ThermostatInfo info = parseState(st);
     convertInfoToJSON(json,info);
 }
@@ -212,8 +249,13 @@ void WeatherModule::setpoint_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
+    Device dev = mDevices[devid];
+
     std::string temp = params->getParam("temp");
-    std::string st = HTTPCommunication::getURL(mServer,"/state.xml?setTemp="+temp);
+    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml?setTemp="+temp);
     ThermostatInfo info = parseState(st);
     convertInfoToJSON(json,info);
 }
@@ -222,6 +264,10 @@ void WeatherModule::setmode_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
+    Device dev = mDevices[devid];
     std::string mode = params->getParam("mode");
     std::string modenum = "";
     if (mode == "heat") modenum = "1";
@@ -233,7 +279,7 @@ void WeatherModule::setmode_callback(RESTContext* context)
         return;
     }
 
-    std::string st = HTTPCommunication::getURL(mServer,"/state.xml?heatMode="+modenum);
+    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml?heatMode="+modenum);
     ThermostatInfo info = parseState(st);
     convertInfoToJSON(json,info);
 }
@@ -242,7 +288,11 @@ void WeatherModule::toggleschedule_callback(RESTContext* context)
 {
     RESTParameters* params = context->params;
     Dumais::JSON::JSON& json = context->returnData;
-    std::string st = HTTPCommunication::getURL(mServer,"/state.xml?hold=1");
+    int devid = 0;
+    try { devid = std::stoi(params->getParam("id"));} catch(std::exception& e){devid=0;}
+    if (devid >= mDevices.size()) return;
+    Device dev = mDevices[devid];
+    std::string st = HTTPCommunication::getURL(dev.mServer,"/state.xml?hold=1");
     ThermostatInfo info = parseState(st);
     convertInfoToJSON(json,info);
 }

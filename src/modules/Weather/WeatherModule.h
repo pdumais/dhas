@@ -21,15 +21,20 @@ struct ThermostatInfo
     HeatMode mode;
 };
 
+struct Device
+{
+    std::string mServer;
+    std::string mTemperatures[4];
+    HeatMode mRunStatus;
+};
+
 class WeatherModule: public Module{
 private:
     ThermostatInfo parseState(const std::string& str);
     std::string getXMLValue(const std::string& subject, const std::string& str, int matchindex);
     void convertInfoToJSON(Dumais::JSON::JSON& j, const ThermostatInfo& info);
     volatile time_t mLastPollTime;
-    std::string mServer;
-    std::string mTemperatures[4];
-    HeatMode mRunStatus;
+    std::vector<Device> mDevices;
 
 protected:
     virtual void configure(Dumais::JSON::JSON& config);
@@ -43,7 +48,7 @@ public:
 
     virtual void appendPeriodicData(Dumais::JSON::JSON& data);
 
-    std::string getTemperature(int id);
+    std::string getTemperature(int devid, int id);
     void setIP_callback(RESTContext* context);    
     void getStats_callback(RESTContext* context);
     void getThermostat_callback(RESTContext* context);
