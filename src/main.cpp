@@ -130,6 +130,7 @@ int main(int argc, char** argv)
         printf("       -d launch daemon\r\n");
         printf("       -g generate API doc\r\n");
         printf("       -r send SIGHUP to daemon\r\n");
+        printf("       -k send SIGTERM to daemon\r\n");
         printf("       -c run normal mode\r\n");
         exit(0);
     }
@@ -157,6 +158,18 @@ int main(int argc, char** argv)
             }
             printf("Sending SIGHUP to server process [%i]\r\n",pid);
             kill(pid,SIGHUP);
+            exit(0);
+        }
+        else if (param=="-k")
+        {
+            unsigned int pid = getServerPID();
+            if (pid == 0)
+            {
+                printf("Server is not running\r\n");
+                exit(-1);
+            }
+            printf("Sending SIGTERM to server process [%i]\r\n",pid);
+            kill(pid,SIGTERM);
             exit(0);
         }
     }
@@ -217,5 +230,6 @@ int main(int argc, char** argv)
     delete pEventProcessor;
     delete mysql;
     LOG("=========== DHAS is now down ===========");
+
     return 0; 
 }

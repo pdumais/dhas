@@ -34,7 +34,7 @@ VPATH:=$(INCLUDES)
 INCLUDES:=$(patsubst %,-I%,$(INCLUDES)) -I/usr/include/mysql
 
 CFLAGS=-g -rdynamic $(INCLUDES) -fpermissive -std=c++11 -DSYSLOG -DSCRIPT$(SCRIPTTYPE)
-LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -lssl -lcrypto -lmysqlclient
+LDFLAGS=-lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -lssl -lcrypto -lmysqlclient -static-libstdc++
 #LDFLAGS=-static -lrt -lpthread -ldl -ldum -lresip -lrutil -lortp -ldb -lasound -lssl -lcrypto -lmysqlclient
 ifeq ($(SCRIPTTYPE),LUA)
 LDFLAGS+= -llua
