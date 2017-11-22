@@ -107,9 +107,6 @@ void forkprocess()
     }
     if (fork()>0) exit(0);
 
-    std::fstream pidfile("/var/run/homeautomation.pid",std::ios_base::out);
-    pidfile << getpid();
-    pidfile.close();
 }
 
 //For examples on how to use GPIO, check out the bcm2835 C library
@@ -191,6 +188,10 @@ int main(int argc, char** argv)
     {
         forkprocess();
     }
+
+    std::fstream pidfile("/var/run/homeautomation.pid",std::ios_base::out);
+    pidfile << getpid();
+    pidfile.close();
 
     LOG("Starting");
     signal(SIGSEGV, handler);
