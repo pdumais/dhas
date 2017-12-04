@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <string.h>
 
 #define NODE_HEARTBEAT 5    /* 5 seconds */
 #define MAX_NODES_COUNT 20

@@ -1,6 +1,6 @@
 #ifndef INSTEONMODEM_H
 #define INSTEONMODEM_H
-#include "SerialPort.h"
+#include "ISerialPort.h"
 #include <queue>
 #include "InsteonDefs.h"
 #include "IInsteonMessageHandler.h"
@@ -11,7 +11,7 @@ class InsteonModem{
 private:
     pthread_mutex_t queueLock;
     std::queue<IInsteonMessage*> mInsteonCommandQueue;
-    SerialPort *mpSerialPort;
+    ISerialPort *mpSerialPort;
     time_t mTimeLastSend;
     IInsteonMessageHandler *mpInsteonMessageHandler;
     bool mWaitingForResponse;
@@ -20,7 +20,8 @@ private:
     void processAllLinkRecordResponse(unsigned char* buf);
     void setIMConfiguration(unsigned char cmd);
 public:
-	InsteonModem(char *serialPort, IInsteonMessageHandler *p);
+	InsteonModem(std::string mac, IInsteonMessageHandler *p);
+//	InsteonModem(char *serialPort, IInsteonMessageHandler *p);
 	~InsteonModem();
 
     bool process(bool readyToSend);

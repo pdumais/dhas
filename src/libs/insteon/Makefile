@@ -8,7 +8,7 @@ CFLAGS=-g -rdynamic -I ./ -I../dumaislib/ -I../../common/ -std=c++11
 cleanapp:
 	rm *.o
 .cpp.o:
-	g++ -c $(CFLAGS) $< -o $@
+	$(CXX) -c $(CFLAGS) $< -o $@
 
 application: $(OBJECTS) 
 	ar rcs insteon.a $(OBJECTS)

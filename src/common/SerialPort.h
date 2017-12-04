@@ -5,9 +5,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
+#include "ISerialPort.h"
 
-
-class SerialPort{
+class SerialPort: public ISerialPort {
 private:
     int mSerialPortHandle;
 public:
@@ -16,6 +16,7 @@ public:
 
     int Write(unsigned char *buf, int size);
     int Read(unsigned char* buf, int maxSize);
+    bool Reconnect();
 
 };
 

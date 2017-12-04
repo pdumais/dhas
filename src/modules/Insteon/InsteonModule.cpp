@@ -41,7 +41,8 @@ Insteon::~Insteon()
 
 void Insteon::configure(Dumais::JSON::JSON& config)
 {
-    mpInsteonModem = new InsteonModem(config["serialport"].str().c_str(),this);
+    //mpInsteonModem = new InsteonModem(config["serialport"].str().c_str(),this);
+    mpInsteonModem = new InsteonModem(config["mac"].str(),this);
 }
 
 void Insteon::registerCallBacks(ThreadSafeRestEngine* pEngine)

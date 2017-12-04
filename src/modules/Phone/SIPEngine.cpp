@@ -22,8 +22,8 @@ using namespace resip;
 
 SIPEngine::SIPEngine(int rtplow, int rtphigh, std::string localip, int sipport, int ronatimeout, ActionMachine *actionMachine): mProfile(new MasterProfile){
 
-//    Log::setLevel(Log::Debug);
-    Log::setLevel(Log::None);
+    Log::setLevel(Log::Debug);
+//    Log::setLevel(Log::None);
 
     this->mRONATimeout = ronatimeout;
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <pthread.h>
+#include "json/JSON.h"
 
 class Schedule{
 private:
@@ -11,7 +12,7 @@ private:
   DB *mpDB;
     pthread_mutex_t mListLock;
 public:
-  Schedule();
+  Schedule(Dumais::JSON::JSON& json);
   ~Schedule();
 
   void addEvent(ScheduledEvent* pEvent);

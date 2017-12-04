@@ -1,4 +1,6 @@
 #include <iomanip>
+#include "SerialPort.h"
+#include "IPSerialPort.h"
 #include "InsteonModem.h"
 #include "utils/Logging.h"
 #include <unistd.h>
@@ -7,11 +9,27 @@
 #include "AllLinkDatabaseMessage.h"
 #include "IMConfigurationMessage.h"
 #include "StartAllLinkingMessage.h"
-
+/*
 InsteonModem::InsteonModem(char *serialPort, IInsteonMessageHandler *pHandler)
 {
     pthread_mutex_init(&queueLock,0);
     mpSerialPort = new SerialPort(serialPort);
+    mTimeLastSend = 0;
+    mpInsteonMessageHandler = pHandler;
+
+    // We will receive a 0x15 at the begining. Not sure why but just discard it.
+    // NOT TRUE ON x86. IT WAS ONLY ON rPi
+    //    while (getByte()!=0x15);
+
+    setIMConfiguration(0b01000000); // set in Monitor mode
+}
+*/
+
+
+InsteonModem::InsteonModem(std::string serialPort, IInsteonMessageHandler *pHandler)
+{
+    pthread_mutex_init(&queueLock,0);
+    mpSerialPort = new IPSerialPort(serialPort);
     mTimeLastSend = 0;
     mpInsteonMessageHandler = pHandler;
 
@@ -26,6 +44,7 @@ InsteonModem::InsteonModem(char *serialPort, IInsteonMessageHandler *pHandler)
     */
     setIMConfiguration(0b01000000); // set in Monitor mode
 }
+
 
 InsteonModem::~InsteonModem()
 {
@@ -42,6 +61,12 @@ bool InsteonModem::messageResponseWaiting()
 
 bool InsteonModem::process(bool readyToSend)
 {
+    // If already connected, it will return true, if not it will connect
+    // in which case it will return false if it fails to.
+    bool connected = mpSerialPort->Reconnect();
+    if (!connected) return false;
+
+
     // readyToSend is false if one of the device is expected to send an ACK. 
     // mWaitingForResponse is true if we sent a command to the PLM and we are waiting for a response from
     // the PLM (like get first ALL-link record etc...
@@ -53,7 +78,11 @@ bool InsteonModem::process(bool readyToSend)
             IInsteonMessage* cmd = mInsteonCommandQueue.front();
             mInsteonCommandQueue.pop();
             pthread_mutex_unlock(&queueLock);
-            sendCommand(cmd);
+            if (!sendCommand(cmd))
+            {
+                //TODO: should keep in queue
+                LOG("ERROR: Could not send insteon command because serial port was closed. Dropping it.");
+            }
             delete cmd;
         }
     }
@@ -195,6 +224,7 @@ bool InsteonModem::waitForReply(IInsteonMessage *cmd)
                 if (b==0x06){
                     return true;
                 } else if (b==0x15){
+                    LOG("Insteon got 0x15");
                     return false;
                 } else {
                     std::stringstream ss;
@@ -206,6 +236,7 @@ bool InsteonModem::waitForReply(IInsteonMessage *cmd)
             }
         }
     }
+    LOG("Insteon got -1 while reading byte");
     return false;
 }
 
@@ -233,7 +264,7 @@ bool InsteonModem::sendCommand(IInsteonMessage* cmd)
     for (int i=0;i<cmd->getSize();i++) ss << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)(cmd->getBuffer()[i]) <<" ";
     LOG(ss.str());
 
-    mpSerialPort->Write(cmd->getBuffer(),cmd->getSize());
+    if (mpSerialPort->Write(cmd->getBuffer(),cmd->getSize()) < 0) return false;
 
     // We wait for the echo right away
     //TODO: This is not good. The echo could come back asynchronously. Meaning
@@ -242,7 +273,7 @@ bool InsteonModem::sendCommand(IInsteonMessage* cmd)
     if (!ack)
     {
         LOG("ERROR: got Nak from PLM");
-        return false;
+        return true;
     }
 
     InsteonID id = cmd->getDestination();

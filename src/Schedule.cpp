@@ -1,14 +1,13 @@
 #include "DHASLogging.h"
 #include "Schedule.h"
-#include "config.h"
 #include <string.h>
 #include <sstream>
 
-Schedule::Schedule()
+Schedule::Schedule(Dumais::JSON::JSON& json)
 {
     pthread_mutex_init(&mListLock,0);
     db_create(&mpDB,0,0);
-    int ret = mpDB->open(mpDB,0,SCHEDULEDB,"",DB_HASH,DB_CREATE,664); 
+    int ret = mpDB->open(mpDB,0,json["db"].str().c_str(),"",DB_HASH,DB_CREATE,664); 
 
    //TODO: read all
     DBC *pCursor;

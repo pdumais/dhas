@@ -27,7 +27,7 @@ RTPSession::~RTPSession(){
 
 void RTPSession::start()
 {
-    rtp_session_set_local_addr(mSession,this->mLocalIP.c_str(),this->mLocalPort,0);
+    rtp_session_set_local_addr(mSession,this->mLocalIP.c_str(),this->mLocalPort);
     rtp_session_set_scheduling_mode(mSession,1);
     rtp_session_set_blocking_mode(mSession,1);
     rtp_session_set_connected_mode(mSession,TRUE);

@@ -40,3 +40,11 @@ int SerialPort::Read(unsigned char* buf, int maxSize)
 
 }
 
+bool SerialPort::Reconnect()
+{
+    // TODO: should detect if serial port went away. It could happen
+    // in the case where a USB adapater is used.
+    return true;
+}
+
+
