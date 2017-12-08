@@ -26,6 +26,8 @@ WeatherHelper::WeatherHelper(double longitude, double latitude)
     mLatitude = latitude;
     mLastTemperatureCheck=0;
 
+    LOG("Location set to " << longitude << "," << latitude);
+
 }
 
 WeatherHelper::~WeatherHelper()

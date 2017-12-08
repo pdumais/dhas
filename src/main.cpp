@@ -116,7 +116,10 @@ void forkprocess()
 //For examples on how to use GPIO, check out the bcm2835 C library
 int main(int argc, char** argv) 
 { 
-    Dumais::Utils::Logging::logger = new SyslogLogging(SYSLOG_SERVER);
+    Dumais::JSON::JSON jsonConfig;
+    getConfig(jsonConfig,"./config.json");
+
+    Dumais::Utils::Logging::logger = new SyslogLogging(jsonConfig["syslog"]["host"].str());
 
     pEventProcessor = 0;
     quit = false;
@@ -175,8 +178,6 @@ int main(int argc, char** argv)
         }
     }
     
-    Dumais::JSON::JSON jsonConfig;
-    getConfig(jsonConfig,"./config.json");
     ModuleProvider serviceProvider(jsonConfig);
 
 
@@ -201,21 +202,21 @@ int main(int argc, char** argv)
     signal(SIGSEGV, handler);
     signal(SIGTERM, termHandler);
     Schedule schedule(jsonConfig["schedule"]);
-    WeatherHelper weather(LONGITUDE,LATITUDE);
+    WeatherHelper weather(jsonConfig["location"]["longitude"].toDouble(),jsonConfig["location"]["latitude"].toDouble());
     WebNotificationEngine webNotificationEngine;
     RESTInterface *pRESTInterface = new RESTInterface(&serviceProvider,&schedule,&weather);
-    WebInterface *pWebInterface = new WebInterface(WEBSERVER_PORT,pRESTInterface,&webNotificationEngine);
+    WebInterface *pWebInterface = new WebInterface(jsonConfig["web"]["port"].toInt(),pRESTInterface,&webNotificationEngine);
     pWebInterface->configure(jsonConfig["web"]);
 
     pRESTInterface->init();
 
     // setup couchDB views at first
-    Mysql *mysql = new Mysql("dhas",MYSQL_SERVER,3306,MYSQL_USER, MYSQL_PASSWORD); 
+    Mysql *mysql = new Mysql("dhas",jsonConfig["database"]["host"].str(),3306,jsonConfig["database"]["user"].str(), jsonConfig["database"]["password"].str()); 
 
     EventLogger eventLogger(mysql);
 
     // This needs to be created after services because it will load a script
-    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,SCRIPT_FILE);
+    pEventProcessor = new EventProcessor(pRESTInterface,&schedule,&weather,&serviceProvider,jsonConfig["script"]["path"].str());
     pEventProcessor->addEventListener(&eventLogger);
     pEventProcessor->addEventListener(&webNotificationEngine);
 

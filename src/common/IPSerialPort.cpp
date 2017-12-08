@@ -131,6 +131,7 @@ bool IPSerialPort::Reconnect()
 
     LOG("Error connecting to IP serial port");
     close(this->mSocket);
+    this->mSocket = 0;
     return false;
 }
 

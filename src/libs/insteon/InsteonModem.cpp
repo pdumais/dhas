@@ -111,6 +111,7 @@ int InsteonModem::getByte()
 {
     //TODO: what is service is trying to stop? will we be stuck in here?
     unsigned char c;
+
     int size = mpSerialPort->Read(&c,1);
     if (size<1) return -1;
 
