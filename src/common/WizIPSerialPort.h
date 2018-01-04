@@ -1,5 +1,4 @@
-#ifndef IPSERIALPORT_H
-#define IPSERIALPORT_H
+#pragma once
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,15 +6,15 @@
 #include <termios.h>
 #include "ISerialPort.h"
 
-class IPSerialPort: public ISerialPort {
+class WizIPSerialPort: public ISerialPort {
 private:
     int mSocket;
     int mPort;
     std::string mAddress;
 
 public:
-	IPSerialPort(std::string ip, int port);
-	~IPSerialPort();
+	WizIPSerialPort(std::string mac);
+	~WizIPSerialPort();
 
     int Write(unsigned char *buf, int size);
     int Read(unsigned char* buf, int maxSize);
@@ -23,5 +22,4 @@ public:
     bool Reconnect();
 };
 
-#endif
 

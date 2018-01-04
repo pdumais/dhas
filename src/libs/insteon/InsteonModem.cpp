@@ -1,6 +1,6 @@
 #include <iomanip>
 #include "SerialPort.h"
-#include "IPSerialPort.h"
+#include "WizIPSerialPort.h"
 #include "InsteonModem.h"
 #include "utils/Logging.h"
 #include <unistd.h>
@@ -29,7 +29,7 @@ InsteonModem::InsteonModem(char *serialPort, IInsteonMessageHandler *pHandler)
 InsteonModem::InsteonModem(std::string serialPort, IInsteonMessageHandler *pHandler)
 {
     pthread_mutex_init(&queueLock,0);
-    mpSerialPort = new IPSerialPort(serialPort);
+    mpSerialPort = new WizIPSerialPort(serialPort);
     mTimeLastSend = 0;
     mpInsteonMessageHandler = pHandler;
 

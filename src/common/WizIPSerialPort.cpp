@@ -1,5 +1,5 @@
 #include "../DHASLogging.h"
-#include "IPSerialPort.h"
+#include "WizIPSerialPort.h"
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -17,15 +17,36 @@
 // the protocol is not documented. Although it would be simple to reverse
 // engineer.
 
-IPSerialPort::IPSerialPort(std::string target, int port)
+WizIPSerialPort::WizIPSerialPort(std::string target)
 {
     this->mSocket = 0;
-    this->mAddress = target;
-    this->mPort = port;
 
+    Wiz110sr w;
+    std::map<std::string,Wiz110srConfig> confs = w.search();
+    if (confs.count(target))
+    {
+        Wiz110srConfig wc = confs[target];
+        wc.baud = 0xFA; //19200
+        if (w.configure(target,wc))
+        {
+            std::stringstream ss;
+            ss << (int)wc.ip[0] << "." << (int)wc.ip[1] << "." << (int)wc.ip[2] << "." << (int)wc.ip[3];
+            this->mAddress = ss.str();
+            this->mPort = __builtin_bswap16(wc.port);
+            LOG("Found wiznet device at " << this->mAddress << ":" <<this->mPort);
+        } 
+        else
+        {
+            LOG("Could not configure wiznet device");
+        }
+    }
+    else
+    {
+        LOG("Could not find wiznet device");   
+    }
 }
 
-IPSerialPort::~IPSerialPort(){
+WizIPSerialPort::~WizIPSerialPort(){
     if (this->mSocket >= 0)
     {
         close(this->mSocket);
@@ -33,7 +54,7 @@ IPSerialPort::~IPSerialPort(){
     }
 }
 
-int IPSerialPort::Write(unsigned char *buf, int size)
+int WizIPSerialPort::Write(unsigned char *buf, int size)
 {
     if (this->mSocket == 0) return -1;
 
@@ -55,7 +76,7 @@ int IPSerialPort::Write(unsigned char *buf, int size)
     }
 }
 
-int IPSerialPort::Read(unsigned char* buf, int maxSize)
+int WizIPSerialPort::Read(unsigned char* buf, int maxSize)
 {
     if (this->mSocket == 0) return -1;
 
@@ -86,7 +107,7 @@ int IPSerialPort::Read(unsigned char* buf, int maxSize)
     return r;
 }
 
-bool IPSerialPort::Reconnect()
+bool WizIPSerialPort::Reconnect()
 {
     if (this->mSocket != 0 ) return true;
 
