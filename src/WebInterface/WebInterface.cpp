@@ -98,6 +98,10 @@ HTTPResponse* WebInterface::processHTTPRequest(HTTPRequest* request)
     return resp;
 }
 
+void WebInterface::processHTTPRequestAsync(Dumais::WebServer::HTTPRequest* req, Dumais::WebServer::HTTPRequestCallBack cb)
+{
+}
+
 // This server accepts one connection at a time only. So sockets are blocking
 void WebInterface::start()
 {

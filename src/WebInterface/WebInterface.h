@@ -31,6 +31,7 @@ public:
     void configure(Dumais::JSON::JSON& config);
 
     virtual Dumais::WebServer::HTTPResponse* processHTTPRequest(Dumais::WebServer::HTTPRequest* request);
+    virtual void processHTTPRequestAsync(Dumais::WebServer::HTTPRequest*, Dumais::WebServer::HTTPRequestCallBack);
     virtual void onConnectionOpen();
     virtual void onConnectionClosed();
     virtual void onResponseSent();
