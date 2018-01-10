@@ -36,6 +36,11 @@ AlarmModule::~AlarmModule()
 
 void AlarmModule::configure(Dumais::JSON::JSON& config)
 {
+    if (this->mpSerialPort)
+    {
+        delete this->mpSerialPort;
+    }
+
     this->mpSerialPort = new IPSerialPort(config["ip"].str(),23);
 }
 
@@ -48,12 +53,20 @@ void AlarmModule::run()
 {
     AlarmData data;
 
+    bool connected = false;
     setStarted();
     while (!stopping())
     {
-        this->mpSerialPort->Reconnect();
+        connected = this->mpSerialPort->Reconnect();
+
+
         memset(&data,0,sizeof(AlarmData));
-        int r = this->mpSerialPort->Read((unsigned char*)&data, sizeof(AlarmData));
+        int r = 0;
+        if (connected)
+        {
+            r = this->mpSerialPort->Read((unsigned char*)&data, sizeof(AlarmData));
+        }
+
         if (r == sizeof(AlarmData))
         {
             Dumais::JSON::JSON j;
@@ -77,14 +90,20 @@ void AlarmModule::run()
                 {
                     j.addValue("Entry delay","action");
                 }
-                else if (data.subgroup == 12)
+                else 
                 {
-                    //j.addValue("Armed","action");
+                    j.addValue("Unknown-A","action");
+                    j.addValue((int)data.subgroup,"subgroup");
+                    j.addValue((int)data.group,"group");
+                }
+                /*else if (data.subgroup == 12)
+                {
+                    j.addValue("Armed","action");
                 }
                 else if (data.subgroup == 11)
                 {
-                    //j.addValue("disarmed","action");
-                }
+                    j.addValue("disarmed","action");
+                }*/
         
             }
             else if (data.group == 29)
@@ -97,22 +116,19 @@ void AlarmModule::run()
                 j.addValue("Disarmed","action");
                 j.addValue((int)data.subgroup,"usernumber");
             }
+            else 
+            {
+                j.addValue("Unknown-B","action");
+                j.addValue((int)data.subgroup,"subgroup");
+                j.addValue((int)data.group,"group");
+            }
             
             std::string label;
-            size_t n = 15;
-            for (int i=15;i>=0;i--)
-            {
-                if (data.label[i]==0 || data.label[i]==' ')
-                {
-                    n--;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            for (int i=0;i<=15;i++) if (data.label[i]==0) data.label[i]=' ';
+            label.assign(data.label,15);
+            label.erase(label.begin(),std::find_if(label.begin(),label.end(),[](int c){return !std::isspace(c);}));
+            label.erase(std::find_if(label.rbegin(),label.rend(),[](int c){return !std::isspace(c);}).base(),label.end());
 
-            label.assign(data.label,n+1);
             j.addValue(label,"label");
             mpEventProcessor->processEvent(j);
         }

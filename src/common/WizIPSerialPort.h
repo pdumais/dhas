@@ -4,22 +4,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
-#include "ISerialPort.h"
+#include "IPSerialPort.h"
 
-class WizIPSerialPort: public ISerialPort {
-private:
-    int mSocket;
-    int mPort;
-    std::string mAddress;
-
+class WizIPSerialPort: public IPSerialPort {
 public:
 	WizIPSerialPort(std::string mac);
-	~WizIPSerialPort();
-
-    int Write(unsigned char *buf, int size);
-    int Read(unsigned char* buf, int maxSize);
-
-    bool Reconnect();
+	virtual ~WizIPSerialPort();
 };
 
 

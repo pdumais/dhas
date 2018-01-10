@@ -33,10 +33,6 @@ InsteonModem::InsteonModem(std::string serialPort, IInsteonMessageHandler *pHand
     mTimeLastSend = 0;
     mpInsteonMessageHandler = pHandler;
 
-    // We will receive a 0x15 at the begining. Not sure why but just discard it.
-    // NOT TRUE ON x86. IT WAS ONLY ON rPi
-    //    while (getByte()!=0x15);
-
     /* This sucks but it is the only way I could find to make the PLM
        pass the broadcast messages to the application. According to the 
        2412sdevguide.pdf, monitor mode is required because the PLM

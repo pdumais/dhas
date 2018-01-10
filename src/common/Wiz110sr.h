@@ -25,7 +25,7 @@ struct Wiz110srConfig
     //0xFE: 57600
     //0xFF: 115200
     //0xBB: 230400
-    char baud;
+    unsigned char baud;
     char dbit;
     char parity;
     char sbit;

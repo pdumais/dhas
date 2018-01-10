@@ -9,13 +9,18 @@
 
 class IPSerialPort: public ISerialPort {
 private:
+    bool mFailedReconnect;
+    time_t mLastReconnect;
     int mSocket;
+
+protected:
     int mPort;
     std::string mAddress;
 
 public:
+	IPSerialPort();
 	IPSerialPort(std::string ip, int port);
-	~IPSerialPort();
+	virtual ~IPSerialPort();
 
     int Write(unsigned char *buf, int size);
     int Read(unsigned char* buf, int maxSize);

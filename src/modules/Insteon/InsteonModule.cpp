@@ -32,17 +32,25 @@ know about it. Manually refreshing the UI seems innevitable
 
 Insteon::Insteon()
 {
+    this->mpInsteonModem = 0;
 }
 
 Insteon::~Insteon()
 {
-    delete mpInsteonModem;
+    if (this->mpInsteonModem)
+    {
+        delete this->mpInsteonModem;
+    }
 }
 
 void Insteon::configure(Dumais::JSON::JSON& config)
 {
+    if (this->mpInsteonModem)
+    {
+        delete this->mpInsteonModem;
+    }
     //mpInsteonModem = new InsteonModem(config["serialport"].str().c_str(),this);
-    mpInsteonModem = new InsteonModem(config["mac"].str(),this);
+    this->mpInsteonModem = new InsteonModem(config["mac"].str(),this);
 }
 
 void Insteon::registerCallBacks(ThreadSafeRestEngine* pEngine)
